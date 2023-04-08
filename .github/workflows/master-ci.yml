@@ -7,16 +7,32 @@ on:
 
 jobs:
   build:
+    name: "Build: ${{ matrix.config.name } / ${{ matrix.config.architecture }}"
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        rust: [stable]
-        arm64: [true, false]
-        exclude:
-          - os: windows-latest
-            arm64: true
+        config:
+          - {
+            name: "Ubuntu Latest",
+            os: ubuntu-22.04,
+            architecture: x64,
+          }
+          - {
+            name: "macOS Latest",
+            os: macos-12.0,
+            architecture: arm64,
+          }
+          - {
+            name: "macOS Latest",
+            os: macos-12.0,
+            architecture: x64,
+          }
+          - {
+            name: "Windows Latest",
+            os: windows-latest,
+            architecture: x64,
+          }
 
     steps:
       - uses: actions/checkout@v3
