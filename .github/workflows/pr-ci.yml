@@ -5,7 +5,8 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    name: "Build: ${{ matrix.config.name }} / ${{ matrix.config.architecture }}"
+    runs-on: ${{ matrix.config.os }}
 
     strategy:
       matrix:
@@ -13,21 +14,25 @@ jobs:
           - {
             name: "Ubuntu Latest",
             os: ubuntu-22.04,
+            rust: stable,
             architecture: x64,
           }
           - {
             name: "macOS Latest",
             os: macos-12.0,
+            rust: stable,
             architecture: arm64,
           }
           - {
             name: "macOS Latest",
             os: macos-12.0,
+            rust: stable,
             architecture: x64,
           }
           - {
             name: "Windows Latest",
             os: windows-latest,
+            rust: stable,
             architecture: x64,
           }
 
@@ -38,7 +43,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: ${{ matrix.config.rust }}
 
       - name: Build Project
         run: cargo build --release
