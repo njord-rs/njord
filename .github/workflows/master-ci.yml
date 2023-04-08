@@ -1,4 +1,4 @@
-name: rorm build
+name: imperator build
 
 on:
   push:
