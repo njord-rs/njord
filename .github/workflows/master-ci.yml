@@ -7,19 +7,28 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        rust: [stable]
+        arm64: [true, false]
+        exclude:
+          - os: windows-latest
+            arm64: true
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: stable
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
 
-    - name: Build Project
-      run: cargo build --release
+      - name: Build Project
+        run: cargo build --release
 
-    - name: Run Tests
-      run: cargo test
+      - name: Run Tests
+        run: cargo test
