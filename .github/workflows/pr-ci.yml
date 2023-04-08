@@ -1,4 +1,4 @@
-name: rorm build pull requests
+name: imperator build pull requests
 
 on:
   pull_request:
