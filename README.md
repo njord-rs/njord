@@ -1,6 +1,6 @@
-# imperator
+# rlinx
 
-![build](https://img.shields.io/github/actions/workflow/status/mjovanc/imperator/master-ci.yml?branch=master)
+![build](https://img.shields.io/github/actions/workflow/status/mjovanc/rlinx/master-ci.yml?branch=master)
 [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 ![](https://img.shields.io/badge/Rust-1.68+-orange.svg)
 
@@ -8,30 +8,30 @@ A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs
 
 ## Development Resources
 
-- Docs: https://github.com/mjovanc/imperator/wiki (not ready yet)
-- Discussions: https://github.com/mjovanc/imperator/discussions
+- Docs: https://github.com/mjovanc/rlinx/wiki (not ready yet)
+- Discussions: https://github.com/mjovanc/rlinx/discussions
 
 ## Getting Help
 
-Are you having trouble with imperator? We want to help!
+Are you having trouble with rlinx? We want to help!
 
 - If you are upgrading, read the release notes for upgrade instructions and "new and noteworthy" features.
 
-- Ask a question on StackOverflow, we monitor for questions tagged with imperator.
+- Ask a question on StackOverflow, we monitor for questions tagged with rlinx.
 
-- Report bugs with imperator at https://github.com/mjovanc/imperator/issues.
+- Report bugs with rlinx at https://github.com/mjovanc/rlinx/issues.
 
-- Join the Discussions and be part of the community at https://github.com/mjovanc/imperator/discussions.
+- Join the Discussions and be part of the community at https://github.com/mjovanc/rlinx/discussions.
 
 ## Reporting Issues
 
-imperator uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
+rlinx uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
 
 - Before you log a bug, please search the issue tracker to see if someone has already reported the problem.
 
 - If the issue doesn’t already exist, create a new issue.
 
-- Please provide as much information as possible with the issue report. We like to know the imperator version, operating system, target platform etc you’re using.
+- Please provide as much information as possible with the issue report. We like to know the rlinx version, operating system, target platform etc you’re using.
 
 - If you need to paste code or include a stack trace, use Markdown. ``` escapes before and after your text.
 
