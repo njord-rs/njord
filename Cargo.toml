@@ -1,5 +1,5 @@
 [package]
-name = "imperator"
+name = "rlinx"
 version = "0.1.0"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
