@@ -12,7 +12,7 @@ assignees: ''
 
 * Maybe this feature is already here?
   - Did you check the latest version of the library?
-  - Maybe it's in a form you didn't expect? Consider asking on [Discussions](https://github.com/mjovanc/imperator/discussions). The community will likely come up with some code that solves your need, and faster than it would take us to answer the issue!
+  - Maybe it's in a form you didn't expect? 
 * Do you actually *need* this feature? Maybe restructuring your code would neatly eliminate the problem the feature would be solving.
 * Is the library in the imperator the best place for this feature? Maybe it would be better suited for some third-party library?
 -->

@@ -1,4 +1,4 @@
-name: imperator build
+name: build
 
 on:
   push:

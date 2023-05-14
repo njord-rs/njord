@@ -1,5 +1,5 @@
 [package]
-name = "rlinx"
+name = "njord"
 version = "0.1.0"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
