@@ -3,9 +3,9 @@ name = "njord"
 version = "0.1.0"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
-description = "A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs."
+description = "A private CLI based messaging application. Powered by the Kryptokrona Blockchain."
 license = "BSD 3-Clause License"
-repository = "https://github.com/mjovanc/imperator"
+repository = "https://github.com/mjovanc/njord"
 rustc = "1.68.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

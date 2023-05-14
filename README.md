@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 ![](https://img.shields.io/badge/Rust-1.68+-orange.svg)
 
-A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs.
+A private CLI based messaging application. Powered by the Kryptokrona Blockchain.
 
 ## Development Resources
 
@@ -22,8 +22,6 @@ Are you having trouble with njord? We want to help!
 - Ask a question on StackOverflow, we monitor for questions tagged with njord.
 
 - Report bugs with njord at https://github.com/mjovanc/njord/issues.
-
-- Join the Discussions and be part of the community at https://github.com/mjovanc/njord/discussions.
 
 ## Reporting Issues
 
