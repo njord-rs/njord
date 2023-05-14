@@ -15,7 +15,7 @@ This is a place for issue reports that are not exactly bugs (wrong unintentional
 * If the behavior is strange, surprising, and undocumented, it could be a good idea to file a "Bug report" instead.
 * Is this still relevant with the latest version of the library? We could have changed this already.
 * Maybe there are good reasons for the existing behavior. Please try searching for existing discussions of the problem.
-* Are you using the right abstraction? Consider asking on [Discussions](https://github.com/mjovanc/imperator/discussions). Maybe your need is better solved by some other abstraction entirely.
+* Are you using the right abstraction?
 
 -->
 
@@ -33,7 +33,7 @@ The upsides of your proposal.
 * Who would benefit from this and how?
   - Would it be possible to cover new use cases?
   - Would some code become clearer?
-  - Would the specific library/libraries become conceptually simpler?
+  - Would the library become conceptually simpler?
   - etc.
 
 **Why not?**
