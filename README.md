@@ -1,6 +1,8 @@
-# rlinx
+<img align="right" width="128" height="128" alt="njord" src="https://github.com/mjovanc/njord/raw/master/resources/logo.png">
 
-![build](https://img.shields.io/github/actions/workflow/status/mjovanc/rlinx/master-ci.yml?branch=master)
+# njord
+
+![build](https://img.shields.io/github/actions/workflow/status/mjovanc/njord/master-ci.yml?branch=master)
 [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 ![](https://img.shields.io/badge/Rust-1.68+-orange.svg)
 
@@ -8,30 +10,30 @@ A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs
 
 ## Development Resources
 
-- Docs: https://github.com/mjovanc/rlinx/wiki (not ready yet)
-- Discussions: https://github.com/mjovanc/rlinx/discussions
+- Docs: https://github.com/mjovanc/njord/wiki (not ready yet)
+- Twitter: https://twitter.com/mjovanc
 
 ## Getting Help
 
-Are you having trouble with rlinx? We want to help!
+Are you having trouble with njord? We want to help!
 
 - If you are upgrading, read the release notes for upgrade instructions and "new and noteworthy" features.
 
-- Ask a question on StackOverflow, we monitor for questions tagged with rlinx.
+- Ask a question on StackOverflow, we monitor for questions tagged with njord.
 
-- Report bugs with rlinx at https://github.com/mjovanc/rlinx/issues.
+- Report bugs with njord at https://github.com/mjovanc/njord/issues.
 
-- Join the Discussions and be part of the community at https://github.com/mjovanc/rlinx/discussions.
+- Join the Discussions and be part of the community at https://github.com/mjovanc/njord/discussions.
 
 ## Reporting Issues
 
-rlinx uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
+njord uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
 
 - Before you log a bug, please search the issue tracker to see if someone has already reported the problem.
 
 - If the issue doesn’t already exist, create a new issue.
 
-- Please provide as much information as possible with the issue report. We like to know the rlinx version, operating system, target platform etc you’re using.
+- Please provide as much information as possible with the issue report. We like to know the njord version, operating system, target platform etc you’re using.
 
 - If you need to paste code or include a stack trace, use Markdown. ``` escapes before and after your text.
 
