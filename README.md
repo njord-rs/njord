@@ -4,9 +4,9 @@
 
 ![build](https://img.shields.io/github/actions/workflow/status/mjovanc/njord/master-ci.yml?branch=master)
 [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-![](https://img.shields.io/badge/Rust-1.68+-orange.svg)
+![](https://img.shields.io/badge/Rust-1.69+-orange.svg)
 
-A private CLI based messaging application. Powered by the Kryptokrona Blockchain.
+A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs.
 
 ## Development Resources
 

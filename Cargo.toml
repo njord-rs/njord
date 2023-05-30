@@ -6,7 +6,7 @@ authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "A private CLI based messaging application. Powered by the Kryptokrona Blockchain."
 license = "BSD 3-Clause License"
 repository = "https://github.com/mjovanc/njord"
-rustc = "1.68.0"
+rustc = "1.69.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

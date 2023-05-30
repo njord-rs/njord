@@ -5,36 +5,8 @@ on:
 
 jobs:
   build:
-    name: "Build: ${{ matrix.config.name }} / ${{ matrix.config.architecture }}"
-    runs-on: ${{ matrix.config.os }}
-
-    strategy:
-      matrix:
-        config:
-          - {
-            name: "Ubuntu Latest",
-            os: ubuntu-22.04,
-            rust: stable,
-            architecture: x64,
-          }
-          - {
-            name: "macOS Latest",
-            os: macos-12.0,
-            rust: stable,
-            architecture: arm64,
-          }
-          - {
-            name: "macOS Latest",
-            os: macos-12.0,
-            rust: stable,
-            architecture: x64,
-          }
-          - {
-            name: "Windows Latest",
-            os: windows-latest,
-            rust: stable,
-            architecture: x64,
-          }
+    name: build
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -43,7 +15,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.config.rust }}
+          toolchain: stable
 
       - name: Build Project
         run: cargo build --release
