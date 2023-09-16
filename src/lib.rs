@@ -1,5 +1,2 @@
 mod sqlite;
-
-fn main() {
-    println!("Hello, world!");
-}
+pub use sqlite::init;
