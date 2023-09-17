@@ -5,4 +5,5 @@ pub use self::init::init;
 pub use self::init::open;
 
 pub mod init;
+pub mod insert;
 pub mod table;
