@@ -33,7 +33,7 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
 
     let mut values_str = String::new();
     for value in values {
-        values_str.push_str(&format!("{}, ", value))
+        values_str.push_str(&format!("'{}', ", value)) // right now we are adding '' for strings, we need to have a way to handle different data types.
     }
 
     // remove the trailing comma and space
@@ -53,6 +53,8 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
         columns_str,
         values_str
     );
+
+    println!("{}", sql);
 
     Ok(sql)
 }
