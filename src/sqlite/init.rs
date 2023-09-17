@@ -2,7 +2,7 @@ use log::info;
 use rusqlite::{Connection, Error, Result};
 use std::{collections::HashMap, env};
 
-use super::{Table, TableDefinition};
+use super::table::{Table, TableDefinition};
 
 impl Table for TableDefinition {
     fn get_name(&self) -> &str {
@@ -35,7 +35,6 @@ pub fn open() -> Result<Connection, Error> {
 
 // initialize database with tables
 pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
-    //TODO: should we include an option for SQLite in-memory DB?
     let mut conn = open()?;
 
     // create a transaction

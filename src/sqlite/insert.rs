@@ -1,19 +1,18 @@
-use crate::sqlite::TableDefinition;
+use crate::sqlite::table::TableDefinition;
 
-use super::init::open;
-use super::Table;
+use super::{init::open, table::Table};
 use log::info;
 use rusqlite::{Connection, Error, Result};
 use std::{collections::HashMap, env};
 
-pub fn insert(table: &dyn Table) -> Result<()> {
+pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
     let mut conn = open()?;
 
     // create a transaction
     let tx = conn.transaction()?;
 
-    // let statement = generate_statement(&**table);
-    // tx.execute(&statement, [])?;
+    let statement = generate_statement(table, values);
+    tx.execute(&statement.unwrap(), [])?;
 
     // commit the transaction
     tx.commit()?;
@@ -24,7 +23,7 @@ pub fn insert(table: &dyn Table) -> Result<()> {
 }
 
 // might need to re-think this one
-/* fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Error> {
+fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Error> {
     // second parameter for values?
 
     let mut columns_str = String::new();
@@ -83,6 +82,9 @@ fn test_insert() {
         },
     };
 
+    let result_posts = insert(&posts, table1_values);
+    let result_categories = insert(&categories, table2_values);
+
     assert!(result_posts.is_ok());
     assert!(result_categories.is_ok());
-} */
+}
