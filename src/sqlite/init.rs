@@ -12,8 +12,18 @@ impl Table for TableDefinition {
     fn get_columns(&self) -> &HashMap<String, String> {
         return &self.columns;
     }
+
+    fn get_column_names(&self) -> Vec<String> {
+        let mut columns = Vec::new();
+        for (column_name, _column_type) in self.get_columns() {
+            columns.push(column_name.to_string());
+        }
+
+        columns
+    }
 }
 
+// open database connection
 pub fn open() -> Result<Connection, Error> {
     let target_dir = env::var("OUT_DIR").unwrap_or_else(|_| "./target".to_string());
     let db_file_name = "my_database.db";
@@ -45,6 +55,7 @@ pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
     Ok(())
 }
 
+// generate sql statement for create table
 fn generate_statement(table: &dyn Table) -> String {
     // generate the column definitions based on the hashmap
     let mut column_definitions = String::new();
