@@ -11,3 +11,4 @@ rustc = "1.69.0"
 
 [dependencies]
 rusqlite = "0.29.0"
+log = "0.4.20"
