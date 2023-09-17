@@ -5,7 +5,7 @@ pub trait Table {
     fn get_columns(&self) -> &HashMap<String, String>;
 }
 
-pub struct TableStruct {
+pub struct TableDefinition {
     pub name: String,
     pub columns: HashMap<String, String>,
 }
