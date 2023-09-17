@@ -13,7 +13,7 @@ impl Table for TableDefinition {
         return &self.columns;
     }
 
-    fn get_column_names(&self) -> Vec<String> {
+    fn get_column_fields(&self) -> Vec<String> {
         let mut columns = Vec::new();
         for (column_name, _column_type) in self.get_columns() {
             columns.push(column_name.to_string());
