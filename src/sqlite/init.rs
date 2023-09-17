@@ -1,3 +1,4 @@
+use log::{info, warn};
 use rusqlite::{Connection, Result};
 use std::{collections::HashMap, env};
 
@@ -15,6 +16,7 @@ impl Table for TableStruct {
 
 // initialize database with tables
 pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
+    //TODO: should we include an option for SQLite in-memory DB?
     let target_dir = env::var("OUT_DIR").unwrap_or_else(|_| "./target".to_string());
     let db_file_name = "my_database.db";
     let db_file_path = format!("{}/{}", target_dir, db_file_name);
@@ -25,6 +27,8 @@ pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
         let statement = convert_to_create_table_str(&**t);
         conn.execute(&statement, [])?;
     }
+
+    info!("Initialize database, done.");
 
     Ok(())
 }
