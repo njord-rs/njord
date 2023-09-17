@@ -2,7 +2,7 @@ use log::info;
 use rusqlite::{Connection, Error, Result};
 use std::{collections::HashMap, env};
 
-use super::table::{Table, TableDefinition};
+use crate::table::{Table, TableDefinition};
 
 impl Table for TableDefinition {
     fn get_name(&self) -> &str {

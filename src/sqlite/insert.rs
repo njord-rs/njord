@@ -1,6 +1,6 @@
-use crate::sqlite::table::TableDefinition;
+use crate::table::{Table, TableDefinition};
 
-use super::{init::open, table::Table};
+use super::init::open;
 use log::info;
 use rusqlite::{Connection, Error, Result};
 use std::{collections::HashMap, env};
@@ -23,6 +23,8 @@ pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
 }
 
 // might need to re-think this one
+// currently we take a vector of strings for the values
+// we need to use '' 10 10.5 etc
 fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Error> {
     // second parameter for values?
 
