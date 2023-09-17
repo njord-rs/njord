@@ -1,2 +1,1 @@
-mod sqlite;
-pub use sqlite::init;
+pub mod sqlite;
