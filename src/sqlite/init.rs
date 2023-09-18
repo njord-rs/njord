@@ -67,13 +67,12 @@ fn generate_statement(table: &dyn Table) -> String {
     column_definitions.pop();
 
     let sql = format!(
-        "CREATE TABLE {} (
-            id   INTEGER PRIMARY KEY,
-            {}
-        )",
+        "CREATE TABLE {} (id INTEGER PRIMARY KEY, {});",
         table.get_name(),
         column_definitions
     );
+
+    println!("{}", sql);
 
     sql
 }
@@ -86,6 +85,7 @@ fn test_init() {
         columns: {
             let mut map = HashMap::new();
             map.insert("title".to_string(), "TEXT NOT NULL".to_string());
+            map.insert("comments".to_string(), "INT DEFAULT 0".to_string());
             map
         },
     };
@@ -96,6 +96,7 @@ fn test_init() {
         columns: {
             let mut map = HashMap::new();
             map.insert("name".to_string(), "TEXT NOT NULL".to_string());
+            map.insert("posts_amount".to_string(), "INT DEFAULT 0".to_string());
             map
         },
     };
