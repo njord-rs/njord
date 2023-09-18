@@ -1,7 +1,7 @@
+use crate::sqlite::open;
 use crate::table::{Table, TableDefinition};
 use crate::util::convert_insert_values;
 
-use super::init::open;
 use log::info;
 use rusqlite::Result;
 use std::collections::HashMap;
@@ -40,7 +40,7 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
         let data_type_str = value.to_string();
         values_str.push_str(&*data_type_str);
         values_str.push_str(", ");
-    };
+    }
 
     // remove the trailing comma and space
     columns_str.pop();
@@ -48,7 +48,8 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
     values_str.pop();
     values_str.pop();
 
-    let sql = format!("INSERT INTO {} ({}) VALUES ({});",
+    let sql = format!(
+        "INSERT INTO {} ({}) VALUES ({});",
         table.get_name(),
         columns_str,
         values_str
