@@ -1,4 +1,5 @@
 use crate::table::{Table, TableDefinition};
+use crate::util::convert_insert_values;
 
 use super::init::open;
 use log::info;
@@ -31,25 +32,11 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
     }
 
     // surround single quotes of text
-    let mut result = Vec::new();
-    for item in values {
-        if let Ok(parsed_int) = item.parse::<i32>() {
-            result.push(parsed_int.to_string());
-        } else if let Ok(parsed_float) = item.parse::<f64>() {
-            result.push(parsed_float.to_string());
-        } else if item.eq_ignore_ascii_case("true") {
-            result.push("true".to_string());
-        } else if item.eq_ignore_ascii_case("false") {
-            result.push("false".to_string());
-        } else {
-            // if it's not true or false, surround it with single quotes and push it.
-            result.push(format!("'{}'", item));
-        }
-    }
+    let mut converted_values = convert_insert_values(values);
 
     // generate values string
     let mut values_str = String::new();
-    for value in result {
+    for value in converted_values {
         let data_type_str = value.to_string();
         values_str.push_str(&*data_type_str);
         values_str.push_str(", ");
