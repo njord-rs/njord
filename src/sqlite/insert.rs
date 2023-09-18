@@ -2,8 +2,9 @@ use crate::table::{Table, TableDefinition};
 
 use super::init::open;
 use log::info;
-use rusqlite::{Connection, Error, Result};
-use std::{collections::HashMap, env};
+use rusqlite::Result;
+use std::collections::HashMap;
+use std::fmt::Error;
 
 pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
     let mut conn = open()?;
@@ -22,21 +23,37 @@ pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
     Ok(())
 }
 
-// might need to re-think this one
-// currently we take a vector of strings for the values
-// we need to use '' 10 10.5 etc
 fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Error> {
-    // second parameter for values?
-
+    // generate string for columns
     let mut columns_str = String::new();
     for column_name in table.get_column_fields() {
         columns_str.push_str(&format!("{}, ", column_name));
     }
 
-    let mut values_str = String::new();
-    for value in values {
-        values_str.push_str(&format!("'{}', ", value)) // right now we are adding '' for strings, we need to have a way to handle different data types.
+    // surround single quotes of text
+    let mut result = Vec::new();
+    for item in values {
+        if let Ok(parsed_int) = item.parse::<i32>() {
+            result.push(parsed_int.to_string());
+        } else if let Ok(parsed_float) = item.parse::<f64>() {
+            result.push(parsed_float.to_string());
+        } else if item.eq_ignore_ascii_case("true") {
+            result.push("true".to_string());
+        } else if item.eq_ignore_ascii_case("false") {
+            result.push("false".to_string());
+        } else {
+            // if it's not true or false, surround it with single quotes and push it.
+            result.push(format!("'{}'", item));
+        }
     }
+
+    // generate values string
+    let mut values_str = String::new();
+    for value in result {
+        let data_type_str = value.to_string();
+        values_str.push_str(&*data_type_str);
+        values_str.push_str(", ");
+    };
 
     // remove the trailing comma and space
     columns_str.pop();
@@ -44,13 +61,7 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
     values_str.pop();
     values_str.pop();
 
-    let sql = format!(
-        "INSERT INTO {} (
-            {}
-        )
-        VALUES (
-            {}
-        )",
+    let sql = format!("INSERT INTO {} ({}) VALUES ({});",
         table.get_name(),
         columns_str,
         values_str
@@ -63,8 +74,8 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
 
 #[test]
 fn test_insert() {
-    let table1_values = vec!["New ORM library for Rust"];
-    let table2_values = vec!["Rust is a great language!"];
+    let table1_values = vec!["New ORM library for Rust", "10"];
+    let table2_values = vec!["Rust is a great language!", "5"];
 
     // create the posts table
     let posts = TableDefinition {
@@ -72,6 +83,7 @@ fn test_insert() {
         columns: {
             let mut map = HashMap::new();
             map.insert("title".to_string(), "TEXT NOT NULL".to_string());
+            map.insert("comments".to_string(), "INT DEFAULT 0".to_string());
             map
         },
     };
@@ -82,6 +94,7 @@ fn test_insert() {
         columns: {
             let mut map = HashMap::new();
             map.insert("name".to_string(), "TEXT NOT NULL".to_string());
+            map.insert("posts_amount".to_string(), "INT DEFAULT 0".to_string());
             map
         },
     };
