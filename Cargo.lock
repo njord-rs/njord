@@ -108,6 +108,7 @@ name = "njord_derive"
 version = "0.1.0"
 dependencies = [
  "njord",
+ "proc-macro2",
  "quote",
  "syn",
 ]
