@@ -1,14 +1,9 @@
-[package]
-name = "njord"
-version = "0.1.0"
-edition = "2021"
-authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
-description = "A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs."
-license = "BSD 3-Clause License"
-repository = "https://github.com/mjovanc/njord"
-rustc = "1.69.0"
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = [
+    "njord",
+    "njord_derive",
+    # "test_suite", perhaps move the tests here?
+]
 
-[dependencies]
-rusqlite = { version = "0.29.0", features = ["bundled"] }
-log = "0.4.20"
+[patch.crates-io]
+njord = { path = "njord" }
