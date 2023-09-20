@@ -9,7 +9,7 @@ repository = "https://github.com/mjovanc/njord"
 rustc = "1.69.0"
 
 [dependencies]
-njord_derive = { optional = true, path = "../njord_derive" }
+njord_derive = { path = "../njord_derive" }
 rusqlite = { version = "0.29.0", features = ["bundled"] }
 log = "0.4.20"
 
