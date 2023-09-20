@@ -32,7 +32,7 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
     }
 
     // surround single quotes of text
-    let mut converted_values = convert_insert_values(values);
+    let converted_values = convert_insert_values(values);
 
     // generate values string
     let mut values_str = String::new();
