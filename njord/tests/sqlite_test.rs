@@ -1,5 +1,7 @@
 // integrations tests for sqlite
 
+use std::collections::HashMap;
+
 use njord::sqlite;
 use njord_derive::Table;
 
@@ -28,24 +30,34 @@ fn init_tables() {
     };
 
     // create table 2
-    // #[derive(Table, Debug)]
-    // struct TableB {
-    //     title: String,
-    //     desc: String,
-    //     amount: u32,
-    // }
+    #[derive(Table, Debug)]
+    struct TableB {
+        name: String,
+        age: u32,
+        email: String,
+    }
 
-    // let table_b = TableB {
-    //     title: "Table B".to_string(),
-    //     desc: "Some description for Table A".to_string(),
-    //     amount: 0,
-    // };
+    let table_b = TableB {
+        name: "John Doe".to_string(),
+        age: 30,
+        email: "john.doe@example.com".to_string(),
+    };
 
     // create table 3
+    #[derive(Table, Debug)]
+    struct TableC {
+        product_id: i64,
+        product_name: String,
+        price: f64,
+        in_stock: bool,
+    }
 
-    println!("Name of Table: {}", table_a.get_name());
-    println!("Columns of Table: {:?}", table_a.get_columns());
-    println!("Column Fields of Table: {:?}", table_a.get_column_fields());
+    let table_c = TableC {
+        product_id: 1001,
+        product_name: "Example Product".to_string(),
+        price: 29.99,
+        in_stock: true,
+    };
 
     assert_eq!(true, true);
 }
