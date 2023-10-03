@@ -19,7 +19,7 @@ pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
     //     columns: HashMap::new(),
     // };
 
-    let mut conn = open()?;
+    let mut conn = open("my_database.db")?;
 
     // create a transaction
     let tx = conn.transaction()?;
@@ -60,38 +60,3 @@ fn generate_statement(table: &dyn Table) -> String {
 
     sql
 }
-
-// #[test]
-// fn test_init() {
-//     // create the posts table
-//     let posts = TableDefinition {
-//         name: "posts".to_string(),
-//         columns: {
-//             let mut map = HashMap::new();
-//             map.insert("title".to_string(), "TEXT NOT NULL".to_string());
-//             map.insert("comments".to_string(), "INT DEFAULT 0".to_string());
-//             map
-//         },
-//     };
-
-//     // create the categories table
-//     let categories = TableDefinition {
-//         name: "categories".to_string(),
-//         columns: {
-//             let mut map = HashMap::new();
-//             map.insert("name".to_string(), "TEXT NOT NULL".to_string());
-//             map.insert("posts_amount".to_string(), "INT DEFAULT 0".to_string());
-//             map
-//         },
-//     };
-
-//     // initialize a vector of the tables to create
-//     let tables: Vec<Box<dyn Table>> = vec![
-//         Box::new(posts) as Box<dyn Table>,
-//         Box::new(categories) as Box<dyn Table>,
-//     ];
-
-//     let result = init(tables);
-
-//     assert!(result.is_ok());
-// }
