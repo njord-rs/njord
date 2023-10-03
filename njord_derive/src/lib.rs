@@ -13,6 +13,7 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 /// # Example
 ///
 /// ```rust
+/// use njord_derive::Table;
 /// #[derive(Table)]
 /// struct MyTable {
 ///     id: i32,
