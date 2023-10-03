@@ -3,7 +3,7 @@ use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, FieldsNamed, Type};
+use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 
 #[proc_macro_derive(Table)]
 pub fn table_derive(input: TokenStream) -> TokenStream {

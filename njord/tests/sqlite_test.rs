@@ -28,6 +28,19 @@ fn init_tables() {
     };
 
     // create table 2
+    // #[derive(Table, Debug)]
+    // struct TableB {
+    //     title: String,
+    //     desc: String,
+    //     amount: u32,
+    // }
+
+    // let table_b = TableB {
+    //     title: "Table B".to_string(),
+    //     desc: "Some description for Table A".to_string(),
+    //     amount: 0,
+    // };
+
     // create table 3
 
     println!("Name of Table: {}", table_a.get_name());
