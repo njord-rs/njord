@@ -6,4 +6,4 @@
 [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 ![](https://img.shields.io/badge/Rust-1.69+-orange.svg)
 
-A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs.
+A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
