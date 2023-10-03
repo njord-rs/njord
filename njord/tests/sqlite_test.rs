@@ -1,8 +1,7 @@
 // integrations tests for sqlite
 
-use std::collections::HashMap;
-
 use njord::sqlite;
+use njord::table::Table;
 use njord_derive::Table;
 
 #[test]
@@ -58,6 +57,13 @@ fn init_tables() {
         price: 29.99,
         in_stock: true,
     };
+
+    // add a vector of the tables here
+    // let tables =
+
+    // let result = sqlite::init(tables);
+
+    // assert!(result.is_ok());
 
     assert_eq!(true, true);
 }
