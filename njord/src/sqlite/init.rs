@@ -6,12 +6,6 @@ use std::{collections::HashMap, env};
 
 use crate::sqlite::open;
 
-#[derive(Table)]
-struct Hello {
-    name: String,
-    columns: HashMap<String, String>,
-}
-
 // initialize database with tables
 pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
     // let test = Hello {
