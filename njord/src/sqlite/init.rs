@@ -1,18 +1,11 @@
 use crate::table::Table;
 use log::info;
-use njord_derive::Table;
-use rusqlite::{Connection, Error, Result};
-use std::{collections::HashMap, env};
+use rusqlite::Result;
 
 use crate::sqlite::open;
 
 // initialize database with tables
 pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
-    // let test = Hello {
-    //     name: "".to_string(),
-    //     columns: HashMap::new(),
-    // };
-
     let mut conn = open("my_database.db")?;
 
     // create a transaction

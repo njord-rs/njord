@@ -4,7 +4,6 @@ use crate::util::convert_insert_values;
 
 use log::info;
 use rusqlite::Result;
-use std::collections::HashMap;
 use std::fmt::Error;
 
 pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
