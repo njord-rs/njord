@@ -1,4 +1,3 @@
 pub fn setup_sqlite() {
-    // open database
-    // init tables
+    sqlite::open("test_database.db");
 }

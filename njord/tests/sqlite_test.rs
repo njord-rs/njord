@@ -1,6 +1,7 @@
 // integrations tests for sqlite
 
 use njord::sqlite;
+use njord::sqlite::init::init;
 use njord::table::Table;
 use njord_derive::Table;
 
@@ -13,6 +14,7 @@ fn open_db() {
 #[test]
 fn init_tables() {
     // open a new db
+    // common::setup_sqlite();
 
     // create table 1
     #[derive(Table, Debug)]
@@ -22,11 +24,11 @@ fn init_tables() {
         amount: u32,
     }
 
-    let _table_a = TableA {
+    let table_a = Box::new(TableA {
         title: "Table A".to_string(),
         desc: "Some description for Table A".to_string(),
         amount: 0,
-    };
+    });
 
     // create table 2
     #[derive(Table, Debug)]
@@ -36,11 +38,11 @@ fn init_tables() {
         email: String,
     }
 
-    let _table_b = TableB {
+    let table_b = Box::new(TableB {
         name: "John Doe".to_string(),
         age: 30,
         email: "john.doe@example.com".to_string(),
-    };
+    });
 
     // create table 3
     #[derive(Table, Debug)]
@@ -51,19 +53,23 @@ fn init_tables() {
         in_stock: bool,
     }
 
-    let _table_c = TableC {
+    let table_c = Box::new(TableC {
         product_id: 1001,
         product_name: "Example Product".to_string(),
         price: 29.99,
         in_stock: true,
-    };
+    });
 
     // add a vector of the tables here
-    // let tables =
+    let mut tables: Vec<Box<dyn Table>> = Vec::new();
 
-    // let result = sqlite::init(tables);
+    tables.push(table_a);
+    tables.push(table_b);
+    tables.push(table_c);
 
-    // assert!(result.is_ok());
+    let result = init(tables);
+
+    assert!(result.is_ok());
 
     assert_eq!(true, true);
 }
