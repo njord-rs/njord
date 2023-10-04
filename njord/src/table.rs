@@ -15,7 +15,7 @@ pub trait Table {
     ///
     /// Returns a reference to a `HashMap` where the keys are column names,
     /// and the values are column types represented as strings.
-    fn get_columns(&self) -> &HashMap<String, String>;
+    fn get_columns(&self) -> HashMap<String, String>;
 
     /// Get the names of the columns.
     ///
@@ -70,7 +70,7 @@ fn create_tables() {
         in_stock: true,
     };
 
-    let expected_columns_a: HashMap<String, String> = vec![
+    let _expected_columns_a: HashMap<String, String> = vec![
         ("title".to_string(), "String".to_string()),
         ("desc".to_string(), "String".to_string()),
         ("amount".to_string(), "u32".to_string()),
@@ -78,7 +78,7 @@ fn create_tables() {
     .into_iter()
     .collect();
 
-    let expected_columns_b: HashMap<String, String> = vec![
+    let _expected_columns_b: HashMap<String, String> = vec![
         ("name".to_string(), "String".to_string()),
         ("age".to_string(), "u32".to_string()),
         ("email".to_string(), "String".to_string()),
@@ -86,7 +86,7 @@ fn create_tables() {
     .into_iter()
     .collect();
 
-    let expected_columns_c: HashMap<String, String> = vec![
+    let _expected_columns_c: HashMap<String, String> = vec![
         ("product_id".to_string(), "i64".to_string()),
         ("product_name".to_string(), "String".to_string()),
         ("price".to_string(), "f64".to_string()),
