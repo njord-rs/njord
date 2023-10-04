@@ -22,7 +22,7 @@ fn init_tables() {
         amount: u32,
     }
 
-    let table_a = TableA {
+    let _table_a = TableA {
         title: "Table A".to_string(),
         desc: "Some description for Table A".to_string(),
         amount: 0,
@@ -36,7 +36,7 @@ fn init_tables() {
         email: String,
     }
 
-    let table_b = TableB {
+    let _table_b = TableB {
         name: "John Doe".to_string(),
         age: 30,
         email: "john.doe@example.com".to_string(),
@@ -51,7 +51,7 @@ fn init_tables() {
         in_stock: bool,
     }
 
-    let table_c = TableC {
+    let _table_c = TableC {
         product_id: 1001,
         product_name: "Example Product".to_string(),
         price: 29.99,

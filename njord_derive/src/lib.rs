@@ -14,6 +14,7 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 ///
 /// ```rust
 /// use njord_derive::Table;
+/// use njord::table::Table;
 /// #[derive(Table)]
 /// struct MyTable {
 ///     id: i32,
@@ -68,7 +69,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     };
 
     let output = quote! {
-        impl #ident {
+        impl Table for #ident {
             #name_stream
             #columns_stream
             #column_fields_stream
