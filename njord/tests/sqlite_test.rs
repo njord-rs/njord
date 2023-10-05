@@ -5,6 +5,8 @@ use njord::sqlite::init::init;
 use njord::table::Table;
 use njord_derive::Table;
 
+mod common;
+
 #[test]
 fn open_db() {
     let result = sqlite::open("test_database.db");
@@ -14,38 +16,24 @@ fn open_db() {
 #[test]
 fn init_tables() {
     // open a new db
-    // common::setup_sqlite();
+    //common::setup_sqlite();
+    let result = sqlite::open("test_database.db");
 
-    // create table 1
-    #[derive(Table, Debug)]
+    #[derive(Table, Debug, Default)]
     struct TableA {
         title: String,
-        desc: String,
+        description: String,
         amount: u32,
     }
 
-    let table_a = Box::new(TableA {
-        title: "Table A".to_string(),
-        desc: "Some description for Table A".to_string(),
-        amount: 0,
-    });
-
-    // create table 2
-    #[derive(Table, Debug)]
+    #[derive(Table, Debug, Default)]
     struct TableB {
         name: String,
         age: u32,
         email: String,
     }
 
-    let table_b = Box::new(TableB {
-        name: "John Doe".to_string(),
-        age: 30,
-        email: "john.doe@example.com".to_string(),
-    });
-
-    // create table 3
-    #[derive(Table, Debug)]
+    #[derive(Table, Debug, Default)]
     struct TableC {
         product_id: i64,
         product_name: String,
@@ -53,16 +41,11 @@ fn init_tables() {
         in_stock: bool,
     }
 
-    let table_c = Box::new(TableC {
-        product_id: 1001,
-        product_name: "Example Product".to_string(),
-        price: 29.99,
-        in_stock: true,
-    });
+    let table_a = Box::new(TableA::default());
+    let table_b = Box::new(TableB::default());
+    let table_c = Box::new(TableC::default());
 
-    // add a vector of the tables here
     let mut tables: Vec<Box<dyn Table>> = Vec::new();
-
     tables.push(table_a);
     tables.push(table_b);
     tables.push(table_c);
