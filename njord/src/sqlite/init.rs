@@ -2,12 +2,8 @@ use crate::table::Table;
 use log::info;
 use rusqlite::Result;
 
-use crate::sqlite::open;
-
 // initialize database with tables
-pub fn init(tables: Vec<Box<dyn Table>>) -> Result<()> {
-    let mut conn = open("my_database.db")?;
-
+pub fn init(mut conn: rusqlite::Connection, tables: Vec<Box<dyn Table>>) -> Result<()> {
     // create a transaction
     let tx = conn.transaction()?;
 
