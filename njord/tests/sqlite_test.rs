@@ -17,7 +17,7 @@ fn open_db() {
 fn init_tables() {
     // open a new db
     //common::setup_sqlite();
-    let result = sqlite::open("test_database.db");
+    let conn = sqlite::open("test_database.db");
 
     #[derive(Table, Debug, Default)]
     struct TableA {
@@ -50,7 +50,7 @@ fn init_tables() {
     tables.push(table_b);
     tables.push(table_c);
 
-    let result = init(tables);
+    let result = init(conn.unwrap(), tables);
 
     assert!(result.is_ok());
 
