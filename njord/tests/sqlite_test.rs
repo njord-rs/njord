@@ -15,8 +15,6 @@ fn open_db() {
 
 #[test]
 fn init_tables() {
-    // open a new db
-    //common::setup_sqlite();
     let conn = sqlite::open("test_database.db");
 
     #[derive(Table, Debug, Default)]
@@ -53,8 +51,6 @@ fn init_tables() {
     let result = init(conn.unwrap(), tables);
 
     assert!(result.is_ok());
-
-    assert_eq!(true, true);
 }
 
 #[test]

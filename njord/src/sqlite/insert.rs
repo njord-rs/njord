@@ -6,6 +6,15 @@ use log::info;
 use rusqlite::Result;
 use std::fmt::Error;
 
+// change table -> table_row and remove values later
+// we will take in an intialized struct for the tables
+// for example we want to send in
+//
+// let table_a = Box::new(TableA {
+//    title: "Some value here".to_string(),
+//    desc: "Some other value here".to_string(),
+//    amount: 0,
+// });
 pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
     let mut conn = open("my_database.db")?;
 
