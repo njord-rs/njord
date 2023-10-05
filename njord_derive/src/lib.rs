@@ -36,7 +36,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
             let field_names_clone = field_names.clone();
-            let field_strings = field_names.clone().map(|f| f.as_ref().unwrap().to_string());
+            let field_types = named.iter().map(|f| &f.ty);
 
             // implement the get_name() function
             name_stream.extend::<TokenStream2>(quote! {
@@ -46,13 +46,22 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             });
 
             // implement the get_columns() function
-            columns_stream.extend::<TokenStream2>(quote! {
+            columns_stream.extend(quote! {
                 fn get_columns(&self) -> std::collections::HashMap<String, String> {
                     let mut columns = std::collections::HashMap::new();
                     #(
+                        let column_type = match stringify!(#field_types) {
+                            "u32" => "BIGINT",
+                            "String" => "VARCHAR(255)",
+                            // Add more data type mappings as needed
+                            _ => {
+                                eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
+                                "UNKNOWN_TYPE"
+                            }
+                        };
                         columns.insert(
-                            #field_strings.to_string(),
-                            format!("{:?}", self.#field_names_clone)
+                            stringify!(#field_names).to_string(),
+                            column_type.to_string(),
                         );
                     )*
                     columns
@@ -60,9 +69,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             });
 
             // implement the get_column_fields() function
-            column_fields_stream.extend::<TokenStream2>(quote! {
+            column_fields_stream.extend(quote! {
                 fn get_column_fields(&self) -> Vec<String> {
-                    vec![#(stringify!(#field_names).to_string()),*]
+                    vec![#(stringify!(#field_names_clone).to_string()),*]
                 }
             });
         }
