@@ -5,16 +5,19 @@ use njord::sqlite::init::init;
 use njord::sqlite::insert::insert;
 use njord::table::Table;
 use njord_derive::Table;
+use serial_test::serial;
 
 mod common;
 
 #[test]
+#[serial]
 fn open_db() {
     let result = sqlite::open("test_database.db");
     assert!(result.is_ok());
 }
 
 #[test]
+#[serial]
 fn init_tables() {
     let conn = sqlite::open("test_database.db");
 
@@ -55,6 +58,7 @@ fn init_tables() {
 }
 
 #[test]
+#[serial]
 fn insert_row() {
     let conn = sqlite::open("test_database.db");
 

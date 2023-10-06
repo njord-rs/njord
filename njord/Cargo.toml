@@ -15,3 +15,4 @@ log = "0.4.20"
 
 [dev-dependencies]
 njord_derive = { path = "../njord_derive" }
+serial_test = "1.0"
