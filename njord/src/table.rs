@@ -22,6 +22,12 @@ pub trait Table {
     /// Returns a `Vec<String>` containing the names of the columns in the same order
     /// as they appear in the table.
     fn get_column_fields(&self) -> Vec<String>;
+
+    /// Get the values of the columns.
+    ///
+    /// Returns a `Vec<String>` containing the values of the columns in the same order
+    /// as they appear in the table.
+    fn get_column_values(&self) -> Vec<String>;
 }
 
 #[test]

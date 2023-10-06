@@ -31,12 +31,17 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     let mut name_stream = TokenStream2::default();
     let mut columns_stream = TokenStream2::default();
     let mut column_fields_stream = TokenStream2::default();
+    let mut column_values_stream = TokenStream2::default();
 
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
             let field_names_clone = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
+            let field_values = named.iter().map(|f| {
+                let field_name = &f.ident;
+                quote! { self.#field_name.to_string() }
+            });
 
             // implement the get_name() function
             name_stream.extend::<TokenStream2>(quote! {
@@ -74,6 +79,13 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     vec![#(stringify!(#field_names_clone).to_string()),*]
                 }
             });
+
+            // implement the get_column_values() function
+            column_values_stream.extend(quote! {
+                fn get_column_values(&self) -> Vec<String> {
+                    vec![#(#field_values),*]
+                }
+            });
         }
     };
 
@@ -82,6 +94,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             #name_stream
             #columns_stream
             #column_fields_stream
+            #column_values_stream
         }
     };
 
