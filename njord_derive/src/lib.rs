@@ -56,9 +56,15 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     let mut columns = std::collections::HashMap::new();
                     #(
                         let column_type = match stringify!(#field_types) {
-                            "u32" => "BIGINT",
-                            "String" => "VARCHAR(255)",
-                            // Add more data type mappings as needed
+                            "i64" | "i32" | "i16" | "i8" | "u64" | "u32" | "u16" | "u8" | "usize" => "INTEGER",
+                            "String" => "TEXT",
+                            "f64" | "f32" => "REAL",
+                            "Vec<u8>" => "BLOB",
+                            "Option<i64>" | "Option<i32>" | "Option<i16>" | "Option<i8>" | "Option<u64>" | "Option<u32>" | "Option<u16>" | "Option<u8>" | "Option<usize>" => "INTEGER", 
+                            "Option<String>" => "TEXT",
+                            "Option<f64>" | "Option<f32>" => "REAL", 
+                            "Option<Vec<u8>>" => "BLOB",
+                            "bool" => "STRING",
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
                                 "UNKNOWN_TYPE"
