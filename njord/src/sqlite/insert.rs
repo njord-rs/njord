@@ -1,4 +1,3 @@
-use crate::sqlite::open;
 use crate::table::Table;
 use crate::util::convert_insert_values;
 
@@ -6,15 +5,6 @@ use log::info;
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
-// change table -> table_row and remove values later
-// we will take in an intialized struct for the tables
-// for example we want to send in
-//
-// let table_row = Box::new(TableA {
-//    title: "Some value here".to_string(),
-//    desc: "Some other value here".to_string(),
-//    amount: 0,
-// });
 pub fn insert(mut conn: Connection, table_row: &dyn Table) -> Result<()> {
     // create a transaction
     let tx = conn.transaction()?;
