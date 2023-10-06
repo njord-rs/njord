@@ -7,7 +7,7 @@
 /// # Returns
 ///
 /// A new vector of strings with surrounding single quotes if it contains text.
-pub fn convert_insert_values(values: Vec<&str>) -> Vec<String> {
+pub fn convert_insert_values(values: Vec<String>) -> Vec<String> {
     let mut result = Vec::new();
 
     for item in values {

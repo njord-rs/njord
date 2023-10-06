@@ -2,6 +2,7 @@
 
 use njord::sqlite;
 use njord::sqlite::init::init;
+use njord::sqlite::insert::insert;
 use njord::table::Table;
 use njord_derive::Table;
 
@@ -55,7 +56,22 @@ fn init_tables() {
 
 #[test]
 fn insert_row() {
-    // open a new db
-    // init tables
-    assert_eq!(true, true);
+    let conn = sqlite::open("test_database.db");
+
+    #[derive(Table, Debug, Default)]
+    struct TableA {
+        title: String,
+        description: String,
+        amount: u32,
+    }
+
+    let table_row: TableA = TableA {
+        title: "Table A".to_string(),
+        description: "Some description for Table A".to_string(),
+        amount: 0,
+    };
+
+    let result = insert(conn.unwrap(), &table_row);
+
+    assert!(result.is_ok());
 }

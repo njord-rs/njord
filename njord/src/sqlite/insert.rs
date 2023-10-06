@@ -3,25 +3,23 @@ use crate::table::Table;
 use crate::util::convert_insert_values;
 
 use log::info;
-use rusqlite::Result;
+use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
 // change table -> table_row and remove values later
 // we will take in an intialized struct for the tables
 // for example we want to send in
 //
-// let table_a = Box::new(TableA {
+// let table_row = Box::new(TableA {
 //    title: "Some value here".to_string(),
 //    desc: "Some other value here".to_string(),
 //    amount: 0,
 // });
-pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
-    let mut conn = open("my_database.db")?;
-
+pub fn insert(mut conn: Connection, table_row: &dyn Table) -> Result<()> {
     // create a transaction
     let tx = conn.transaction()?;
 
-    let statement = generate_statement(table, values);
+    let statement = generate_statement(table_row);
     tx.execute(&statement.unwrap(), [])?;
 
     // commit the transaction
@@ -32,17 +30,17 @@ pub fn insert(table: &dyn Table, values: Vec<&str>) -> Result<()> {
     Ok(())
 }
 
-fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Error> {
+fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
     // generate string for columns
     let mut columns_str = String::new();
-    for column_name in table.get_column_fields() {
+    for column_name in table_row.get_column_fields() {
         columns_str.push_str(&format!("{}, ", column_name));
     }
 
     // surround single quotes of text
-    let converted_values = convert_insert_values(values);
+    let converted_values = convert_insert_values(table_row.get_column_values());
 
-    // generate values string
+    // // generate values string
     let mut values_str = String::new();
     for value in converted_values {
         let data_type_str = value.to_string();
@@ -58,12 +56,12 @@ fn generate_statement(table: &dyn Table, values: Vec<&str>) -> Result<String, Er
 
     let sql = format!(
         "INSERT INTO {} ({}) VALUES ({});",
-        table.get_name(),
+        table_row.get_name(),
         columns_str,
         values_str
     );
 
-    println!("{}", sql);
+    println!("SQL: {}", sql);
 
     Ok(sql)
 }

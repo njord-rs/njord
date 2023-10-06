@@ -1,5 +1,3 @@
-use njord::sqlite::open;
-
-pub fn setup_sqlite() {
-    open("test_database.db");
+pub fn _setup_sqlite() {
+    // some stuff here
 }
