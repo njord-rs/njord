@@ -5,6 +5,7 @@
 ![build](https://img.shields.io/github/actions/workflow/status/mjovanc/njord/master-ci.yml?branch=master)
 [![license](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 ![](https://img.shields.io/badge/Rust-1.73+-orange.svg)
+![crates.io](https://img.shields.io/crates/v/njord.svg)
 
 A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
 
