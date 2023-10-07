@@ -36,8 +36,8 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
-            let field_names: Vec<String> = named.iter().map(|f| f.ident.as_ref().unwrap().to_string()).collect();
-            let field_names_clone = field_names.iter();
+            let field_names = named.iter().map(|f| &f.ident);
+            let field_names_clone = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
