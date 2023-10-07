@@ -44,7 +44,7 @@ To install njord into your Rust project we need to include the dependencies:
 # required when using njord. The "derive" feature is only required when
 # using #[derive(Table)] to make njord work with structs
 # and enums defined in your crate.
-njord = { version = "0.1", features = ["derive"] }
+njord = { version = "0.1.0", features = ["derive"] }
 ```
 
 ## Usage

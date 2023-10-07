@@ -5,5 +5,4 @@ members = [
     # "test_suite", perhaps move the tests here?
 ]
 
-[patch.crates-io]
-njord = { path = "njord" }
+resolver = "2"
