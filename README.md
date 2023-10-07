@@ -49,7 +49,62 @@ njord = { version = "0.1", features = ["derive"] }
 
 ## Usage
 
-...
+Currently njord is very limited in functionality, but has some basic SQL operations. The ORM is currently only supported for SQLite, but once most functionality is in place, more database types will be added.
+
+### SQLite
+
+First thing you need to do is to setup a connection:
+
+```rust
+let conn = sqlite::open("my_database.db");
+```
+
+Then you need to define your tables that will be initialized:
+
+```rust
+#[derive(Table, Default)]
+struct Posts {
+    title: String,
+    description: String,
+}
+
+#[derive(Table, Default)]
+struct Categories {
+    name: String,
+}
+```
+
+And then we box our tables and push them to a tables vector:
+
+```rust
+let posts_table = Box::new(Posts::default());
+let categories_table = Box::new(Categories::default());
+
+let mut tables: Vec<Box<dyn Table>> = Vec::new();
+tables.push(posts_table);
+tables.push(categories_table);
+```
+
+Now we simply just initialize the database with the init() function by sending in the database connection and tables we created:
+
+```rust
+sqlite::init(conn.unwrap(), tables);
+```
+
+Now we have two tables in our database `Posts` and `Categories`. Let's insert some data:
+
+```rust
+let table_row: Posts = Posts {
+    title: "A post title".to_string(),
+    description: "Some description for for a post".to_string(),
+};
+```
+
+Then we insert the row by passing in the connection again and a reference to the table_row:
+
+```rust
+sqlite::insert(conn.unwrap(), &table_row);
+```
 
 ## Contributors
 
