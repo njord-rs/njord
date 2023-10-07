@@ -5,7 +5,9 @@ edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs."
 license = "BSD-3-Clause"
+documentation = "https://docs.rs/njord/latest/njord/"
 repository = "https://github.com/mjovanc/njord"
+readme = "crates-io.md"
 rustc = "1.73.0"
 
 [dependencies]
