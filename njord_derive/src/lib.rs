@@ -17,8 +17,9 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 /// use njord::table::Table;
 /// #[derive(Table)]
 /// struct MyTable {
-///     id: i32,
 ///     name: String,
+///     price: f64,
+///     in_stock: bool
 /// }
 /// ```
 ///
@@ -64,7 +65,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<String>" => "TEXT",
                             "Option<f64>" | "Option<f32>" => "REAL", 
                             "Option<Vec<u8>>" => "BLOB",
-                            "bool" => "STRING",
+                            "bool" => "TEXT",
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
                                 "UNKNOWN_TYPE"
