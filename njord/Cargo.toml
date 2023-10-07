@@ -6,7 +6,7 @@ authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "A lightweight ORM framework for Rust with strong-typed SQL DSL and sequence APIs."
 license = "BSD 3-Clause License"
 repository = "https://github.com/mjovanc/njord"
-rustc = "1.69.0"
+rustc = "1.73.0"
 
 [dependencies]
 njord_derive = { path = "../njord_derive" }
