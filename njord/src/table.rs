@@ -76,27 +76,27 @@ fn create_tables() {
         in_stock: true,
     };
 
-    let _expected_columns_a: HashMap<String, String> = vec![
-        ("title".to_string(), "String".to_string()),
-        ("desc".to_string(), "String".to_string()),
-        ("amount".to_string(), "u32".to_string()),
+    let expected_columns_a: HashMap<String, String> = vec![
+        ("title".to_string(), "TEXT".to_string()),
+        ("desc".to_string(), "TEXT".to_string()),
+        ("amount".to_string(), "INTEGER".to_string()),
     ]
     .into_iter()
     .collect();
 
-    let _expected_columns_b: HashMap<String, String> = vec![
-        ("name".to_string(), "String".to_string()),
-        ("age".to_string(), "u32".to_string()),
-        ("email".to_string(), "String".to_string()),
+    let expected_columns_b: HashMap<String, String> = vec![
+        ("name".to_string(), "TEXT".to_string()),
+        ("age".to_string(), "INTEGER".to_string()),
+        ("email".to_string(), "TEXT".to_string()),
     ]
     .into_iter()
     .collect();
 
-    let _expected_columns_c: HashMap<String, String> = vec![
-        ("product_id".to_string(), "i64".to_string()),
-        ("product_name".to_string(), "String".to_string()),
-        ("price".to_string(), "f64".to_string()),
-        ("in_stock".to_string(), "bool".to_string()),
+    let expected_columns_c: HashMap<String, String> = vec![
+        ("product_id".to_string(), "INTEGER".to_string()),
+        ("product_name".to_string(), "TEXT".to_string()),
+        ("price".to_string(), "REAL".to_string()),
+        ("in_stock".to_string(), "TEXT".to_string()),
     ]
     .into_iter()
     .collect();
@@ -119,10 +119,21 @@ fn create_tables() {
     ];
 
     // assert that we get the expected column names
-    //TODO need to fix these later
-    // assert_eq!(table_a.get_columns(), expected_columns_a);
-    // assert_eq!(table_b.get_columns(), expected_columns_b);
-    // assert_eq!(table_c.get_columns(), expected_columns_c);
+    let columns_a = table_a.get_columns();
+    for (key, value) in &expected_columns_a {
+        assert_eq!(columns_a.get(key), Some(value));
+    }
+
+    let columns_b = table_b.get_columns();
+    for (key, value) in &expected_columns_b {
+        assert_eq!(columns_b.get(key), Some(value));
+    }
+
+    let columns_c = table_c.get_columns();
+    for (key, value) in &expected_columns_c {
+        println!("{:?}", columns_c.get(key));
+        assert_eq!(columns_c.get(key), Some(value));
+    }
 
     // assert that we get the correct table fields
     assert_eq!(table_a.get_column_fields(), expected_fields_a);
