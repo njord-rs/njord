@@ -6,7 +6,7 @@ authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "Macros implementations."
 license = "BSD 3-Clause License"
 repository = "https://github.com/mjovanc/njord"
-rustc = "1.69.0"
+rustc = "1.73.0"
 
 [lib]
 name = "njord_derive"
@@ -16,3 +16,6 @@ proc-macro = true
 proc-macro2 = "1.0.67"
 quote = "1.0"
 syn = "2.0.28"
+
+[dev-dependencies]
+njord = { version = "0.1.0", path = "../njord" }
