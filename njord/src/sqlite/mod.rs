@@ -3,7 +3,9 @@ use std::env;
 use rusqlite::{Connection, Error};
 
 pub mod init;
+pub use init::init;
 pub mod insert;
+pub use insert::insert;
 
 /// Open a database connection
 pub fn open(db_name: &str) -> Result<Connection, Error> {

@@ -52,7 +52,7 @@ fn init_tables() {
     tables.push(table_b);
     tables.push(table_c);
 
-    let result = init(conn.unwrap(), tables);
+    let result = sqlite::init(conn.unwrap(), tables);
 
     assert!(result.is_ok());
 }
@@ -75,7 +75,7 @@ fn insert_row() {
         amount: 0,
     };
 
-    let result = insert(conn.unwrap(), &table_row);
+    let result = sqlite::insert(conn.unwrap(), &table_row);
 
     assert!(result.is_ok());
 }
