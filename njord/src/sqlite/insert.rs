@@ -10,7 +10,13 @@ pub fn insert(mut conn: Connection, table_row: &dyn Table) -> Result<()> {
     let tx = conn.transaction()?;
 
     let statement = generate_statement(table_row);
-    tx.execute(&statement.unwrap(), [])?;
+
+    let generated_statement = match statement {
+        Ok(statement) => statement,
+        Err(error) => panic!("Problem generating statement: {:?}.", error),
+    };
+
+    tx.execute(generated_statement.as_str(), [])?;
 
     // commit the transaction
     tx.commit()?;

@@ -11,12 +11,12 @@ pub fn drop(mut conn: Connection, table: &dyn Table) -> Result<()> {
 
     let statement = generate_statement(table);
 
-    // let generated_statement = match statement {
-    //     Ok(statement) => statement,
-    //     Err(error) => panic!("Problem generating statement: {:?}.", error),
-    // };
+    let generated_statement = match statement {
+        Ok(statement) => statement,
+        Err(error) => panic!("Problem generating statement: {:?}.", error),
+    };
 
-    tx.execute(&statement.unwrap(), [])?;
+    tx.execute(generated_statement.as_str(), [])?;
 
     // commit the transaction
     tx.commit()?;

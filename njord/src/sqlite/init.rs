@@ -1,6 +1,7 @@
 use crate::table::Table;
 use log::info;
 use rusqlite::Result;
+use std::fmt::Error;
 
 // initialize database with tables
 pub fn init(mut conn: rusqlite::Connection, tables: Vec<Box<dyn Table>>) -> Result<()> {
@@ -10,7 +11,13 @@ pub fn init(mut conn: rusqlite::Connection, tables: Vec<Box<dyn Table>>) -> Resu
     // execute all sql statements based on tables vector parameter
     for t in &tables {
         let statement = generate_statement(&**t);
-        tx.execute(&statement, [])?;
+
+        let generated_statement = match statement {
+            Ok(statement) => statement,
+            Err(error) => panic!("Problem generating statement: {:?}.", error),
+        };
+
+        tx.execute(generated_statement.as_str(), [])?;
     }
 
     // commit the transaction
@@ -22,7 +29,7 @@ pub fn init(mut conn: rusqlite::Connection, tables: Vec<Box<dyn Table>>) -> Resu
 }
 
 // generate sql statement for create table
-fn generate_statement(table: &dyn Table) -> String {
+fn generate_statement(table: &dyn Table) -> Result<String, Error> {
     // generate the column definitions based on the hashmap
     let mut column_definitions = String::new();
     for (column_name, column_type) in table.get_columns() {
@@ -41,5 +48,5 @@ fn generate_statement(table: &dyn Table) -> String {
 
     println!("{}", sql);
 
-    sql
+    Ok(sql)
 }
