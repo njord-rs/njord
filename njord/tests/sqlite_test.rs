@@ -3,7 +3,6 @@
 use njord::sqlite;
 use njord::table::Table;
 use njord_derive::Table;
-use serial_test::file_serial;
 
 mod common;
 
@@ -15,57 +14,68 @@ fn open_db() {
 
 #[test]
 fn init_tables() {
-    let conn = sqlite::open("test_database.db");
+    let _ = common::drop_db_sqlite();
+    let conn = common::open_db_sqlite("init_tables.db").unwrap();
 
     let tables = common::initialized_tables_sqlite();
 
-    let result = sqlite::init(conn.unwrap(), tables);
+    let result = sqlite::init(conn, tables);
 
     assert!(result.is_ok());
 }
 
 #[test]
 fn insert_row() {
-    let conn = sqlite::open("test_database.db");
+    let _ = common::drop_db_sqlite();
+    let conn = common::open_db_sqlite("insert_row.db").unwrap();
+    let init_tables_result = common::initialize_tables_sqlite("insert_row.db");
 
-    #[derive(Table, Debug)]
-    struct TableA {
-        title: String,
-        description: String,
-        amount: u32,
-    }
+    match init_tables_result {
+        Ok(_) => {
+            #[derive(Table, Debug)]
+            struct TableA {
+                title: String,
+                description: String,
+                amount: u32,
+            }
 
-    let table_row: TableA = TableA {
-        title: "Table A".to_string(),
-        description: "Some description for Table A".to_string(),
-        amount: 0,
+            let table_row: TableA = TableA {
+                title: "Table A".to_string(),
+                description: "Some description for Table A".to_string(),
+                amount: 0,
+            };
+
+            let result = sqlite::insert(conn, &table_row);
+
+            println!("Result: {:?}", result);
+
+            assert!(result.is_ok());
+        }
+        Err(error) => panic!("Failed to insert row: {:?}", error),
     };
-
-    let result = sqlite::insert(conn.unwrap(), &table_row);
-
-    assert!(result.is_ok());
 }
 
 #[test]
 fn drop_table() {
-    let conn = sqlite::open("test_database.db").unwrap();
+    let _ = common::drop_db_sqlite();
+    let conn = common::open_db_sqlite("drop_table.db").unwrap();
+    let init_tables_result = common::initialize_tables_sqlite("drop_table.db");
 
-    let tables = common::initialized_tables_sqlite();
+    match init_tables_result {
+        Ok(_) => {
+            #[derive(Table, Debug, Default)]
+            struct TableA {
+                title: String,
+                description: String,
+                amount: u32,
+            }
 
-    let _ = sqlite::init(conn, tables);
+            let result = sqlite::drop_table(conn, &TableA::default());
 
-    #[derive(Table, Debug, Default)]
-    struct TableA {
-        title: String,
-        description: String,
-        amount: u32,
+            println!("Result: {:?}", result);
+
+            assert!(result.is_ok());
+        }
+        Err(error) => panic!("Failed to drop table: {:?}", error),
     }
-
-    let conn = sqlite::open("test_database.db").unwrap();
-
-    let result = sqlite::drop_table(conn, &TableA::default());
-
-    println!("Result: {:?}", result);
-
-    assert!(result.is_ok());
 }

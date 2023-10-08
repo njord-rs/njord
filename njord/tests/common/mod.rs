@@ -1,7 +1,29 @@
-use std::vec;
+use std::{env, fs, vec};
 
-use njord::table::Table;
+use njord::{sqlite, table::Table};
 use njord_derive::Table;
+use rusqlite::{Connection, Error};
+
+pub fn open_db_sqlite(db_name: &str) -> Result<Connection, Error> {
+    let conn = sqlite::open(db_name).unwrap();
+    Ok(conn)
+}
+
+pub fn drop_db_sqlite() -> Result<(), std::io::Error> {
+    let target_dir = env::var("OUT_DIR").unwrap_or_else(|_| "../target".to_string());
+    let db_file_path = format!("{}/{}", target_dir, "test_database.db");
+    fs::remove_file(db_file_path)
+}
+
+pub fn initialize_tables_sqlite(db_name: &str) -> Result<(), Error> {
+    let conn = open_db_sqlite(db_name).unwrap();
+
+    let tables = initialized_tables_sqlite();
+
+    let result = sqlite::init(conn, tables);
+
+    result
+}
 
 pub fn initialized_tables_sqlite() -> Vec<Box<dyn Table>> {
     #[derive(Table, Debug, Default)]
