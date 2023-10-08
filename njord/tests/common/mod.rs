@@ -9,9 +9,9 @@ pub fn open_db_sqlite(db_name: &str) -> Result<Connection, Error> {
     Ok(conn)
 }
 
-pub fn drop_db_sqlite() -> Result<(), std::io::Error> {
+pub fn drop_db_sqlite(db_name: &str) -> Result<(), std::io::Error> {
     let target_dir = env::var("OUT_DIR").unwrap_or_else(|_| "../target".to_string());
-    let db_file_path = format!("{}/{}", target_dir, "test_database.db");
+    let db_file_path = format!("{}/{}", target_dir, db_name);
     fs::remove_file(db_file_path)
 }
 
