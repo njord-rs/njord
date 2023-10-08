@@ -67,7 +67,7 @@ fn drop_table() {
 
     let conn = sqlite::open("test_database.db").unwrap();
 
-    let result = sqlite::drop(conn, &TableA::default());
+    let result = sqlite::drop_table(conn, &TableA::default());
 
     println!("Result: {:?}", result);
 
