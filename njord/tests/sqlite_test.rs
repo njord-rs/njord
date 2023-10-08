@@ -3,19 +3,19 @@
 use njord::sqlite;
 use njord::table::Table;
 use njord_derive::Table;
-use serial_test::serial;
+use serial_test::file_serial;
 
 mod common;
 
 #[test]
-#[serial]
+#[file_serial]
 fn open_db() {
     let result = sqlite::open("test_database.db");
     assert!(result.is_ok());
 }
 
 #[test]
-#[serial]
+#[file_serial]
 fn init_tables() {
     let conn = sqlite::open("test_database.db");
 
@@ -27,11 +27,11 @@ fn init_tables() {
 }
 
 #[test]
-#[serial]
+#[file_serial]
 fn insert_row() {
     let conn = sqlite::open("test_database.db");
 
-    #[derive(Table, Debug, Default)]
+    #[derive(Table, Debug)]
     struct TableA {
         title: String,
         description: String,
@@ -50,7 +50,7 @@ fn insert_row() {
 }
 
 #[test]
-#[serial]
+#[file_serial]
 fn drop_table() {
     let conn = sqlite::open("test_database.db").unwrap();
 
