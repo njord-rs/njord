@@ -5,4 +5,8 @@ use log::info;
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
-pub fn select(mut conn: Connection, table_row: &dyn Table) -> Result<()> {}
+pub fn select(mut conn: Connection, table: &dyn Table) -> Result<()> {}
+
+fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
+    Ok()
+}
