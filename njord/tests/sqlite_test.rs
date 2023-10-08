@@ -18,7 +18,7 @@ fn init_tables() {
     let _ = common::drop_db_sqlite(db_name);
     let conn = common::open_db_sqlite(db_name).unwrap();
 
-    let tables = common::initialized_tables_sqlite();
+    let tables = common::generate_tables_sqlite();
 
     let result = sqlite::init(conn, tables);
 
@@ -59,7 +59,7 @@ fn insert_row() {
 
 #[test]
 fn drop_table() {
-    let db_name = "drop_tables.db";
+    let db_name = "drop_table.db";
     let _ = common::drop_db_sqlite(db_name);
     let conn = common::open_db_sqlite(db_name).unwrap();
     let init_tables_result = common::initialize_tables_sqlite(db_name);
