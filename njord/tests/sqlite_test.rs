@@ -26,24 +26,28 @@ fn init_tables() {
     assert!(result.is_ok());
 }
 
-// #[test]
-// #[serial]
-// fn insert_row() {
-//     let conn = sqlite::open("test_database.db");
+#[test]
+#[serial]
+fn insert_row() {
+    let conn = sqlite::open("test_database.db");
 
-//     let tables = common::initialized_tables_sqlite();
-//     let table_a: &Box<dyn Table> = &tables[0];
+    #[derive(Table, Debug, Default)]
+    struct TableA {
+        title: String,
+        description: String,
+        amount: u32,
+    }
 
-//     let table_row: TableA = TableA {
-//         title: "Table A".to_string(),
-//         description: "Some description for Table A".to_string(),
-//         amount: 0,
-//     };
+    let table_row: TableA = TableA {
+        title: "Table A".to_string(),
+        description: "Some description for Table A".to_string(),
+        amount: 0,
+    };
 
-//     let result = sqlite::insert(conn.unwrap(), &table_row);
+    let result = sqlite::insert(conn.unwrap(), &table_row);
 
-//     assert!(result.is_ok());
-// }
+    assert!(result.is_ok());
+}
 
 #[test]
 #[serial]
