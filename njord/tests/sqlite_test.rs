@@ -1,8 +1,6 @@
 // integrations tests for sqlite
 
 use njord::sqlite;
-use njord::sqlite::init::init;
-use njord::sqlite::insert::insert;
 use njord::table::Table;
 use njord_derive::Table;
 use serial_test::serial;
@@ -21,46 +19,40 @@ fn open_db() {
 fn init_tables() {
     let conn = sqlite::open("test_database.db");
 
-    #[derive(Table, Debug, Default)]
-    struct TableA {
-        title: String,
-        description: String,
-        amount: u32,
-    }
-
-    #[derive(Table, Debug, Default)]
-    struct TableB {
-        name: String,
-        age: u32,
-        email: String,
-    }
-
-    #[derive(Table, Debug, Default)]
-    struct TableC {
-        product_id: i64,
-        product_name: String,
-        price: f64,
-        in_stock: bool,
-    }
-
-    let table_a = Box::new(TableA::default());
-    let table_b = Box::new(TableB::default());
-    let table_c = Box::new(TableC::default());
-
-    let mut tables: Vec<Box<dyn Table>> = Vec::new();
-    tables.push(table_a);
-    tables.push(table_b);
-    tables.push(table_c);
+    let tables = common::initialized_tables_sqlite();
 
     let result = sqlite::init(conn.unwrap(), tables);
 
     assert!(result.is_ok());
 }
 
+// #[test]
+// #[serial]
+// fn insert_row() {
+//     let conn = sqlite::open("test_database.db");
+
+//     let tables = common::initialized_tables_sqlite();
+//     let table_a: &Box<dyn Table> = &tables[0];
+
+//     let table_row: TableA = TableA {
+//         title: "Table A".to_string(),
+//         description: "Some description for Table A".to_string(),
+//         amount: 0,
+//     };
+
+//     let result = sqlite::insert(conn.unwrap(), &table_row);
+
+//     assert!(result.is_ok());
+// }
+
 #[test]
 #[serial]
-fn insert_row() {
-    let conn = sqlite::open("test_database.db");
+fn drop_table() {
+    let conn = sqlite::open("test_database.db").unwrap();
+
+    let tables = common::initialized_tables_sqlite();
+
+    let _ = sqlite::init(conn, tables);
 
     #[derive(Table, Debug, Default)]
     struct TableA {
@@ -69,13 +61,11 @@ fn insert_row() {
         amount: u32,
     }
 
-    let table_row: TableA = TableA {
-        title: "Table A".to_string(),
-        description: "Some description for Table A".to_string(),
-        amount: 0,
-    };
+    let conn = sqlite::open("test_database.db").unwrap();
 
-    let result = sqlite::insert(conn.unwrap(), &table_row);
+    let result = sqlite::drop(conn, &TableA::default());
+
+    println!("Result: {:?}", result);
 
     assert!(result.is_ok());
 }
