@@ -5,7 +5,7 @@ use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
 /// drop a table
-pub fn drop(mut conn: Connection, table: &dyn Table) -> Result<()> {
+pub fn drop_table(mut conn: Connection, table: &dyn Table) -> Result<()> {
     // create a transaction
     let tx = conn.transaction()?;
 
