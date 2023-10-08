@@ -1,3 +1,5 @@
+use std::vec;
+
 use njord::table::Table;
 use njord_derive::Table;
 
@@ -24,14 +26,11 @@ pub fn initialized_tables_sqlite() -> Vec<Box<dyn Table>> {
         in_stock: bool,
     }
 
-    let table_a = Box::new(TableA::default());
-    let table_b = Box::new(TableB::default());
-    let table_c = Box::new(TableC::default());
+    let table_a = Box::<TableA>::default();
+    let table_b = Box::<TableB>::default();
+    let table_c = Box::<TableC>::default();
 
-    let mut tables: Vec<Box<dyn Table>> = Vec::new();
-    tables.push(table_a);
-    tables.push(table_b);
-    tables.push(table_c);
+    let tables: Vec<Box<dyn Table>> = vec![table_a, table_b, table_c];
 
     tables
 }

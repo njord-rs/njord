@@ -34,7 +34,7 @@ fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
     let mut values_str = String::new();
     for value in converted_values {
         let data_type_str = value.to_string();
-        values_str.push_str(&*data_type_str);
+        values_str.push_str(&data_type_str);
         values_str.push_str(", ");
     }
 
