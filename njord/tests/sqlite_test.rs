@@ -14,8 +14,9 @@ fn open_db() {
 
 #[test]
 fn init_tables() {
-    let _ = common::drop_db_sqlite();
-    let conn = common::open_db_sqlite("init_tables.db").unwrap();
+    let db_name = "init_tables.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
 
     let tables = common::initialized_tables_sqlite();
 
@@ -26,9 +27,10 @@ fn init_tables() {
 
 #[test]
 fn insert_row() {
-    let _ = common::drop_db_sqlite();
-    let conn = common::open_db_sqlite("insert_row.db").unwrap();
-    let init_tables_result = common::initialize_tables_sqlite("insert_row.db");
+    let db_name = "insert_row.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
+    let init_tables_result = common::initialize_tables_sqlite(db_name);
 
     match init_tables_result {
         Ok(_) => {
@@ -57,9 +59,10 @@ fn insert_row() {
 
 #[test]
 fn drop_table() {
-    let _ = common::drop_db_sqlite();
-    let conn = common::open_db_sqlite("drop_table.db").unwrap();
-    let init_tables_result = common::initialize_tables_sqlite("drop_table.db");
+    let db_name = "drop_tables.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
+    let init_tables_result = common::initialize_tables_sqlite(db_name);
 
     match init_tables_result {
         Ok(_) => {
