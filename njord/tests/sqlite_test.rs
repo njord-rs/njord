@@ -8,14 +8,12 @@ use serial_test::file_serial;
 mod common;
 
 #[test]
-#[file_serial]
 fn open_db() {
     let result = sqlite::open("test_database.db");
     assert!(result.is_ok());
 }
 
 #[test]
-#[file_serial]
 fn init_tables() {
     let conn = sqlite::open("test_database.db");
 
@@ -27,7 +25,6 @@ fn init_tables() {
 }
 
 #[test]
-#[file_serial]
 fn insert_row() {
     let conn = sqlite::open("test_database.db");
 
@@ -50,7 +47,6 @@ fn insert_row() {
 }
 
 #[test]
-#[file_serial]
 fn drop_table() {
     let conn = sqlite::open("test_database.db").unwrap();
 
