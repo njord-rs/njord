@@ -1,5 +1,8 @@
 name: build
 
+env:
+  RUSTFLAGS: "-Dwarnings"
+
 on:
   push:
     branches:

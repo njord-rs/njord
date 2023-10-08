@@ -1,5 +1,8 @@
 name: pull requests
 
+env:
+  RUSTFLAGS: "-Dwarnings"
+
 on:
   pull_request:
 
