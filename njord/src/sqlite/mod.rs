@@ -6,8 +6,8 @@ pub mod init;
 pub use init::init;
 pub mod insert;
 pub use insert::insert;
-pub mod drop_table;
-pub use drop_table::drop_table;
+pub mod drop;
+pub use drop::drop_table;
 
 /// Open a database connection
 pub fn open(db_name: &str) -> Result<Connection, Error> {
