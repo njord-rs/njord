@@ -18,14 +18,14 @@ pub fn drop_db_sqlite(db_name: &str) -> Result<(), std::io::Error> {
 pub fn initialize_tables_sqlite(db_name: &str) -> Result<(), Error> {
     let conn = open_db_sqlite(db_name).unwrap();
 
-    let tables = initialized_tables_sqlite();
+    let tables = generate_tables_sqlite();
 
     let result = sqlite::init(conn, tables);
 
     result
 }
 
-pub fn initialized_tables_sqlite() -> Vec<Box<dyn Table>> {
+pub fn generate_tables_sqlite() -> Vec<Box<dyn Table>> {
     #[derive(Table, Debug, Default)]
     struct TableA {
         title: String,
