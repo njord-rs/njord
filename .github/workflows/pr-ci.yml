@@ -24,6 +24,9 @@ jobs:
             ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
+
       - name: Build Project
         run: cargo build
 

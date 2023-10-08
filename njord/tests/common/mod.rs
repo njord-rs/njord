@@ -1,8 +1,6 @@
 use njord::table::Table;
 use njord_derive::Table;
 
-pub fn setup_sqlite() {}
-
 pub fn initialized_tables_sqlite() -> Vec<Box<dyn Table>> {
     #[derive(Table, Debug, Default)]
     struct TableA {
@@ -37,5 +35,3 @@ pub fn initialized_tables_sqlite() -> Vec<Box<dyn Table>> {
 
     tables
 }
-
-pub fn teardown_sqlite() {}
