@@ -32,7 +32,6 @@ pub trait Table {
 
 #[test]
 fn create_tables() {
-    // create table 1
     #[derive(Table, Debug)]
     struct TableA {
         title: String,
@@ -46,7 +45,6 @@ fn create_tables() {
         amount: 0,
     };
 
-    // create table 2
     #[derive(Table, Debug)]
     struct TableB {
         name: String,
@@ -60,7 +58,6 @@ fn create_tables() {
         email: "john.doe@example.com".to_string(),
     };
 
-    // create table 3
     #[derive(Table, Debug)]
     struct TableC {
         product_id: i64,
@@ -131,7 +128,6 @@ fn create_tables() {
 
     let columns_c = table_c.get_columns();
     for (key, value) in &expected_columns_c {
-        println!("{:?}", columns_c.get(key));
         assert_eq!(columns_c.get(key), Some(value));
     }
 
