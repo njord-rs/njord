@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[cfg(feature = "derive")]
 use njord_derive::Table;
 
 /// The Table trait.
