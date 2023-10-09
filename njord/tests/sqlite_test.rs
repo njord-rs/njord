@@ -2,6 +2,8 @@
 
 use njord::sqlite;
 use njord::table::Table;
+
+#[cfg(feature = "derive")]
 use njord_derive::Table;
 
 mod common;
