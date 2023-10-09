@@ -109,7 +109,7 @@ fn select() {
                 .build()
                 .unwrap();
 
-            println!("result: {:?}", result);
+            println!("SELECT SQL QUERY: {:?}", result);
         }
         Err(error) => panic!("Failed to drop table: {:?}", error),
     };
