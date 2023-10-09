@@ -1,6 +1,6 @@
 // integrations tests for sqlite
 
-use njord::sqlite;
+use njord::sqlite::{self, Condition};
 use njord::table::Table;
 
 #[cfg(feature = "derive")]
@@ -83,4 +83,34 @@ fn drop_table() {
         }
         Err(error) => panic!("Failed to drop table: {:?}", error),
     }
+}
+
+#[test]
+fn select() {
+    let db_name = "select.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
+    let init_tables_result = common::initialize_tables_sqlite(db_name);
+
+    match init_tables_result {
+        Ok(_) => {
+            #[derive(Table, Debug, Default)]
+            struct TableA {
+                title: String,
+                description: String,
+                amount: u32,
+            }
+            let columns = vec!["column1".to_string(), "column2".to_string()];
+            let condition = Condition::Eq("hej".to_string(), "hej".to_string());
+
+            let result = sqlite::select(conn, columns)
+                .from(&TableA::default())
+                .where_clause(condition)
+                .build()
+                .unwrap();
+
+            println!("result: {:?}", result);
+        }
+        Err(error) => panic!("Failed to drop table: {:?}", error),
+    };
 }
