@@ -40,7 +40,7 @@ jobs:
         run: cargo clippy --all-targets --all-features
 
       - name: Build Project
-        run: cargo build --release --features derive
+        run: cargo build --release
 
       - name: Run Tests
-        run: cargo test --features derive
+        run: cargo test
