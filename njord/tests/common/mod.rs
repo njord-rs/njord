@@ -1,6 +1,8 @@
 use std::{env, fs, vec};
 
 use njord::{sqlite, table::Table};
+
+#[cfg(feature = "derive")]
 use njord_derive::Table;
 use rusqlite::{Connection, Error};
 
