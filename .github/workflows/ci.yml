@@ -7,6 +7,13 @@ on:
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - "**/README.md"
+      - "**/LICENSE"
+      - "**/SECURITY.md"
+      - "**/.gitignore"
+      - "**/resources/**"
+      - "**/.github/ISSUE_TEMPLATE/**"
 
 jobs:
   build:
