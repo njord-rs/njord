@@ -1,12 +1,7 @@
-use crate::table::Table;
-use crate::util::convert_insert_values;
+use crate::sqlite::query::QueryBuilder;
 
-use log::info;
-use rusqlite::{Connection, Result};
-use std::fmt::Error;
+use rusqlite::Connection;
 
-pub fn select(mut conn: Connection, table: &dyn Table) -> Result<()> {}
-
-fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
-    Ok()
+pub fn select<'a>(conn: Connection, columns: Vec<String>) -> QueryBuilder<'a> {
+    QueryBuilder::new(conn, columns)
 }

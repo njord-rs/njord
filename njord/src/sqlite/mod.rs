@@ -8,6 +8,11 @@ pub mod insert;
 pub use insert::insert;
 pub mod drop;
 pub use drop::drop_table;
+pub mod select;
+pub use select::select;
+pub mod condition;
+pub use condition::Condition;
+pub mod query;
 
 /// Open a database connection
 pub fn open(db_name: &str) -> Result<Connection, Error> {
