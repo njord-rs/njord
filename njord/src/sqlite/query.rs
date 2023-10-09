@@ -39,25 +39,47 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> Result<()> {
+    pub fn build(self) -> Result<String> {
         let columns_str = self.columns.join(", ");
-        println!("SELECT {} FROM", columns_str);
+        let table_name = self
+            .table
+            .map(|t| t.get_name().to_string())
+            .unwrap_or("".to_string());
+
+        let mut query = format!("SELECT {} FROM {}", columns_str, table_name);
+
         if let Some(condition) = self.condition {
             match condition {
-                Condition::Eq(column, value) => println!("WHERE {} = '{}'", column, value),
-                Condition::Ne(column, value) => println!("WHERE {} <> '{}'", column, value),
-                Condition::Lt(column, value) => println!("WHERE {} < '{}'", column, value),
-                Condition::Gt(column, value) => println!("WHERE {} > '{}'", column, value),
-                Condition::Le(column, value) => println!("WHERE {} <= '{}'", column, value),
-                Condition::Ge(column, value) => println!("WHERE {} >= '{}'", column, value),
+                Condition::Eq(column, value) => {
+                    query.push_str(&format!(" WHERE {} = '{}'", column, value));
+                }
+                Condition::Ne(column, value) => {
+                    query.push_str(&format!(" WHERE {} <> '{}'", column, value));
+                }
+                Condition::Lt(column, value) => {
+                    query.push_str(&format!(" WHERE {} < '{}'", column, value));
+                }
+                Condition::Gt(column, value) => {
+                    query.push_str(&format!(" WHERE {} > '{}'", column, value));
+                }
+                Condition::Le(column, value) => {
+                    query.push_str(&format!(" WHERE {} <= '{}'", column, value));
+                }
+                Condition::Ge(column, value) => {
+                    query.push_str(&format!(" WHERE {} >= '{}'", column, value));
+                }
                 Condition::And(left, right) => {
-                    println!("WHERE ({}) AND ({})", left.build(), right.build())
+                    let left_query = left.build();
+                    let right_query = right.build();
+                    query.push_str(&format!(" WHERE ({}) AND ({})", left_query, right_query));
                 }
                 Condition::Or(left, right) => {
-                    println!("WHERE ({}) OR ({})", left.build(), right.build())
+                    let left_query = left.build();
+                    let right_query = right.build();
+                    query.push_str(&format!(" WHERE ({}) OR ({})", left_query, right_query));
                 }
             }
         }
-        Ok(())
+        Ok(query)
     }
 }
