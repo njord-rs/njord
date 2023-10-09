@@ -1,7 +1,12 @@
-name: pull requests
+name: build
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -28,7 +33,7 @@ jobs:
         run: cargo clippy --all-targets --all-features
 
       - name: Build Project
-        run: cargo build
+        run: cargo build --release --features derive
 
       - name: Run Tests
-        run: cargo test
+        run: cargo test --features derive
