@@ -18,7 +18,7 @@ pub fn open(db_name: &str) -> Result<Connection, Error> {
     Ok(conn)
 }
 
-/// Open an in-memory SQLite database
+/// Open an in-memory database connection
 pub fn open_in_memory() -> Result<Connection, Error> {
     let conn = Connection::open_in_memory()?;
 
