@@ -22,3 +22,4 @@ njord_derive = { version = "0.1.0", path = "../njord_derive" }
 
 # Provide derive(Table) macro.
 derive = ["njord_derive"]
+default = ["derive"]
