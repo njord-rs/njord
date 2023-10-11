@@ -100,8 +100,8 @@ fn select() {
                 description: String,
                 amount: u32,
             }
-            let columns = vec!["column1".to_string(), "column2".to_string()];
-            let condition = Condition::Eq("hej".to_string(), "hej".to_string());
+            let columns = vec!["title".to_string(), "description".to_string()];
+            let condition = Condition::Eq("title".to_string(), "Some title".to_string());
 
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
