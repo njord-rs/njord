@@ -111,6 +111,6 @@ fn select() {
 
             println!("SELECT SQL QUERY: {:?}", result);
         }
-        Err(error) => panic!("Failed to drop table: {:?}", error),
+        Err(error) => panic!("Failed to select: {:?}", error),
     };
 }
