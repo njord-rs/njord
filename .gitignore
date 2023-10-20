@@ -20,3 +20,6 @@ rust-project.json
 
 ### Other
 .DS_Store
+
+# JetBrains
+.idea
