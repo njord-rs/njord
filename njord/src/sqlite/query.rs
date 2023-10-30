@@ -2,6 +2,8 @@ use crate::table::Table;
 
 use rusqlite::{Connection, Result};
 
+use log::info;
+
 use super::Condition;
 
 pub struct QueryBuilder<'a> {
@@ -39,7 +41,7 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> Result<String> {
+    pub fn build(mut self) -> rusqlite::Result<()> {
         let columns_str = self.columns.join(", ");
         let table_name = self
             .table
@@ -80,6 +82,14 @@ impl<'a> QueryBuilder<'a> {
                 }
             }
         }
-        Ok(query)
+
+        // info!("INSERT SQL: {}", query);
+        println!("INSERT SQL: {}", query);
+
+        let tx = self.conn.transaction()?;
+        tx.execute(&query, [])?;
+        tx.commit()?;
+
+        Ok(())
     }
 }
