@@ -91,6 +91,7 @@ fn select() {
     let _ = common::drop_db_sqlite(db_name);
     let conn = common::open_db_sqlite(db_name).unwrap();
     let init_tables_result = common::initialize_tables_sqlite(db_name);
+    let insert_rows_result = common::insert_rows_sqlite(db_name);
 
     match init_tables_result {
         Ok(_) => {
@@ -101,15 +102,21 @@ fn select() {
                 amount: u32,
             }
             let columns = vec!["title".to_string(), "description".to_string()];
-            let condition = Condition::Eq("title".to_string(), "Some title".to_string());
+            let condition = Condition::Eq(
+                "description".to_string(),
+                "Some description for Table A".to_string(),
+            );
 
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
                 .where_clause(condition)
-                .build()
-                .unwrap();
+                .build();
 
-            println!("SELECT SQL QUERY: {:?}", result);
+            // currently returns error with "ExecuteReturnedResults"
+            match result {
+                Ok(result) => println!("SELECT SQL QUERY: {:?}", result),
+                Err(error) => panic!("Failed to select: {:?}", error),
+            };
         }
         Err(error) => panic!("Failed to select: {:?}", error),
     };
