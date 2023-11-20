@@ -8,7 +8,7 @@ license = "BSD-3-Clause"
 documentation = "https://docs.rs/njord/latest/njord/"
 repository = "https://github.com/mjovanc/njord"
 readme = "crates-io.md"
-rustc = "1.73.0"
+rustc = "1.74.0"
 
 [dependencies]
 njord_derive = { version = "0.1.0", optional = true, path = "../njord_derive" }

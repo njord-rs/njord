@@ -4,8 +4,8 @@
 
 ![build](https://img.shields.io/github/actions/workflow/status/mjovanc/njord/ci.yml?branch=master)
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
-[![njord: rustc 1.73+](https://img.shields.io/badge/njord-rustc_1.73+-lightgray.svg)](https://blog.rust-lang.org/2023/10/05/Rust-1.73.0.html)
-[![njord_derive: rustc 1.73+](https://img.shields.io/badge/njord_derive-rustc_1.73+-lightgray.svg)](https://blog.rust-lang.org/2023/10/05/Rust-1.73.0.html)
+[![njord: rustc 1.74+](https://img.shields.io/badge/njord-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
+[![njord_derive: rustc 1.74+](https://img.shields.io/badge/njord_derive-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
 
 A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
 
