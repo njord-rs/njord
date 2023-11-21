@@ -17,6 +17,8 @@ pub struct QueryBuilder<'a> {
     distinct: bool,
     group_by: Option<Vec<String>>,
     order_by: Option<HashMap<Vec<String>, String>>,
+    limit: Option<usize>,
+    offset: Option<usize>,
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -30,6 +32,8 @@ impl<'a> QueryBuilder<'a> {
             distinct: false,
             group_by: None,
             order_by: None,
+            limit: None,
+            offset: None,
         }
     }
 
@@ -64,6 +68,16 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
+    pub fn limit(mut self, count: usize) -> Self {
+        self.limit = Some(count);
+        self
+    }
+
+    pub fn offset(mut self, offset: usize) -> Self {
+        self.offset = Some(offset);
+        self
+    }
+
     pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
 
@@ -80,7 +94,7 @@ impl<'a> QueryBuilder<'a> {
             String::new()
         };
 
-        let group_by_str = match &self.group_by {
+        let group_by_str= match &self.group_by {
             Some(columns) => format!("GROUP BY {}", columns.join(", ")),
             None => String::new(),
         };
@@ -99,15 +113,19 @@ impl<'a> QueryBuilder<'a> {
             String::new()
         };
 
+        let limit_str = self.limit.map_or(String::new(), |count| format!("LIMIT {}", count));
+        let offset_str = self.offset.map_or(String::new(), |offset| format!("OFFSET {}", offset));
+
         // construct the query based on defined variables above
         let query = format!(
-            "SELECT {}{} FROM {} {} {} {}",
+            "SELECT {}{} FROM {} {} {} {} {}",
             distinct_str,
             columns_str,
             table_name_str,
             condition_str,
             group_by_str,
             order_by_str,
+            format!("{} {}", limit_str, offset_str),
         );
 
         info!("{}", query);
