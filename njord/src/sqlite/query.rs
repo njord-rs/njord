@@ -44,7 +44,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     // Result<Option<Vec<HashMap<String, rusqlite::types::Value>>>>
-    pub fn build(mut self) -> Result<Vec<HashMap<String, String>>> {
+    pub fn build(mut self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
         let table_name = self
             .table
@@ -94,13 +94,13 @@ impl<'a> QueryBuilder<'a> {
         let iter = stmt.query_map((), |row| {
             let mut result_row = HashMap::new();
             for (i, column) in self.columns.iter().enumerate() {
-                let value: String = format!("{:?}", row.get_unwrap::<usize, Value>(i));
+                let value = row.get_unwrap::<usize, Value>(i);
                 result_row.insert(column.clone(), value);
             }
             Ok(result_row)
         })?;
 
-        let result: Result<Vec<HashMap<String, String>>> = iter.collect();
+        let result: Result<Vec<HashMap<String, Value>>> = iter.collect();
         result.map_err(|err| err.into())
     }
 }

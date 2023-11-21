@@ -1,5 +1,6 @@
 // integrations tests for sqlite
 
+use rusqlite::types::Value;
 use njord::sqlite::{self, Condition};
 use njord::table::Table;
 
@@ -114,7 +115,20 @@ fn select() {
 
             // currently returns error with "ExecuteReturnedResults"
             match result {
-                Ok(result) => println!("{:?}", result),
+                Ok(result) => {
+                    for row in result {
+                        for (column, value) in &row {
+                            match value {
+                                Value::Null => println!("{}: NULL", column),
+                                Value::Integer(i) => println!("{}: {}", column, i),
+                                Value::Real(f) => println!("{}: {}", column, f),
+                                Value::Text(s) => println!("{}: {}", column, s),
+                                Value::Blob(b) => println!("{}: <blob of length {}>", column, b.len()),
+                            }
+                        }
+                        println!("---"); // Separate rows for clarity
+                    }
+                },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
             };
         }
