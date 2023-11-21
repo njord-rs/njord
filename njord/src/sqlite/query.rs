@@ -86,7 +86,7 @@ impl<'a> QueryBuilder<'a> {
             }
         }
 
-        // info!("INSERT SQL: {}", query);
+        info!("{}", query);
         println!("{}", query);
 
         let mut stmt = self.conn.prepare(query.as_str())?;
