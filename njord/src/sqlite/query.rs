@@ -50,7 +50,6 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    // Result<Option<Vec<HashMap<String, rusqlite::types::Value>>>>
     pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
         let table_name = self
