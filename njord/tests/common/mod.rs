@@ -1,10 +1,12 @@
 use std::{env, fs, vec};
+use std::collections::HashMap;
 
 use njord::{sqlite, table::Table};
 
 #[cfg(feature = "derive")]
 use njord_derive::Table;
 use rusqlite::{Connection, Error};
+use rusqlite::types::Value;
 
 pub fn open_db_sqlite(db_name: &str) -> Result<Connection, Error> {
     let conn = sqlite::open(db_name).unwrap();
@@ -119,4 +121,19 @@ pub fn generate_tables_sqlite() -> Vec<Box<dyn Table>> {
     let tables: Vec<Box<dyn Table>> = vec![table_a, table_b, table_c];
 
     tables
+}
+
+pub fn print_rows(result: &Vec<HashMap<String, Value>>) {
+    for row in result {
+        for (column, value) in row {
+            match value {
+                Value::Null => println!("\t{}: NULL", column),
+                Value::Integer(i) => println!("\t{}: {}", column, i),
+                Value::Real(f) => println!("\t{}: {}", column, f),
+                Value::Text(s) => println!("\t{}: {}", column, s),
+                Value::Blob(b) => println!("\t{}: <blob of length {}>", column, b.len()),
+            }
+        }
+        println!("\t---");
+    }
 }

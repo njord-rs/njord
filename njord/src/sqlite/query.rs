@@ -15,6 +15,7 @@ pub struct QueryBuilder<'a> {
     condition: Option<Condition>,
     selected: bool,
     distinct: bool,
+    group_by: Option<Vec<String>>,
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -26,6 +27,7 @@ impl<'a> QueryBuilder<'a> {
             condition: None,
             selected: false,
             distinct: false,
+            group_by: None,
         }
     }
 
@@ -50,6 +52,11 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
+    pub fn group_by(mut self, columns: Vec<String>) -> Self {
+        self.group_by = Some(columns);
+        self
+    }
+
     pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
         let table_name = self
@@ -57,12 +64,20 @@ impl<'a> QueryBuilder<'a> {
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
-        let mut query;
-        if self.distinct {
-            query = format!("SELECT DISTINCT {} FROM {}", columns_str, table_name);
-        } else {
-            query = format!("SELECT {} FROM {}", columns_str, table_name);
-        }
+        let distinct_str = if self.distinct { "DISTINCT " } else { "" };
+        let group_by_str = match &self.group_by {
+            Some(columns) => format!("GROUP BY {}", columns.join(", ")),
+            None => String::new(),
+        };
+
+        let mut query = format!(
+            "SELECT {}{} FROM {}",
+            distinct_str,
+            columns_str,
+            table_name
+        );
+
+        println!("{}", query);
 
         if let Some(condition) = self.condition {
             match condition {
@@ -95,6 +110,11 @@ impl<'a> QueryBuilder<'a> {
                     query.push_str(&format!(" WHERE ({}) OR ({})", left_query, right_query));
                 }
             }
+        }
+
+        // GROUP BY must be placed after the WHERE clause
+        if !group_by_str.is_empty() {
+            query.push_str(&group_by_str);
         }
 
         info!("{}", query);
