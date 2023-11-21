@@ -1,5 +1,6 @@
 // integrations tests for sqlite
 
+use std::collections::HashMap;
 use njord::sqlite::{self, Condition};
 use njord::table::Table;
 
@@ -198,6 +199,55 @@ fn select_group_by() {
             match result {
                 Ok(result) => {
                     println!("\nSELECT GROUP BY ROWS: ");
+                    print_rows(&result);
+                    assert_eq!(result.len(), 2);
+                },
+                Err(error) => panic!("Failed to SELECT: {:?}", error),
+            };
+        }
+        Err(error) => panic!("Failed to select: {:?}", error),
+    };
+}
+
+#[test]
+fn select_order_by() {
+    let db_name = "select_order_by.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
+    let init_tables_result = common::initialize_tables_sqlite(db_name);
+    common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+
+    match init_tables_result {
+        Ok(_) => {
+            #[derive(Table, Debug, Default)]
+            struct TableA {
+                title: String,
+                description: String,
+                amount: u32,
+            }
+            let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+            let condition = Condition::Eq(
+                "description".to_string(),
+                "Some description for Table A".to_string(),
+            );
+            let group_by_columns = vec![
+                "description".to_string(),
+                "amount".to_string(),
+            ];
+            let mut order_by_criteria = HashMap::new();
+            order_by_criteria.insert(vec!["amount".to_string()], "DESC".to_string());
+            order_by_criteria.insert(vec!["description".to_string()], "ASC".to_string());
+
+            let result = sqlite::select(conn, columns)
+                .from(&TableA::default())
+                .where_clause(condition)
+                .order_by(order_by_criteria)
+                .group_by(group_by_columns)
+                .build();
+
+            match result {
+                Ok(result) => {
+                    println!("\nSELECT ORDER BY ROWS: ");
                     print_rows(&result);
                     assert_eq!(result.len(), 2);
                 },
