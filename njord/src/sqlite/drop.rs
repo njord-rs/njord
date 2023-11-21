@@ -29,7 +29,7 @@ pub fn drop_table(mut conn: Connection, table: &dyn Table) -> Result<()> {
 fn generate_statement(table: &dyn Table) -> Result<String, Error> {
     let sql = format!("DROP TABLE {};", table.get_name());
 
-    println!("SQL: {}", sql);
+    println!("{}", sql);
 
     Ok(sql)
 }

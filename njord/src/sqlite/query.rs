@@ -1,8 +1,10 @@
+use std::collections::HashMap;
 use crate::table::Table;
 
-use rusqlite::{Connection, Result};
+use rusqlite::{Connection, Result, ToSql};
 
 use log::info;
+use rusqlite::types::Value;
 
 use super::Condition;
 
@@ -41,7 +43,8 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    pub fn build(mut self) -> rusqlite::Result<()> {
+    // Result<Option<Vec<HashMap<String, rusqlite::types::Value>>>>
+    pub fn build(mut self) -> Result<Vec<HashMap<String, String>>> {
         let columns_str = self.columns.join(", ");
         let table_name = self
             .table
@@ -84,12 +87,20 @@ impl<'a> QueryBuilder<'a> {
         }
 
         // info!("INSERT SQL: {}", query);
-        println!("INSERT SQL: {}", query);
+        println!("{}", query);
 
-        let tx = self.conn.transaction()?;
-        tx.execute(&query, [])?;
-        tx.commit()?;
+        let mut stmt = self.conn.prepare(query.as_str())?;
 
-        Ok(())
+        let iter = stmt.query_map((), |row| {
+            let mut result_row = HashMap::new();
+            for (i, column) in self.columns.iter().enumerate() {
+                let value: String = format!("{:?}", row.get_unwrap::<usize, Value>(i));
+                result_row.insert(column.clone(), value);
+            }
+            Ok(result_row)
+        })?;
+
+        let result: Result<Vec<HashMap<String, String>>> = iter.collect();
+        result.map_err(|err| err.into())
     }
 }

@@ -114,8 +114,8 @@ fn select() {
 
             // currently returns error with "ExecuteReturnedResults"
             match result {
-                Ok(result) => println!("SELECT SQL QUERY: {:?}", result),
-                Err(error) => panic!("Failed to select: {:?}", error),
+                Ok(result) => println!("{:?}", result),
+                Err(error) => panic!("Failed to SELECT: {:?}", error),
             };
         }
         Err(error) => panic!("Failed to select: {:?}", error),

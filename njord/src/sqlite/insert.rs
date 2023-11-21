@@ -57,7 +57,7 @@ fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
         values_str
     );
 
-    println!("SQL: {}", sql);
+    println!("{}", sql);
 
     Ok(sql)
 }
