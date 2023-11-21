@@ -1,6 +1,5 @@
 // integrations tests for sqlite
 
-use log::info;
 use rusqlite::types::Value;
 use njord::sqlite::{self, Condition};
 use njord::table::Table;
@@ -90,7 +89,7 @@ fn select() {
     let _ = common::drop_db_sqlite(db_name);
     let conn = common::open_db_sqlite(db_name).unwrap();
     let init_tables_result = common::initialize_tables_sqlite(db_name);
-    let insert_rows_result = common::insert_rows_sqlite(db_name);
+    common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
 
     match init_tables_result {
         Ok(_) => {

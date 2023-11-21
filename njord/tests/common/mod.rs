@@ -1,5 +1,4 @@
 use std::{env, fs, vec};
-use log::info;
 
 use njord::{sqlite, table::Table};
 
@@ -51,10 +50,8 @@ pub fn insert_rows_sqlite(db_name: &str) -> Result<(), Error> {
         amount: 20,
     };
 
-    let result = sqlite::insert(conn1, &table_row_1);
+    sqlite::insert(conn1, &table_row_1).expect("Failed to insert table_row_1");
     let result = sqlite::insert(conn2, &table_row_2);
-
-    info!("insert_rows_sqlite(): {:?}", result);
 
     assert!(result.is_ok());
 

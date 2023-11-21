@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use crate::table::Table;
 
-use rusqlite::{Connection, Result, ToSql};
+use rusqlite::{Connection, Result};
 
 use log::info;
 use rusqlite::types::Value;
@@ -44,7 +44,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     // Result<Option<Vec<HashMap<String, rusqlite::types::Value>>>>
-    pub fn build(mut self) -> Result<Vec<HashMap<String, Value>>> {
+    pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
         let table_name = self
             .table
