@@ -287,6 +287,8 @@ fn select_limit_offset() {
             order_by_criteria.insert(vec!["amount".to_string()], "ASC".to_string());
             order_by_criteria.insert(vec!["description".to_string()], "DESC".to_string());
 
+            //TODO we should probably get back a vector of the table that was used so we can more
+            // easily pass around that struct in the code
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
                 .where_clause(condition)
