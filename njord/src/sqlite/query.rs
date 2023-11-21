@@ -14,6 +14,7 @@ pub struct QueryBuilder<'a> {
     columns: Vec<String>,
     condition: Option<Condition>,
     selected: bool,
+    distinct: bool,
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -24,12 +25,18 @@ impl<'a> QueryBuilder<'a> {
             columns,
             condition: None,
             selected: false,
+            distinct: false,
         }
     }
 
     pub fn select(mut self, columns: Vec<String>) -> Self {
         self.columns = columns;
         self.selected = true;
+        self
+    }
+
+    pub fn distinct(mut self) -> Self {
+        self.distinct = true;
         self
     }
 
@@ -51,7 +58,12 @@ impl<'a> QueryBuilder<'a> {
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
-        let mut query = format!("SELECT {} FROM {}", columns_str, table_name);
+        let mut query;
+        if self.distinct {
+            query = format!("SELECT DISTINCT {} FROM {}", columns_str, table_name);
+        } else {
+            query = format!("SELECT {} FROM {}", columns_str, table_name);
+        }
 
         if let Some(condition) = self.condition {
             match condition {

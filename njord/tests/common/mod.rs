@@ -58,6 +58,37 @@ pub fn insert_rows_sqlite(db_name: &str) -> Result<(), Error> {
     result
 }
 
+pub fn insert_rows_sqlite_distinct(db_name: &str) -> Result<(), Error> {
+    let conn1 = open_db_sqlite(db_name)?;
+    let conn2 = open_db_sqlite(db_name)?;
+
+    #[derive(Table, Debug)]
+    struct TableA {
+        title: String,
+        description: String,
+        amount: u32,
+    }
+
+    let table_row_1: TableA = TableA {
+        title: "Item".to_string(),
+        description: "Some description for Table A".to_string(),
+        amount: 10,
+    };
+
+    let table_row_2: TableA = TableA {
+        title: "Item".to_string(),
+        description: "Some description for Table A".to_string(),
+        amount: 10,
+    };
+
+    sqlite::insert(conn1, &table_row_1).expect("Failed to insert table_row_1");
+    let result = sqlite::insert(conn2, &table_row_2);
+
+    assert!(result.is_ok());
+
+    result
+}
+
 pub fn generate_tables_sqlite() -> Vec<Box<dyn Table>> {
     #[derive(Table, Debug, Default)]
     struct TableA {
