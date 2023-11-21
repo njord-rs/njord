@@ -64,58 +64,26 @@ impl<'a> QueryBuilder<'a> {
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
+        // generate strings for each clause - empty if no value/false provided
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
         let group_by_str = match &self.group_by {
             Some(columns) => format!("GROUP BY {}", columns.join(", ")),
             None => String::new(),
         };
+        let condition_str = if let Some(condition) = self.condition {
+            format!("WHERE {}", condition.build())
+        } else {
+            String::new()
+        };
 
-        let mut query = format!(
-            "SELECT {}{} FROM {}",
+        let query = format!(
+            "SELECT {}{} FROM {} {} {}",
             distinct_str,
             columns_str,
-            table_name
+            table_name,
+            condition_str,
+            group_by_str,
         );
-
-        println!("{}", query);
-
-        if let Some(condition) = self.condition {
-            match condition {
-                Condition::Eq(column, value) => {
-                    query.push_str(&format!(" WHERE {} = '{}'", column, value));
-                }
-                Condition::Ne(column, value) => {
-                    query.push_str(&format!(" WHERE {} <> '{}'", column, value));
-                }
-                Condition::Lt(column, value) => {
-                    query.push_str(&format!(" WHERE {} < '{}'", column, value));
-                }
-                Condition::Gt(column, value) => {
-                    query.push_str(&format!(" WHERE {} > '{}'", column, value));
-                }
-                Condition::Le(column, value) => {
-                    query.push_str(&format!(" WHERE {} <= '{}'", column, value));
-                }
-                Condition::Ge(column, value) => {
-                    query.push_str(&format!(" WHERE {} >= '{}'", column, value));
-                }
-                Condition::And(left, right) => {
-                    let left_query = left.build();
-                    let right_query = right.build();
-                    query.push_str(&format!(" WHERE ({}) AND ({})", left_query, right_query));
-                }
-                Condition::Or(left, right) => {
-                    let left_query = left.build();
-                    let right_query = right.build();
-                    query.push_str(&format!(" WHERE ({}) OR ({})", left_query, right_query));
-                }
-            }
-        }
-
-        // GROUP BY must be placed after the WHERE clause
-        if !group_by_str.is_empty() {
-            query.push_str(&group_by_str);
-        }
 
         info!("{}", query);
         println!("{}", query);
