@@ -77,7 +77,6 @@ fn drop_table() {
             let result = sqlite::drop_table(conn, &TableA::default());
 
             assert!(result.is_ok());
-            // assert_eq!(result.iter().len(), 2);
         }
         Err(error) => panic!("Failed to drop table: {:?}", error),
     }
@@ -110,12 +109,11 @@ fn select() {
                 .where_clause(condition)
                 .build();
 
-            // currently returns error with "ExecuteReturnedResults"
             match result {
                 Ok(result) => {
-                    println!("\nRETURNED ROWS: ");
-                    for row in result {
-                        for (column, value) in &row {
+                    println!("\nSELECT ROWS: ");
+                    for row in &result {
+                        for (column, value) in row {
                             match value {
                                 Value::Null => println!("\t{}: NULL", column),
                                 Value::Integer(i) => println!("\t{}: {}", column, i),
@@ -126,6 +124,61 @@ fn select() {
                         }
                         println!("\t---");
                     }
+
+                    assert_eq!(result.len(), 2);
+                },
+                Err(error) => panic!("Failed to SELECT: {:?}", error),
+            };
+        }
+        Err(error) => panic!("Failed to select: {:?}", error),
+    };
+}
+
+#[test]
+fn select_distinct() {
+    let db_name = "select_distinct.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
+    let init_tables_result = common::initialize_tables_sqlite(db_name);
+    common::insert_rows_sqlite_distinct(db_name).expect("Failed to insert rows to sqlite.");
+
+    match init_tables_result {
+        Ok(_) => {
+            #[derive(Table, Debug, Default)]
+            struct TableA {
+                title: String,
+                description: String,
+                amount: u32,
+            }
+            let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+            let condition = Condition::Eq(
+                "description".to_string(),
+                "Some description for Table A".to_string(),
+            );
+
+            let result = sqlite::select(conn, columns)
+                .from(&TableA::default())
+                .where_clause(condition)
+                .distinct()
+                .build();
+
+            match result {
+                Ok(result) => {
+                    println!("\nSELECT DISTINCT ROWS: ");
+                    for row in &result {
+                        for (column, value) in row {
+                            match value {
+                                Value::Null => println!("\t{}: NULL", column),
+                                Value::Integer(i) => println!("\t{}: {}", column, i),
+                                Value::Real(f) => println!("\t{}: {}", column, f),
+                                Value::Text(s) => println!("\t{}: {}", column, s),
+                                Value::Blob(b) => println!("\t{}: <blob of length {}>", column, b.len()),
+                            }
+                        }
+                        println!("\t---");
+                    }
+
+                    assert_eq!(result.len(), 1);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
             };
