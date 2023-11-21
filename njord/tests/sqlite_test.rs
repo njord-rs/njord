@@ -257,3 +257,54 @@ fn select_order_by() {
         Err(error) => panic!("Failed to select: {:?}", error),
     };
 }
+
+#[test]
+fn select_limit_offset() {
+    let db_name = "select_limit_offset.db";
+    let _ = common::drop_db_sqlite(db_name);
+    let conn = common::open_db_sqlite(db_name).unwrap();
+    let init_tables_result = common::initialize_tables_sqlite(db_name);
+    common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+
+    match init_tables_result {
+        Ok(_) => {
+            #[derive(Table, Debug, Default)]
+            struct TableA {
+                title: String,
+                description: String,
+                amount: u32,
+            }
+            let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+            let condition = Condition::Eq(
+                "description".to_string(),
+                "Some description for Table A".to_string(),
+            );
+            let group_by_columns = vec![
+                "description".to_string(),
+                "amount".to_string(),
+            ];
+            let mut order_by_criteria = HashMap::new();
+            order_by_criteria.insert(vec!["amount".to_string()], "ASC".to_string());
+            order_by_criteria.insert(vec!["description".to_string()], "DESC".to_string());
+
+            let result = sqlite::select(conn, columns)
+                .from(&TableA::default())
+                .where_clause(condition)
+                .order_by(order_by_criteria)
+                .group_by(group_by_columns)
+                .limit(1)
+                .offset(1)
+                .build();
+
+            match result {
+                Ok(result) => {
+                    println!("\nSELECT LIMIT & OFFSET ROWS: ");
+                    print_rows(&result);
+                    assert_eq!(result.len(), 1);
+                },
+                Err(error) => panic!("Failed to SELECT: {:?}", error),
+            };
+        }
+        Err(error) => panic!("Failed to select: {:?}", error),
+    };
+}
