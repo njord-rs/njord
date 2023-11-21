@@ -16,6 +16,7 @@ pub struct QueryBuilder<'a> {
     selected: bool,
     distinct: bool,
     group_by: Option<Vec<String>>,
+    order_by: Option<HashMap<Vec<String>, String>>,
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -28,6 +29,7 @@ impl<'a> QueryBuilder<'a> {
             selected: false,
             distinct: false,
             group_by: None,
+            order_by: None,
         }
     }
 
@@ -57,37 +59,61 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
+    pub fn order_by(mut self, col_and_order: HashMap<Vec<String>, String>) -> Self {
+        self.order_by = Some(col_and_order);
+        self
+    }
+
     pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
-        let table_name = self
+
+        let table_name_str = self
             .table
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
-        // generate strings for each clause - empty if no value/false provided
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
-        let group_by_str = match &self.group_by {
-            Some(columns) => format!("GROUP BY {}", columns.join(", ")),
-            None => String::new(),
-        };
+
         let condition_str = if let Some(condition) = self.condition {
             format!("WHERE {}", condition.build())
         } else {
             String::new()
         };
 
+        let group_by_str = match &self.group_by {
+            Some(columns) => format!("GROUP BY {}", columns.join(", ")),
+            None => String::new(),
+        };
+
+        let order_by_str = if let Some(order_by) = &self.order_by {
+            let order_by_str: Vec<String> = order_by
+                .iter()
+                .map(|(columns, order)| format!("{} {}", columns.join(", "), order))
+                .collect();
+            if !order_by_str.is_empty() {
+                format!("ORDER BY {}", order_by_str.join(", "))
+            } else {
+                String::new()
+            }
+        } else {
+            String::new()
+        };
+
+        // construct the query based on defined variables above
         let query = format!(
-            "SELECT {}{} FROM {} {} {}",
+            "SELECT {}{} FROM {} {} {} {}",
             distinct_str,
             columns_str,
-            table_name,
+            table_name_str,
             condition_str,
             group_by_str,
+            order_by_str,
         );
 
         info!("{}", query);
         println!("{}", query);
 
+        // prepare sql statement
         let mut stmt = self.conn.prepare(query.as_str())?;
 
         let iter = stmt.query_map((), |row| {
