@@ -185,7 +185,7 @@ fn select_group_by() {
                 "description".to_string(),
                 "Some description for Table A".to_string(),
             );
-            let group_by_columns = vec![
+            let group_by = vec![
                 "description".to_string(),
                 "amount".to_string(),
             ];
@@ -193,7 +193,7 @@ fn select_group_by() {
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
                 .where_clause(condition)
-                .group_by(group_by_columns)
+                .group_by(group_by)
                 .build();
 
             match result {
@@ -230,19 +230,19 @@ fn select_order_by() {
                 "description".to_string(),
                 "Some description for Table A".to_string(),
             );
-            let group_by_columns = vec![
+            let group_by = vec![
                 "description".to_string(),
                 "amount".to_string(),
             ];
-            let mut order_by_criteria = HashMap::new();
-            order_by_criteria.insert(vec!["amount".to_string()], "DESC".to_string());
-            order_by_criteria.insert(vec!["description".to_string()], "ASC".to_string());
+            let mut order_by = HashMap::new();
+            order_by.insert(vec!["amount".to_string()], "DESC".to_string());
+            order_by.insert(vec!["description".to_string()], "ASC".to_string());
 
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
                 .where_clause(condition)
-                .order_by(order_by_criteria)
-                .group_by(group_by_columns)
+                .order_by(order_by)
+                .group_by(group_by)
                 .build();
 
             match result {
@@ -279,21 +279,21 @@ fn select_limit_offset() {
                 "description".to_string(),
                 "Some description for Table A".to_string(),
             );
-            let group_by_columns = vec![
+            let group_by = vec![
                 "description".to_string(),
                 "amount".to_string(),
             ];
-            let mut order_by_criteria = HashMap::new();
-            order_by_criteria.insert(vec!["amount".to_string()], "ASC".to_string());
-            order_by_criteria.insert(vec!["description".to_string()], "DESC".to_string());
+            let mut order_by = HashMap::new();
+            order_by.insert(vec!["amount".to_string()], "ASC".to_string());
+            order_by.insert(vec!["description".to_string()], "DESC".to_string());
 
             //TODO we should probably get back a vector of the table that was used so we can more
             // easily pass around that struct in the code
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
                 .where_clause(condition)
-                .order_by(order_by_criteria)
-                .group_by(group_by_columns)
+                .order_by(order_by)
+                .group_by(group_by)
                 .limit(1)
                 .offset(1)
                 .build();
@@ -301,7 +301,7 @@ fn select_limit_offset() {
             match result {
                 Ok(result) => {
                     println!("\nSELECT LIMIT & OFFSET ROWS: ");
-                    print_rows(&result);
+                    // print_rows(&result);
                     assert_eq!(result.len(), 1);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
