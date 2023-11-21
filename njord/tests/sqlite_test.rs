@@ -1,5 +1,6 @@
 // integrations tests for sqlite
 
+use log::info;
 use rusqlite::types::Value;
 use njord::sqlite::{self, Condition};
 use njord::table::Table;
@@ -52,8 +53,6 @@ fn insert_row() {
 
             let result = sqlite::insert(conn, &table_row);
 
-            println!("Result: {:?}", result);
-
             assert!(result.is_ok());
         }
         Err(error) => panic!("Failed to insert row: {:?}", error),
@@ -78,9 +77,8 @@ fn drop_table() {
 
             let result = sqlite::drop_table(conn, &TableA::default());
 
-            println!("Result: {:?}", result);
-
             assert!(result.is_ok());
+            // assert_eq!(result.iter().len(), 2);
         }
         Err(error) => panic!("Failed to drop table: {:?}", error),
     }
@@ -102,7 +100,7 @@ fn select() {
                 description: String,
                 amount: u32,
             }
-            let columns = vec!["title".to_string(), "description".to_string()];
+            let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
             let condition = Condition::Eq(
                 "description".to_string(),
                 "Some description for Table A".to_string(),
@@ -116,17 +114,18 @@ fn select() {
             // currently returns error with "ExecuteReturnedResults"
             match result {
                 Ok(result) => {
+                    println!("\nRETURNED ROWS: ");
                     for row in result {
                         for (column, value) in &row {
                             match value {
-                                Value::Null => println!("{}: NULL", column),
-                                Value::Integer(i) => println!("{}: {}", column, i),
-                                Value::Real(f) => println!("{}: {}", column, f),
-                                Value::Text(s) => println!("{}: {}", column, s),
-                                Value::Blob(b) => println!("{}: <blob of length {}>", column, b.len()),
+                                Value::Null => println!("\t{}: NULL", column),
+                                Value::Integer(i) => println!("\t{}: {}", column, i),
+                                Value::Real(f) => println!("\t{}: {}", column, f),
+                                Value::Text(s) => println!("\t{}: {}", column, s),
+                                Value::Blob(b) => println!("\t{}: <blob of length {}>", column, b.len()),
                             }
                         }
-                        println!("---"); // Separate rows for clarity
+                        println!("\t---");
                     }
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),

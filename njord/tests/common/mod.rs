@@ -1,4 +1,5 @@
 use std::{env, fs, vec};
+use log::info;
 
 use njord::{sqlite, table::Table};
 
@@ -28,7 +29,8 @@ pub fn initialize_tables_sqlite(db_name: &str) -> Result<(), Error> {
 }
 
 pub fn insert_rows_sqlite(db_name: &str) -> Result<(), Error> {
-    let conn = open_db_sqlite(db_name)?;
+    let conn1 = open_db_sqlite(db_name)?;
+    let conn2 = open_db_sqlite(db_name)?;
 
     #[derive(Table, Debug)]
     struct TableA {
@@ -37,15 +39,22 @@ pub fn insert_rows_sqlite(db_name: &str) -> Result<(), Error> {
         amount: u32,
     }
 
-    let table_row: TableA = TableA {
-        title: "Table A".to_string(),
+    let table_row_1: TableA = TableA {
+        title: "Item 1".to_string(),
         description: "Some description for Table A".to_string(),
-        amount: 0,
+        amount: 10,
     };
 
-    let result = sqlite::insert(conn, &table_row);
+    let table_row_2: TableA = TableA {
+        title: "Item 2".to_string(),
+        description: "Some description for Table A".to_string(),
+        amount: 20,
+    };
 
-    println!("Result: {:?}", result);
+    let result = sqlite::insert(conn1, &table_row_1);
+    let result = sqlite::insert(conn2, &table_row_2);
+
+    info!("insert_rows_sqlite(): {:?}", result);
 
     assert!(result.is_ok());
 
