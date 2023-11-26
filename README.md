@@ -13,7 +13,7 @@ A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
 
 Are you having trouble with njord? We want to help!
 
-- Read through the documentation on our [website](https://njord.rs).
+- Read through the documentation on our [docs](https://docs.njord.rs).
 
 - If you are upgrading, read the release notes for upgrade instructions and "new and noteworthy" features.
 
