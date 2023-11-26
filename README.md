@@ -13,6 +13,8 @@ A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
 
 Are you having trouble with njord? We want to help!
 
+- Read through the documentation on our [website](https://njord.rs).
+
 - If you are upgrading, read the release notes for upgrade instructions and "new and noteworthy" features.
 
 - Ask a question we monitor stackoverflow.com for questions tagged with njord.
@@ -32,10 +34,6 @@ njord uses GitHub’s integrated issue tracking system to record bugs and featur
 - If you need to paste code or include a stack trace, use Markdown. ``` escapes before and after your text.
 
 - If possible, try to create a test case or project that replicates the problem and attach it to the issue.
-
-## Getting started
-
-To learn about how to use the ORM, please checkout our [Wiki](https://github.com/mjovanc/njord/wiki). 
 
 ## Contributors
 
