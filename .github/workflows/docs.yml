@@ -26,10 +26,12 @@ jobs:
           cargo install mdbook
 
       - name: Build mdBook
+        working-directory: docs
         run: |
           mdbook build
 
       - name: Copy CNAME file
+        working-directory: docs
         run: |
           cp CNAME ./book/
 
