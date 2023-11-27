@@ -11,7 +11,7 @@
 	<meta property="og:title" content="{pageTitle}" />
 	<meta
 		property="og:description"
-		content="Tidlunds Ved är ett Skånskt företag som förädlar ved till lösved, 1 m3 kubiks säckar samt 40 liters småsäckar."
+		content="A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs."
 	/>
 	<meta property="og:image" content="/meta.png" />
 	<meta property="twitter:card" content="summary_large_image" />
