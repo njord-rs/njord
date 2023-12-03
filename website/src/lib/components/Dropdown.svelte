@@ -6,7 +6,7 @@
     <slot />
     <div class="group-hover/nav:flex hover:flex hidden absolute">
       <div
-        class="bg-zinc-800 text-zinc-50 rounded-md py-2 px-2 flex-col flex gap-2 mt-4 w-52"
+        class="bg-zinc-800  rounded-md py-2 px-2 flex-col flex gap-2 mt-4 w-52"
       >
         {#each items as item}
           <a
