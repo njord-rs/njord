@@ -47,19 +47,19 @@
           }}>Home</a
         >
         <a
-          href="/history"
+          href="https://x.com/njord_rs"
           on:click={() => {
             openMenu = !openMenu;
           }}>News</a
         >
         <a
-          href="/about"
+          href="https://docs.njord.rs"
           on:click={() => {
             openMenu = !openMenu;
           }}>Book</a
         >
         <a
-          href="/gallery"
+          href="http://docs.rs/njord/0.1.0/njord"
           on:click={() => {
             openMenu = !openMenu;
           }}>API Docs</a
