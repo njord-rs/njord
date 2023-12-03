@@ -3,4 +3,4 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
