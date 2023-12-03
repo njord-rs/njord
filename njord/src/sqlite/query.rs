@@ -12,13 +12,14 @@ pub struct QueryBuilder<'a> {
     conn: Connection,
     table: Option<&'a dyn Table>,
     columns: Vec<String>,
-    condition: Option<Condition>,
+    where_condition: Option<Condition>,
     selected: bool,
     distinct: bool,
     group_by: Option<Vec<String>>,
     order_by: Option<HashMap<Vec<String>, String>>,
     limit: Option<usize>,
     offset: Option<usize>,
+    having_condition: Option<Condition>
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -27,13 +28,14 @@ impl<'a> QueryBuilder<'a> {
             conn,
             table: None,
             columns,
-            condition: None,
+            where_condition: None,
             selected: false,
             distinct: false,
             group_by: None,
             order_by: None,
             limit: None,
             offset: None,
+            having_condition: None,
         }
     }
 
@@ -54,7 +56,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     pub fn where_clause(mut self, condition: Condition) -> Self {
-        self.condition = Some(condition);
+        self.where_condition = Some(condition);
         self
     }
 
@@ -78,6 +80,11 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
+    pub fn having(mut self, condition: Condition) -> Self {
+        self.having_condition = Some(condition);
+        self
+    }
+
     pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
         let columns_str = self.columns.join(", ");
 
@@ -88,7 +95,7 @@ impl<'a> QueryBuilder<'a> {
 
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
 
-        let condition_str = if let Some(condition) = self.condition {
+        let where_condition_str = if let Some(condition) = self.where_condition {
             format!("WHERE {}", condition.build())
         } else {
             String::new()
@@ -116,14 +123,22 @@ impl<'a> QueryBuilder<'a> {
         let limit_str = self.limit.map_or(String::new(), |count| format!("LIMIT {}", count));
         let offset_str = self.offset.map_or(String::new(), |offset| format!("OFFSET {}", offset));
 
+        // having should only be added if group_by is present
+        let having_str = if self.group_by.is_some() && self.having_condition.is_some() {
+            format!("HAVING {}", self.having_condition.unwrap().build())
+        } else {
+            String::new()
+        };
+
         // construct the query based on defined variables above
         let query = format!(
-            "SELECT {}{} FROM {} {} {} {} {}",
+            "SELECT {}{} FROM {} {} {} {} {} {}",
             distinct_str,
             columns_str,
             table_name_str,
-            condition_str,
+            where_condition_str,
             group_by_str,
+            having_str,
             order_by_str,
             format!("{} {}", limit_str, offset_str),
         );

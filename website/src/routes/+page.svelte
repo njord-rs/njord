@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import GithubBar from "$lib/components/GithubBar.svelte";
   import Copy from "$lib/components/icons/Copy.svelte";
   import Box from "$lib/components/Box.svelte";
@@ -11,7 +12,28 @@
         let text = document.getElementById(id);
         navigator.clipboard.writeText(text.value)
     }
+  
+  let pageTitle = 'njord - A lightweight ORM library for Rust';
+	onMount(() => {
+		document.title = pageTitle;
+	});
 </script>
+
+<svelte:head>
+	<meta property="og:title" content="{pageTitle}" />
+	<meta
+		property="og:description"
+		content="A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs."
+	/>
+	<meta property="og:image" content="/meta.png" />
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:title" content="{pageTitle}" />
+	<meta
+		property="twitter:description"
+		content="A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs."
+	/>
+	<meta property="twitter:image" content="/meta.png" />
+</svelte:head>
 
 <div class="container flex flex-col px-4 py-24">
     <h1 class="header text-8xl mb-4">Njord</h1>
@@ -75,5 +97,3 @@ sqlite::insert(conn, &table_row);
 </div>
     
 </div>
-
-
