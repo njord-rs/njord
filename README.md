@@ -1,6 +1,6 @@
 <img align="right" width="128" height="128" alt="njord" src="https://github.com/mjovanc/njord/raw/master/resources/logo.png">
 
-# njord
+# Njord
 
 ![build](https://img.shields.io/github/actions/workflow/status/mjovanc/njord/ci.yml?branch=master)
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
@@ -11,25 +11,25 @@ A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
 
 ## Getting Help
 
-Are you having trouble with njord? We want to help!
+Are you having trouble with Njord? We want to help!
 
 - Read through the documentation on our [docs](https://docs.njord.rs).
 
 - If you are upgrading, read the release notes for upgrade instructions and "new and noteworthy" features.
 
-- Ask a question we monitor stackoverflow.com for questions tagged with njord.
+- Ask a question we monitor stackoverflow.com for questions tagged with Njord.
 
-- Report bugs with njord at https://github.com/mjovanc/njord/issues.
+- Report bugs with Njord at https://github.com/mjovanc/njord/issues.
 
 ## Reporting Issues
 
-njord uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
+Njord uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
 
 - Before you log a bug, please search the issue tracker to see if someone has already reported the problem.
 
 - If the issue doesn’t already exist, create a new issue.
 
-- Please provide as much information as possible with the issue report. We like to know the njord version, operating system, and Rust version version you’re using.
+- Please provide as much information as possible with the issue report. We like to know the Njord version, operating system, and Rust version version you’re using.
 
 - If you need to paste code or include a stack trace, use Markdown. ``` escapes before and after your text.
 
