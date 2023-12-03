@@ -3,8 +3,8 @@ export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     fontFamily: {
-      'Secondary': ['Barlow Condensed','sans-serif'],
-      'Primary': ['Manrope','sans-serif']
+      'secondary': ['Titillium Web', 'Barlow Condensed','sans-serif'],
+      'primary': ['Manrope','sans-serif']
     },
     extend: {
     },
