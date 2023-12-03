@@ -13,7 +13,7 @@
         navigator.clipboard.writeText(text.value)
     }
   
-  let pageTitle = 'njord - A lightweight ORM library for Rust';
+  let pageTitle = 'Njord - A lightweight ORM library for Rust';
 	onMount(() => {
 		document.title = pageTitle;
 	});
