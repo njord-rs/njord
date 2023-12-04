@@ -1,5 +1,3 @@
-use rusqlite::types::Value;
-
 /// Converts values for SQL INSERT
 ///
 /// # Arguments
