@@ -8,6 +8,28 @@ use njord_derive::Table;
 use rusqlite::{Connection, Error};
 use rusqlite::types::Value;
 
+#[derive(Table, Debug, Default)]
+struct TableA {
+    title: String,
+    description: String,
+    amount: u32,
+}
+
+#[derive(Table, Debug, Default)]
+struct TableB {
+    name: String,
+    age: u32,
+    email: String,
+}
+
+#[derive(Table, Debug, Default)]
+struct TableC {
+    product_id: i64,
+    product_name: String,
+    price: f64,
+    in_stock: bool,
+}
+
 pub fn open_db_sqlite(db_name: &str) -> Result<Connection, Error> {
     let conn = sqlite::open(db_name).unwrap();
     Ok(conn)
@@ -33,13 +55,6 @@ pub fn insert_rows_sqlite(db_name: &str) -> Result<(), Error> {
     let conn1 = open_db_sqlite(db_name)?;
     let conn2 = open_db_sqlite(db_name)?;
 
-    #[derive(Table, Debug)]
-    struct TableA {
-        title: String,
-        description: String,
-        amount: u32,
-    }
-
     let table_row_1: TableA = TableA {
         title: "Item 1".to_string(),
         description: "Some description for Table A".to_string(),
@@ -64,13 +79,6 @@ pub fn insert_rows_sqlite_distinct(db_name: &str) -> Result<(), Error> {
     let conn1 = open_db_sqlite(db_name)?;
     let conn2 = open_db_sqlite(db_name)?;
 
-    #[derive(Table, Debug)]
-    struct TableA {
-        title: String,
-        description: String,
-        amount: u32,
-    }
-
     let table_row_1: TableA = TableA {
         title: "Item".to_string(),
         description: "Some description for Table A".to_string(),
@@ -92,28 +100,6 @@ pub fn insert_rows_sqlite_distinct(db_name: &str) -> Result<(), Error> {
 }
 
 pub fn generate_tables_sqlite() -> Vec<Box<dyn Table>> {
-    #[derive(Table, Debug, Default)]
-    struct TableA {
-        title: String,
-        description: String,
-        amount: u32,
-    }
-
-    #[derive(Table, Debug, Default)]
-    struct TableB {
-        name: String,
-        age: u32,
-        email: String,
-    }
-
-    #[derive(Table, Debug, Default)]
-    struct TableC {
-        product_id: i64,
-        product_name: String,
-        price: f64,
-        in_stock: bool,
-    }
-
     let table_a = Box::<TableA>::default();
     let table_b = Box::<TableB>::default();
     let table_c = Box::<TableC>::default();
