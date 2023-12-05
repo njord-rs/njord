@@ -43,9 +43,7 @@ pub fn drop_db_sqlite(db_name: &str) -> Result<(), std::io::Error> {
 
 pub fn initialize_tables_sqlite(db_name: &str) -> Result<(), Error> {
     let conn = open_db_sqlite(db_name).unwrap();
-
     let tables = generate_tables_sqlite();
-
     let result = sqlite::init(conn, tables);
 
     result
