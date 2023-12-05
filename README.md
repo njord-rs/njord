@@ -6,6 +6,8 @@
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
 [![njord: rustc 1.74+](https://img.shields.io/badge/njord-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
 [![njord_derive: rustc 1.74+](https://img.shields.io/badge/njord_derive-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
+[![discord](https://img.shields.io/discord/927966344266256434.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/nFYfGPB8g4)
+
 
 A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
 
