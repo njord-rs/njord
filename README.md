@@ -2,7 +2,7 @@
 
 # Docs
 
-[![build and deploy](https://github.com/njord-rs/docs/actions/workflows/docs.yml/badge.svg)](https://github.com/njord-rs/docs/actions/workflows/docs.yml)
+![build](https://img.shields.io/github/actions/workflow/status/njord-rs/docs/docs.yml?branch=master)
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
 The docs for Njord using Rust book.
