@@ -104,6 +104,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "njord_cli"
+version = "0.1.0"
+
+[[package]]
 name = "njord_derive"
 version = "0.1.0"
 dependencies = [
