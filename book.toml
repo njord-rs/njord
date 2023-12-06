@@ -1,7 +1,7 @@
 [book]
-title = "Njord - A lightweight ORM library for Rust"
+title = "Njord - A lightweight ORM library in Rust"
 authors = ["Marcus Cvjeticanin"]
-description = "A lightweight ORM library for Rust with strong-typed SQL DSL and sequence API."
+description = "A lightweight ORM library in Rust with strong-typed SQL DSL and sequence API."
 language = "en"
 git-repository-url = "https://github.com/mjovanc/njord"
 git-repository-icon = "fa-github"

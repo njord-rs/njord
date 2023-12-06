@@ -1,6 +1,6 @@
 # Getting started
 
-To install njord into your Rust project we need to include the dependencies:
+To install Njord into your Rust project we need to include the dependencies:
 
 **Cargo.toml**
 ```toml
