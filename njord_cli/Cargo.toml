@@ -10,4 +10,9 @@ repository = "https://github.com/mjovanc/njord"
 readme = "crates-io.md"
 rustc = "1.74.0"
 
+[[bin]]
+name = "njord"
+path = "src/main.rs"
+doc = false
+
 [dependencies]
