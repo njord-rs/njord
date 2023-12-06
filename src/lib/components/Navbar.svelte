@@ -9,7 +9,7 @@
     class="fixed top-0 px-4 h-16 w-full hidden justify-center md:flex z-10 border-b border-zinc-100 bg-zinc-900 font-secondary"
   >
     <div class="container flex-row items-center justify-between flex">
-        <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"> <img src="logo.png" alt="logo" class="w-12" /> Njord</a>
+        <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"> <img src="logo.png" alt="Logo" class="w-12" /> Njord</a>
         <div class="flex gap-6">
           <a href="https://x.com/njord_rs">News</a>
           <a href="https://docs.njord.rs">Book</a>
@@ -22,7 +22,10 @@
   <nav
     class="fixed flex flex-col items-end md:hidden p-4 bg-zinc-900 top-0 w-full z-10 border-b border-zinc-100 font-secondary"
   >
+  <div class="flex flex-row justify-between w-full">
+    <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"><img src="logo.png" alt="Logo" class="w-12" /> Njord</a>
     <button
+      aria-label="Toggle menu"
       on:click={() => {
         openMenu = !openMenu;
       }}
@@ -33,6 +36,7 @@
         <Hamburger />
       {/if}
     </button>
+  </div>
   
     {#if openMenu}
       <div
