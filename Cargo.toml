@@ -2,6 +2,7 @@
 members = [
     "njord",
     "njord_derive",
+    "njord_cli",
     # "test_suite", perhaps move the tests here?
 ]
 
