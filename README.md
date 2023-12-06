@@ -49,4 +49,4 @@ being awesome contributors to this project. **We'd like to take a moment to reco
 
 ## License
 
-The 3-Clause BSD License.
+The GPLv3 License.
