@@ -1,0 +1,13 @@
+[package]
+name = "njord_cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
+description = "Provides the CLI for the Njord crate."
+license = "GPL-3.0"
+documentation = "https://docs.rs/njord/latest/njord/"
+repository = "https://github.com/mjovanc/njord"
+readme = "crates-io.md"
+rustc = "1.74.0"
+
+[dependencies]
