@@ -23,6 +23,7 @@
     class="fixed flex flex-col items-end md:hidden p-4 bg-zinc-900 top-0 w-full z-10 border-b border-zinc-100 font-secondary"
   >
     <button
+      aria-label="Toggle menu"
       on:click={() => {
         openMenu = !openMenu;
       }}
