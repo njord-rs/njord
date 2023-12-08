@@ -33,12 +33,15 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     let mut columns_stream = TokenStream2::default();
     let mut column_fields_stream = TokenStream2::default();
     let mut column_values_stream = TokenStream2::default();
+    let mut set_column_values_stream = TokenStream2::default();
 
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
             let field_names_clone = field_names.clone();
+            let field_names_clone2 = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
+            let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
                 quote! { self.#field_name.to_string() }
@@ -61,9 +64,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "String" => "TEXT",
                             "f64" | "f32" => "REAL",
                             "Vec<u8>" => "BLOB",
-                            "Option<i64>" | "Option<i32>" | "Option<i16>" | "Option<i8>" | "Option<u64>" | "Option<u32>" | "Option<u16>" | "Option<u8>" | "Option<usize>" => "INTEGER", 
+                            "Option<i64>" | "Option<i32>" | "Option<i16>" | "Option<i8>" | "Option<u64>" | "Option<u32>" | "Option<u16>" | "Option<u8>" | "Option<usize>" => "INTEGER",
                             "Option<String>" => "TEXT",
-                            "Option<f64>" | "Option<f32>" => "REAL", 
+                            "Option<f64>" | "Option<f32>" => "REAL",
                             "Option<Vec<u8>>" => "BLOB",
                             "bool" => "TEXT",
                             _ => {
@@ -87,6 +90,23 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             });
 
+            set_column_values_stream.extend(quote! {
+                fn set_column_value(&mut self, column: &str, value: Value) {
+                    match column {
+                        #(
+                            stringify!(#field_names_clone2) => {
+                                if let Ok(val) = value.clone().into::<#field_types_clone>() {
+                                    self.#field_names_clone2 = val;
+                                } else {
+                                    eprintln!("Error: Failed to convert value for column '{}'", column);
+                                }
+                            }
+                        )*
+                        _ => eprintln!("Warning: Unknown column '{}'", column),
+                    }
+                }
+            });
+
             // implement the get_column_values() function
             column_values_stream.extend(quote! {
                 fn get_column_values(&self) -> Vec<String> {
@@ -102,6 +122,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             #columns_stream
             #column_fields_stream
             #column_values_stream
+            #set_column_values_stream
         }
     };
 
