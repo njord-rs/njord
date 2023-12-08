@@ -6,11 +6,10 @@ use njord::table::Table;
 
 #[cfg(feature = "derive")]
 use njord_derive::Table;
-use crate::common::print_rows;
 
 mod common;
 
-#[derive(Table, Debug, Default)]
+#[derive(Table)]
 struct TableA {
     title: String,
     description: String,
@@ -67,7 +66,7 @@ fn drop_table() {
 
     match init_tables_result {
         Ok(_) => {
-            let result = sqlite::drop_table(conn, &TableA::default());
+            let result = sqlite::drop_table::<TableA>(conn);
             assert!(result.is_ok());
         }
         Err(error) => panic!("Failed to drop table: {:?}", error),
@@ -93,12 +92,12 @@ fn select() {
             let result = sqlite::select(conn, columns)
                 .from(&TableA::default())
                 .where_clause(condition)
-                .build();
+                .build::<TableA>();
 
             match result {
                 Ok(result) => {
                     println!("\nSELECT ROWS: ");
-                    print_rows(&result);
+                    // print_rows(&result);
                     assert_eq!(result.len(), 2);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
@@ -128,12 +127,12 @@ fn select_distinct() {
                 .from(&TableA::default())
                 .where_clause(condition)
                 .distinct()
-                .build();
+                .build::<TableA>();
 
             match result {
                 Ok(result) => {
                     println!("\nSELECT DISTINCT ROWS: ");
-                    print_rows(&result);
+                    // print_rows(&result);
                     assert_eq!(result.len(), 1);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
@@ -167,12 +166,12 @@ fn select_group_by() {
                 .from(&TableA::default())
                 .where_clause(condition)
                 .group_by(group_by)
-                .build();
+                .build::<TableA>();
 
             match result {
                 Ok(result) => {
                     println!("\nSELECT GROUP BY ROWS: ");
-                    print_rows(&result);
+                    // print_rows(&result);
                     assert_eq!(result.len(), 2);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
@@ -210,12 +209,12 @@ fn select_order_by() {
                 .where_clause(condition)
                 .order_by(order_by)
                 .group_by(group_by)
-                .build();
+                .build::<TableA>();
 
             match result {
                 Ok(result) => {
                     println!("\nSELECT ORDER BY ROWS: ");
-                    print_rows(&result);
+                    // print_rows(&result);
                     assert_eq!(result.len(), 2);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),
@@ -257,7 +256,7 @@ fn select_limit_offset() {
                 .group_by(group_by)
                 .limit(1)
                 .offset(1)
-                .build();
+                .build::<TableA>();
 
             match result {
                 Ok(result) => {
@@ -305,12 +304,12 @@ fn select_having() {
                 .order_by(order_by)
                 .group_by(group_by)
                 .having(having_condition)
-                .build();
+                .build::<TableA>();
 
             match result {
                 Ok(result) => {
                     println!("\nSELECT HAVING: ");
-                    print_rows(&result);
+                    // print_rows(&result);
                     assert_eq!(result.len(), 1);
                 },
                 Err(error) => panic!("Failed to SELECT: {:?}", error),

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
 use crate::table::Table;
 
 use rusqlite::{Connection, Result};
@@ -85,7 +86,7 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> Result<Vec<HashMap<String, Value>>> {
+    pub fn build<T: Table + Default>(self) -> Result<Vec<T>> {
         let columns_str = self.columns.join(", ");
 
         let table_name_str = self
@@ -150,15 +151,24 @@ impl<'a> QueryBuilder<'a> {
         let mut stmt = self.conn.prepare(query.as_str())?;
 
         let iter = stmt.query_map((), |row| {
-            let mut result_row = HashMap::new();
-            for (i, column) in self.columns.iter().enumerate() {
-                let value = row.get_unwrap::<usize, Value>(i);
-                result_row.insert(column.clone(), value);
+            // dynamically create an instance of the struct based on the Table trait
+            let mut instance = T::default();
+            let columns = instance.get_column_fields();
+            println!("{:?}", columns);
+
+            for (index, column) in columns.iter().enumerate() {
+                // use the index to get the value from the row and set it in the struct
+                let value = row.get::<usize, Value>(index + 1)?;
+                instance.set_column_value(column, value);
             }
-            Ok(result_row)
+
+            Ok(instance)
         })?;
 
-        let result: Result<Vec<HashMap<String, Value>>> = iter.collect();
+        let result: Result<Vec<T>> = iter
+            .map(|row_result| row_result.and_then(|row| Ok(row)))
+            .collect::<Result<Vec<T>>>();
+
         result.map_err(|err| err.into())
     }
 }

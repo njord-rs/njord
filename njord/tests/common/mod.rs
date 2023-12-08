@@ -1,5 +1,4 @@
 use std::{env, fs, vec};
-use std::collections::HashMap;
 
 use njord::{sqlite, table::Table};
 
@@ -8,21 +7,21 @@ use njord_derive::Table;
 use rusqlite::{Connection, Error};
 use rusqlite::types::Value;
 
-#[derive(Table, Debug, Default)]
+#[derive(Table)]
 struct TableA {
     title: String,
     description: String,
     amount: u32,
 }
 
-#[derive(Table, Debug, Default)]
+#[derive(Table)]
 struct TableB {
     name: String,
     age: u32,
     email: String,
 }
 
-#[derive(Table, Debug, Default)]
+#[derive(Table)]
 struct TableC {
     product_id: i64,
     product_name: String,
@@ -107,17 +106,17 @@ pub fn generate_tables_sqlite() -> Vec<Box<dyn Table>> {
     tables
 }
 
-pub fn print_rows(result: &Vec<HashMap<String, Value>>) {
-    for row in result {
-        for (column, value) in row {
-            match value {
-                Value::Null => println!("\t{}: NULL", column),
-                Value::Integer(i) => println!("\t{}: {}", column, i),
-                Value::Real(f) => println!("\t{}: {}", column, f),
-                Value::Text(s) => println!("\t{}: {}", column, s),
-                Value::Blob(b) => println!("\t{}: <blob of length {}>", column, b.len()),
-            }
-        }
-        println!("\t---");
-    }
-}
+// pub fn print_rows(result: &Vec<Row>) {
+//     for row in result {
+//         for (column, value) in row {
+//             match value {
+//                 Value::Null => println!("\t{}: NULL", column),
+//                 Value::Integer(i) => println!("\t{}: {}", column, i),
+//                 Value::Real(f) => println!("\t{}: {}", column, f),
+//                 Value::Text(s) => println!("\t{}: {}", column, s),
+//                 Value::Blob(b) => println!("\t{}: <blob of length {}>", column, b.len()),
+//             }
+//         }
+//         println!("\t---");
+//     }
+// }
