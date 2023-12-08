@@ -9,7 +9,7 @@ use njord_derive::Table;
 
 mod common;
 
-#[derive(Table)]
+#[derive(Table, Debug, Default)]
 struct TableA {
     title: String,
     description: String,
@@ -66,7 +66,7 @@ fn drop_table() {
 
     match init_tables_result {
         Ok(_) => {
-            let result = sqlite::drop_table::<TableA>(conn);
+            let result = sqlite::drop_table(conn, TableA::default());
             assert!(result.is_ok());
         }
         Err(error) => panic!("Failed to drop table: {:?}", error),
