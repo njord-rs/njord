@@ -114,6 +114,7 @@ dependencies = [
  "njord",
  "proc-macro2",
  "quote",
+ "rusqlite",
  "syn",
 ]
 
