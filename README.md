@@ -1,4 +1,4 @@
-<img align="right" width="128" height="128" alt="njord" src="https://github.com/mjovanc/njord/raw/master/resources/logo.png">
+<img align="right" width="128" height="128" alt="njord" src="https://github.com/njord-rs/resources/raw/master/logo.png">
 
 # Docs
 
