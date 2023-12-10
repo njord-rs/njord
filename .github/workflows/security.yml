@@ -1,0 +1,32 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Run cargo audit fix
+        uses: simonhyll/cargo-audit@v1
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          branch: bot/cargo-audit
+          title: "[Bot] Audit fixes"
+          commit-message: "fix: Cargo audit issues"
+          body: >
+            Updates to Cargo.toml and/or Cargo.lock with security fixes.
+          labels: report
+
+      - name: Assign User to PR
+        uses: peter-evans/assignee@v5
+        with:
+          repo-token: ${{ secrets.GH_TOKEN }}
+          assignees: ${{ github.repository_owner }}
