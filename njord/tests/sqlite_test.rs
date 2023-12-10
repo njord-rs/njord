@@ -1,12 +1,12 @@
 // integrations tests for sqlite
 
-use njord::sqlite::{self, Condition};
-use njord::table::Table;
-use rusqlite::types::Value;
-use std::collections::HashMap;
+// use njord::sqlite::{self, Condition};
+// use njord::table::Table;
+// use rusqlite::types::Value;
+// use std::collections::HashMap;
 
-#[cfg(feature = "derive")]
-use njord_derive::Table;
+// #[cfg(feature = "derive")]
+// use njord_derive::Table;
 
 mod common;
 
