@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-use std::fmt::Debug;
 use crate::table::Table;
+use std::collections::HashMap;
 
 use rusqlite::{Connection, Result};
 
@@ -20,7 +19,7 @@ pub struct QueryBuilder<'a> {
     order_by: Option<HashMap<Vec<String>, String>>,
     limit: Option<usize>,
     offset: Option<usize>,
-    having_condition: Option<Condition>
+    having_condition: Option<Condition>,
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -102,7 +101,7 @@ impl<'a> QueryBuilder<'a> {
             String::new()
         };
 
-        let group_by_str= match &self.group_by {
+        let group_by_str = match &self.group_by {
             Some(columns) => format!("GROUP BY {}", columns.join(", ")),
             None => String::new(),
         };
@@ -121,8 +120,12 @@ impl<'a> QueryBuilder<'a> {
             String::new()
         };
 
-        let limit_str = self.limit.map_or(String::new(), |count| format!("LIMIT {}", count));
-        let offset_str = self.offset.map_or(String::new(), |offset| format!("OFFSET {}", offset));
+        let limit_str = self
+            .limit
+            .map_or(String::new(), |count| format!("LIMIT {}", count));
+        let offset_str = self
+            .offset
+            .map_or(String::new(), |offset| format!("OFFSET {}", offset));
 
         // having should only be added if group_by is present
         let having_str = if self.group_by.is_some() && self.having_condition.is_some() {

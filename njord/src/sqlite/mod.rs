@@ -2,12 +2,8 @@ use std::env;
 
 use rusqlite::{Connection, Error};
 
-pub mod init;
-pub use init::init;
 pub mod insert;
 pub use insert::insert;
-pub mod drop;
-pub use drop::drop_table;
 pub mod select;
 pub use select::select;
 pub mod condition;
