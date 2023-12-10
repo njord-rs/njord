@@ -28,5 +28,5 @@ jobs:
       - name: Assign User to PR
         uses: peter-evans/assignee@v2
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GH_TOKEN }}
           username: ${{ github.repository_owner }}
