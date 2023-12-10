@@ -29,4 +29,4 @@ jobs:
         uses: peter-evans/assignee@v5
         with:
           repo-token: ${{ secrets.GH_TOKEN }}
-          username: ${{ github.repository_owner }}
+          assignees: ${{ github.repository_owner }}
