@@ -1,27 +1,25 @@
 // integrations tests for sqlite
 
-// use njord::sqlite::{self, Condition};
-// use njord::table::Table;
-// use rusqlite::types::Value;
-// use std::collections::HashMap;
+use njord::sqlite::{self};
+use njord::table::Table;
 
-// #[cfg(feature = "derive")]
-// use njord_derive::Table;
+#[cfg(feature = "derive")]
+use njord_derive::Table;
 
 mod common;
 
-// #[derive(Table, Debug, Default)]
-// struct TableA {
-//     title: String,
-//     description: String,
-//     amount: u32,
-// }
+#[derive(Table, Default)]
+struct TableA {
+    title: String,
+    description: String,
+    amount: u32,
+}
 
-// #[test]
-// fn open_db() {
-//     let result = sqlite::open("test_database.db");
-//     assert!(result.is_ok());
-// }
+#[test]
+fn open_db() {
+    let result = sqlite::open("test_database.db");
+    assert!(result.is_ok());
+}
 
 // #[test]
 // fn init_tables() {
@@ -228,20 +226,21 @@ mod common;
 // #[test]
 // fn select_limit_offset() {
 //     let db_name = "select_limit_offset.db";
-//     let _ = common::drop_db_sqlite(db_name);
+//     // let _ = common::drop_db_sqlite(db_name);
 //     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+//     // let init_tables_result = common::initialize_tables_sqlite(db_name);
+//     // common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
 
-//     let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+//     let columns = vec![
+//         "title".to_string(),
+//         "description".to_string(),
+//         "amount".to_string(),
+//     ];
 //     let condition = Condition::Eq(
 //         "description".to_string(),
 //         "Some description for Table A".to_string(),
 //     );
-//     let group_by = vec![
-//         "description".to_string(),
-//         "amount".to_string(),
-//     ];
+//     let group_by = vec!["description".to_string(), "amount".to_string()];
 //     let mut order_by = HashMap::new();
 //     order_by.insert(vec!["amount".to_string()], "ASC".to_string());
 //     order_by.insert(vec!["description".to_string()], "DESC".to_string());
@@ -264,20 +263,21 @@ mod common;
 //                     println!("\nSELECT LIMIT & OFFSET ROWS: ");
 //                     // print_rows(&result);
 //                     assert_eq!(result.len(), 1);
-//                 },
+//                 }
 //                 Err(error) => panic!("Failed to SELECT: {:?}", error),
 //             };
 //         }
 //         Err(error) => panic!("Failed to select: {:?}", error),
 //     };
 // }
+
 // #[test]
 // fn select_having() {
 //     let db_name = "select_having.db";
-//     let _ = common::drop_db_sqlite(db_name);
+//     // let _ = common::drop_db_sqlite(db_name);
 //     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+//     // let init_tables_result = common::initialize_tables_sqlite(db_name);
+//     // common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
 
 //     let columns = vec![
 //         "title".to_string(),
@@ -294,25 +294,20 @@ mod common;
 //     order_by.insert(vec!["description".to_string()], "DESC".to_string());
 //     let having_condition = Condition::Gt("amount".to_string(), "10".to_string());
 
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::select(conn, columns)
-//                 .from(&TableA::default())
-//                 .where_clause(where_condition)
-//                 .order_by(order_by)
-//                 .group_by(group_by)
-//                 .having(having_condition)
-//                 .build::<TableA>();
+//     let result = sqlite::select(conn, columns)
+//         .from(TableA::default())
+//         .where_clause(where_condition)
+//         .order_by(order_by)
+//         .group_by(group_by)
+//         .having(having_condition)
+//         .build();
 
-//             match result {
-//                 Ok(result) => {
-//                     println!("\nSELECT HAVING: ");
-//                     // print_rows(&result);
-//                     assert_eq!(result.len(), 1);
-//                 }
-//                 Err(error) => panic!("Failed to SELECT: {:?}", error),
-//             };
+//     match result {
+//         Ok(result) => {
+//             println!("\nSELECT HAVING: ");
+//             // print_rows(&result);
+//             assert_eq!(result.len(), 1);
 //         }
-//         Err(error) => panic!("Failed to select: {:?}", error),
+//         Err(error) => panic!("Failed to SELECT: {:?}", error),
 //     };
 // }
