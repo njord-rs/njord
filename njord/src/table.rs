@@ -31,11 +31,11 @@ pub trait Table {
     /// as they appear in the table.
     fn get_column_values(&self) -> Vec<String>;
 
-    /// Set the values of the columns.
-    ///
-    /// Returns a `Vec<String>` containing the values of the columns in the same order
-    /// as they appear in the table.
-    fn set_column_value(&mut self, column: &str, value: String);
+    // /// Set the values of the columns.
+    // ///
+    // /// Returns a `Vec<String>` containing the values of the columns in the same order
+    // /// as they appear in the table.
+    // fn set_column_value(&mut self, column: &str, value: &str);
 }
 
 // #[test]

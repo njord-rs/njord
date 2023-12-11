@@ -1,7 +1,7 @@
-use crate::sqlite::query::QueryBuilder;
+use crate::{sqlite::query::QueryBuilder, table::Table};
 
 use rusqlite::Connection;
 
-pub fn select<'a>(conn: Connection, columns: Vec<String>) -> QueryBuilder<'a> {
+pub fn select<T: Table + Default>(conn: Connection, columns: Vec<String>) -> QueryBuilder<T> {
     QueryBuilder::new(conn, columns)
 }

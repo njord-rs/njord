@@ -8,9 +8,9 @@ use rusqlite::types::Value;
 
 use super::Condition;
 
-pub struct QueryBuilder<'a> {
+pub struct QueryBuilder<T: Table + Default> {
     conn: Connection,
-    table: Option<&'a dyn Table>,
+    table: Option<T>,
     columns: Vec<String>,
     where_condition: Option<Condition>,
     selected: bool,
@@ -22,7 +22,7 @@ pub struct QueryBuilder<'a> {
     having_condition: Option<Condition>,
 }
 
-impl<'a> QueryBuilder<'a> {
+impl<T: Table + Default> QueryBuilder<T> {
     pub fn new(conn: Connection, columns: Vec<String>) -> Self {
         QueryBuilder {
             conn,
@@ -50,7 +50,7 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    pub fn from(mut self, table: &'a dyn Table) -> Self {
+    pub fn from(mut self, table: T) -> Self {
         self.table = Some(table);
         self
     }
@@ -85,7 +85,7 @@ impl<'a> QueryBuilder<'a> {
         self
     }
 
-    pub fn build<T: Table + Default>(self) -> Result<Vec<T>> {
+    pub fn build(self) -> Result<Vec<T>> {
         let columns_str = self.columns.join(", ");
 
         let table_name_str = self
@@ -171,7 +171,7 @@ impl<'a> QueryBuilder<'a> {
                     Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
                 };
 
-                instance.set_column_value(column, string_value);
+                // instance.set_column_value(column, &string_value);
             }
 
             Ok(instance)
@@ -182,5 +182,18 @@ impl<'a> QueryBuilder<'a> {
             .collect::<Result<Vec<T>>>();
 
         result.map_err(|err| err.into())
+
+        // remove this later
+        // let iter = stmt.query_map((), |row| {
+        //     let mut result_row = HashMap::new();
+        //     for (i, column) in self.columns.iter().enumerate() {
+        //         let value = row.get_unwrap::<usize, Value>(i);
+        //         result_row.insert(column.clone(), value);
+        //     }
+        //     Ok(result_row)
+        // })?;
+
+        // let result: Result<Vec<HashMap<String, Value>>> = iter.collect();
+        // result.map_err(|err| err.into())
     }
 }
