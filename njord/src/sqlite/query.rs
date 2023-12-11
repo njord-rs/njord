@@ -162,7 +162,16 @@ impl<'a> QueryBuilder<'a> {
             for (index, column) in columns.iter().enumerate() {
                 // use the index to get the value from the row and set it in the struct
                 let value = row.get::<usize, Value>(index + 1)?;
-                instance.set_column_value(column, value);
+
+                let string_value = match value {
+                    Value::Integer(val) => val.to_string(),
+                    Value::Null => String::new(),
+                    Value::Real(val) => val.to_string(),
+                    Value::Text(val) => val.to_string(),
+                    Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
+                };
+
+                instance.set_column_value(column, string_value);
             }
 
             Ok(instance)

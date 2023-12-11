@@ -1,4 +1,3 @@
-use rusqlite::types::Value;
 use std::collections::HashMap;
 
 #[cfg(feature = "derive")]
@@ -36,7 +35,7 @@ pub trait Table {
     ///
     /// Returns a `Vec<String>` containing the values of the columns in the same order
     /// as they appear in the table.
-    fn set_column_value(&mut self, column: &str, value: Value);
+    fn set_column_value(&mut self, column: &str, value: String);
 }
 
 // #[test]

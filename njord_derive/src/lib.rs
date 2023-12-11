@@ -91,7 +91,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             });
 
             set_column_values_stream.extend(quote! {
-                fn set_column_value(&mut self, column: &str, value: Value) {
+                fn set_column_value(&mut self, column: &str, value: String) {
                     match column {
                         #(
                             stringify!(#field_names_clone2) => {
