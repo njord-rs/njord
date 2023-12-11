@@ -171,7 +171,7 @@ impl<T: Table + Default> QueryBuilder<T> {
                     Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
                 };
 
-                // instance.set_column_value(column, &string_value);
+                instance.set_column_value(column, &string_value);
             }
 
             Ok(instance)
@@ -182,18 +182,5 @@ impl<T: Table + Default> QueryBuilder<T> {
             .collect::<Result<Vec<T>>>();
 
         result.map_err(|err| err.into())
-
-        // remove this later
-        // let iter = stmt.query_map((), |row| {
-        //     let mut result_row = HashMap::new();
-        //     for (i, column) in self.columns.iter().enumerate() {
-        //         let value = row.get_unwrap::<usize, Value>(i);
-        //         result_row.insert(column.clone(), value);
-        //     }
-        //     Ok(result_row)
-        // })?;
-
-        // let result: Result<Vec<HashMap<String, Value>>> = iter.collect();
-        // result.map_err(|err| err.into())
     }
 }
