@@ -5,7 +5,7 @@ use log::info;
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
-pub fn insert(mut conn: Connection, table_row: &dyn Table) -> Result<()> {
+pub fn insert<T: Table>(mut conn: Connection, table_row: &T) -> Result<()> {
     // create a transaction
     let tx = conn.transaction()?;
 
@@ -26,7 +26,7 @@ pub fn insert(mut conn: Connection, table_row: &dyn Table) -> Result<()> {
     Ok(())
 }
 
-fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
+fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
     // generate string for columns
     let mut columns_str = String::new();
     for column_name in table_row.get_column_fields() {
@@ -36,7 +36,7 @@ fn generate_statement(table_row: &dyn Table) -> Result<String, Error> {
     // surround single quotes of text
     let converted_values = convert_insert_values(table_row.get_column_values());
 
-    // // generate values string
+    // generate values string
     let mut values_str = String::new();
     for value in converted_values {
         let data_type_str = value.to_string();
