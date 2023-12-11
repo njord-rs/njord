@@ -3,6 +3,8 @@ use clap::Arg;
 fn main() {
     let cmd = clap::Command::new("njord")
         .bin_name("njord")
+        .author("Marcus Cvjeticanin. <mjovanc@icloud.com>")
+        .about("Njord CLI ⛵ for handling migration changes.")
         .subcommand_required(true)
         .subcommand(
             clap::command!("migration")
