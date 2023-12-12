@@ -9,7 +9,7 @@
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
 
-A lightweight ORM library for Rust with strong-typed SQL DSL and sequence APIs.
+A lightweight and extensible ORM library and Query Builder for Rust.
 
 ## Getting Help
 
