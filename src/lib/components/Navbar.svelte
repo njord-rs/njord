@@ -62,6 +62,12 @@
             openMenu = !openMenu;
           }}>Docs</a
         >
+        <a
+          href="https://discord.com/invite/2uppTzjUHE"
+          on:click={() => {
+            openMenu = !openMenu;
+          }}>Discord</a
+        >
       </div>
     {/if}
   </nav>
