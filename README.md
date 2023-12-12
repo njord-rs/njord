@@ -9,7 +9,7 @@
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
 
-A lightweight and extensible ORM library and Query Builder for Rust.
+Lightweight, Extensible ORM library and Query Builder for Rust.
 
 ## Getting Help
 
