@@ -56,16 +56,10 @@
           }}>News</a
         >
         <a
-          href="https://docs.njord.rs"
-          on:click={() => {
-            openMenu = !openMenu;
-          }}>Book</a
-        >
-        <a
           href="http://docs.rs/njord/0.1.0/njord"
           on:click={() => {
             openMenu = !openMenu;
-          }}>API Docs</a
+          }}>Docs</a
         >
       </div>
     {/if}
