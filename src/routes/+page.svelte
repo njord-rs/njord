@@ -19,7 +19,7 @@
         <div class="fade-out" style="pointer-events: none"></div>
         <div class="container px-4">
             <h1 class="header text-8xl mb-4">Njord</h1>
-            <h2 class="text-2xl">Safe, Extensible ORM and Query Builder for Rust</h2>
+            <h2 class="text-2xl">Lightweight, Extensible ORM and Query Builder for Rust</h2>
             <GithubBar repo={data.repo}></GithubBar> 
         </div>
 
