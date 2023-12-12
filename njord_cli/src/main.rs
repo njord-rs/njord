@@ -53,9 +53,7 @@ fn main() {
 
     // match a given command/subcommand and run corresponding function
     match cmd.subcommand_name() {
-        Some("generate") => generate(),
-        Some("run") => run(),
-        Some("rollback") => rollback(),
+        Some("migration") => generate(), // we should not run generate here, we should have another match statement to check the next subcommand which is generate/run/rollback
         _ => {
             eprintln!("Invalid command. Use 'njord --help' for usage information.");
             std::process::exit(1);
