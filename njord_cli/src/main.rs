@@ -40,7 +40,11 @@ fn main() {
                 )
                 .subcommand(
                     clap::command!("rollback")
-                        .about("Rolls back the last applied migration or to a specific version."),
+                        .about("Rolls back the last applied migration or to a specific version.")
+                        .arg(Arg::new("to")
+                            .long("to")
+                            .help("Sets a previous migration change to rollback to (e.g. 20231204120000")
+                            .value_name("change")),
                 )
         )
         .get_matches();
