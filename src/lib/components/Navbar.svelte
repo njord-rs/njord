@@ -12,8 +12,7 @@
         <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"> <img src="logo.png" alt="Logo" class="w-12" /> Njord</a>
         <div class="flex gap-6">
           <a href="https://x.com/njord_rs">News</a>
-          <a href="https://docs.njord.rs">Book</a>
-          <a href="http://docs.rs/njord/0.1.0/njord">API Docs</a>
+          <a href="http://docs.rs/njord/0.1.0/njord">Docs</a>
         </div>
        
     </div>
