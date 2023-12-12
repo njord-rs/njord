@@ -46,7 +46,6 @@ being awesome contributors to this project. **We'd like to take a moment to reco
 [<img src="https://github.com/mjovanc.png?size=72" alt="mjovanc" width="72">](https://github.com/mjovanc)
 [<img src="https://github.com/appelskrutt34.png?size=72" alt="appelskrutt34" width="72">](https://github.com/appelskrutt34)
 [<img src="https://github.com/ahsentekdemir.png?size=72">](https://github.com/ahsentekdemir)
-[<img src="https://avatars.githubusercontent.com/in/29110?s=48&v=4" alt="dependabot" width="72">](https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates)
 
 ## License
 
