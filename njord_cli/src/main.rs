@@ -1,4 +1,6 @@
+mod migration;
 use clap::Arg;
+use migration::{generate, rollback, run};
 
 fn main() {
     let cmd = clap::Command::new("njord")
@@ -43,20 +45,20 @@ fn main() {
                         .about("Rolls back the last applied migration or to a specific version.")
                         .arg(Arg::new("to")
                             .long("to")
-                            .help("Sets a previous migration change to rollback to (e.g. 20231204120000")
+                            .help("Sets a previous migration change to rollback to (e.g. --to=20231204120000")
                             .value_name("change")),
                 )
         )
         .get_matches();
 
     // match a given command/subcommand and run corresponding function
-    match cmd.subcommand() {
-        Some(("migration", _migration_matches)) => {
-            println!("Hello!")
-        }
+    match cmd.subcommand_name() {
+        Some("generate") => generate(),
+        Some("run") => run(),
+        Some("rollback") => rollback(),
         _ => {
             eprintln!("Invalid command. Use 'njord --help' for usage information.");
             std::process::exit(1);
-        }
+        },
     }
 }
