@@ -2,6 +2,10 @@ use clap::ArgMatches;
 
 use crate::migration::{generate, rollback, run};
 
+pub fn handle_setup_subcommand(sub_matches: &ArgMatches) {
+    println!("Setting up Njord...")
+}
+
 /// Handles the "migration" subcommand based on the provided `ArgMatches`.
 ///
 /// # Arguments
@@ -68,6 +72,7 @@ pub fn handle_migration_subcommand(sub_matches: &ArgMatches) {
 pub fn handle_command(cmd: &str, sub_matches: &ArgMatches) {
     match cmd {
         "migration" => handle_migration_subcommand(sub_matches),
+        "setup" => handle_setup_subcommand(sub_matches),
         _ => {
             eprintln!("Invalid command. Use 'njord --help' for usage information.");
             std::process::exit(1);
