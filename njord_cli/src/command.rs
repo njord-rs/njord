@@ -33,6 +33,12 @@ pub fn handle_setup() {
     // include content of njord.toml template
     let toml_content = include_str!("../templates/njord.toml");
 
+    // include the content of up.sql and down.sql templates
+    let up_sql_content =
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/up.sql");
+    let down_sql_content =
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/down.sql");
+
     // determine the current dir where njord is running from
     if let Ok(current_dir) = std::env::current_dir() {
         let destination_path = current_dir.join("njord.toml");
@@ -46,8 +52,70 @@ pub fn handle_setup() {
         } else {
             println!("njord.toml already exists in the current directory. Skipping copy.")
         }
+
+        // get the migrations path
+        let migrations_path = current_dir.join("migrations/00000000000000_diesel_initial_setup");
+
+        // check if the migration files already exist
+        if !migrations_path.exists() {
+            if let Err(err) = fs::create_dir_all(&migrations_path) {
+                eprintln!("Error creating migrations directory: {}", err);
+                return;
+            }
+
+            write_migration_file(&migrations_path, "up.sql", up_sql_content);
+            write_migration_file(&migrations_path, "down.sql", down_sql_content);
+        } else {
+            println!("Migration files already exist. Skipping creation.");
+        }
     } else {
         eprintln!("Error determining the current directory.")
+    }
+}
+
+/// Writes content to a migration file in the specified directory.
+///
+/// Given a `Path` representing the directory where migration files are stored, a `file_name` for
+/// the migration file, and the `content` to be written to the file, this function constructs the
+/// full path for the file and writes the content to it.
+///
+/// # Arguments
+///
+/// * `migrations_path` - A reference to a `Path` representing the directory for migration files.
+/// * `file_name` - A string slice representing the name of the migration file.
+/// * `content` - A string slice containing the content to be written to the migration file.
+///
+/// # Example
+///
+/// ```rust
+/// use std::path::Path;
+/// use my_njord_module::write_migration_file;
+///
+/// let migrations_path = Path::new("migrations/00000000000000_diesel_initial_setup");
+/// let file_name = "up.sql";
+/// let content = "/* SQL statements for the 'up' migration */";
+///
+/// write_migration_file(&migrations_path, file_name, content);
+/// ```
+///
+/// # Errors
+///
+/// If there is an error writing to the file, an error message is printed to standard error
+/// using `eprintln!`. The error message includes the file name and the specific error details.
+///
+/// If the write operation is successful, a success message is printed to standard output using
+/// `println!`. The success message includes the file name.
+///
+/// # Panics
+///
+/// This function does not panic.
+fn write_migration_file(migrations_path: &Path, file_name: &str, content: &str) {
+    let file_path = migrations_path.join(file_name);
+
+    if let Err(err) = fs::write(&file_path, content) {
+        eprintln!("Error writing {}: {}", file_name, err);
+    } else {
+        println!("{} successfully created.", file_name);
     }
 }
 
