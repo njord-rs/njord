@@ -11,7 +11,7 @@
 /// ```rust
 /// generate(Some("example_name"), Some("development"), Some("true"));
 /// ```
-pub fn generate(name: Option<&str>, env: Option<&str>, dry_run: Option<&str>) {
+pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&String>) {
     println!(
         "Generating migration file '{:?}' env '{:?}', dry-run: {:?}",
         name, env, dry_run
@@ -30,7 +30,7 @@ pub fn generate(name: Option<&str>, env: Option<&str>, dry_run: Option<&str>) {
 /// ```rust
 /// run(Some("production"), Some("debug"));
 /// ```
-pub fn run(env: Option<&str>, log_level: Option<&str>) {
+pub fn run(env: Option<&String>, log_level: Option<&String>) {
     println!(
         "Running migration with env '{:?}' and log-level '{:?}'",
         env, log_level
@@ -50,7 +50,7 @@ pub fn run(env: Option<&str>, log_level: Option<&str>) {
 /// ```rust
 /// rollback(Some("development"), Some("20231204120000"), Some("info"));
 /// ```
-pub fn rollback(env: Option<&str>, to: Option<&str>, log_level: Option<&str>) {
+pub fn rollback(env: Option<&String>, to: Option<&String>, log_level: Option<&String>) {
     println!(
         "Rolling back migration with env '{:?}' to '{:?}' log_level '{:?}'",
         env, to, log_level
