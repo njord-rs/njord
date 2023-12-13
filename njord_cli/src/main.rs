@@ -1,6 +1,7 @@
 mod migration;
+mod command;
 use clap::Arg;
-use migration::{generate, rollback, run};
+use command::handle_command;
 
 fn main() {
     let cmd = clap::Command::new("njord")
@@ -61,39 +62,10 @@ fn main() {
         )
         .get_matches();
 
-    // match a given command/subcommand and run corresponding function
-    match cmd.subcommand() {
-        Some(("migration", sub_matches)) => {
-            match sub_matches.subcommand() {
-                Some(("generate", generate_matches)) => {
-                    let name = generate_matches.get_one::<String>("name");
-                    let env = generate_matches.get_one::<String>("env");
-                    let dry_run = generate_matches.get_one::<String>("dry-run");
-
-                    generate(name, env, dry_run)
-                }
-                Some(("run", run_matches)) => {
-                    let env = run_matches.get_one::<String>("env");
-                    let log_level = run_matches.get_one::<String>("log-level");
-
-                    run(env, log_level)
-                }
-                Some(("rollback", rollback_matches)) => {
-                    let env = rollback_matches.get_one::<String>("env");
-                    let to = rollback_matches.get_one::<String>("to");
-                    let log_level = rollback_matches.get_one::<String>("log-level");
-
-                    rollback(env, to, log_level)
-                }
-                _ => {
-                    eprintln!("Invalid subcommand for 'migration'. Use 'njord migration --help' for usage information.");
-                    std::process::exit(1);
-                }
-            }
-        }
-        _ => {
-            eprintln!("Invalid command. Use 'njord --help' for usage information.");
-            std::process::exit(1);
-        },
+    if let Some((cmd, sub_matches)) = cmd.subcommand() {
+        handle_command(cmd, sub_matches);
+    } else {
+        eprintln!("Invalid command. Use 'njord --help' for usage information.");
+        std::process::exit(1);
     }
 }
