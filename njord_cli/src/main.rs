@@ -9,6 +9,7 @@ fn main() {
         .author("Marcus Cvjeticanin. <mjovanc@icloud.com>")
         .about("Njord CLI ⛵ for handling migration changes.")
         .subcommand_required(true)
+        .subcommand(clap::command!("setup").about("Initializes Njord with an empty migrations directory and a njord.toml config file."))
         .subcommand(
             clap::command!("migration")
                 .subcommand(
