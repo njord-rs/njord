@@ -2,8 +2,31 @@ use clap::ArgMatches;
 
 use crate::migration::{generate, rollback, run};
 
-pub fn handle_setup_subcommand(sub_matches: &ArgMatches) {
-    println!("Setting up Njord...")
+/// Initializes Njord with an empty migrations directory and a `njord.toml` config file.
+///
+/// This function is responsible for setting up the initial configuration for Njord, a migration
+/// tool. It does not require any command-line arguments and initializes Njord with an empty
+/// migrations directory and a `njord.toml` configuration file. This allows users to start fresh
+/// with an initial setup for managing database migrations.
+///
+/// # Example
+///
+/// ```rust
+/// use njord_cli::handle_setup;
+///
+/// handle_setup();
+/// ```
+///
+/// # Panics
+///
+/// This function does not panic.
+///
+/// # Notes
+///
+/// - The migrations directory will be empty initially.
+/// - A `njord.toml` configuration file will be created with default settings.
+pub fn handle_setup() {
+    println!("Setting up Njord with an empty migrations directory and a njord.toml config file...");
 }
 
 /// Handles the "migration" subcommand based on the provided `ArgMatches`.
@@ -72,7 +95,7 @@ pub fn handle_migration_subcommand(sub_matches: &ArgMatches) {
 pub fn handle_command(cmd: &str, sub_matches: &ArgMatches) {
     match cmd {
         "migration" => handle_migration_subcommand(sub_matches),
-        "setup" => handle_setup_subcommand(sub_matches),
+        "setup" => handle_setup(),
         _ => {
             eprintln!("Invalid command. Use 'njord --help' for usage information.");
             std::process::exit(1);
