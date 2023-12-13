@@ -33,7 +33,7 @@ pub fn handle_setup() {
     // include content of njord.toml template
     let toml_content = include_str!("../templates/njord.toml");
 
-    //TODO use a different .sql file depending on what connector using (Sqlite, MySQL, PostgreSQL etc)
+    //TODO: use a different .sql file depending on what connector using (Sqlite, MySQL, PostgreSQL etc)
 
     // include the content of up.sql and down.sql templates
     let sqlite_up_sql_content =
