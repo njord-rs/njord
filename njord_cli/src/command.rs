@@ -33,11 +33,13 @@ pub fn handle_setup() {
     // include content of njord.toml template
     let toml_content = include_str!("../templates/njord.toml");
 
+    //TODO use a different .sql file depending on what connector using (Sqlite, MySQL, PostgreSQL etc)
+
     // include the content of up.sql and down.sql templates
-    let up_sql_content =
-        include_str!("../templates/migrations/00000000000000_njord_initial_setup/up.sql");
-    let down_sql_content =
-        include_str!("../templates/migrations/00000000000000_njord_initial_setup/down.sql");
+    let sqlite_up_sql_content =
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/up.sql");
+    let sqlite_down_sql_content =
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/down.sql");
 
     // determine the current dir where njord is running from
     if let Ok(current_dir) = std::env::current_dir() {
@@ -54,7 +56,7 @@ pub fn handle_setup() {
         }
 
         // get the migrations path
-        let migrations_path = current_dir.join("migrations/00000000000000_diesel_initial_setup");
+        let migrations_path = current_dir.join("migrations/00000000000000_njord_initial_setup");
 
         // check if the migration files already exist
         if !migrations_path.exists() {
@@ -63,8 +65,8 @@ pub fn handle_setup() {
                 return;
             }
 
-            write_migration_file(&migrations_path, "up.sql", up_sql_content);
-            write_migration_file(&migrations_path, "down.sql", down_sql_content);
+            write_migration_file(&migrations_path, "up.sql", sqlite_up_sql_content);
+            write_migration_file(&migrations_path, "down.sql", sqlite_down_sql_content);
         } else {
             println!("Migration files already exist. Skipping creation.");
         }

@@ -23,3 +23,6 @@ rust-project.json
 
 # JetBrains
 .idea
+
+njord_cli/njord.toml
+njord_cli/migrations/
