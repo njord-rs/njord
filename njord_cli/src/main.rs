@@ -52,8 +52,24 @@ fn main() {
         .get_matches();
 
     // match a given command/subcommand and run corresponding function
-    match cmd.subcommand_name() {
-        Some("migration") => generate(), // we should not run generate here, we should have another match statement to check the next subcommand which is generate/run/rollback
+    match cmd.subcommand() {
+        Some(("migration", sub_matches)) => {
+            match sub_matches.subcommand() {
+                Some(("generate", _)) => {
+                    generate()
+                }
+                Some(("run", _)) => {
+                    run()
+                }
+                Some(("rollback", _)) => {
+                    rollback()
+                }
+                _ => {
+                    eprintln!("Invalid subcommand for 'migration'. Use 'njord migration --help' for usage information.");
+                    std::process::exit(1);
+                }
+            }
+        }
         _ => {
             eprintln!("Invalid command. Use 'njord --help' for usage information.");
             std::process::exit(1);
