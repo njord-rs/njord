@@ -1,4 +1,6 @@
 use clap::ArgMatches;
+use std::fs;
+use std::path::Path;
 
 use crate::migration::{generate, rollback, run};
 
@@ -27,6 +29,26 @@ use crate::migration::{generate, rollback, run};
 /// - A `njord.toml` configuration file will be created with default settings.
 pub fn handle_setup() {
     println!("Setting up Njord with an empty migrations directory and a njord.toml config file...");
+
+    // include content of njord.toml template
+    let toml_content = include_str!("../templates/njord.toml");
+
+    // determine the current dir where njord is running from
+    if let Ok(current_dir) = std::env::current_dir() {
+        let destination_path = current_dir.join("njord.toml");
+
+        if !destination_path.exists() {
+            if let Err(err) = fs::write(&destination_path, toml_content) {
+                eprintln!("Error writing njord.toml: {}", err)
+            } else {
+                println!("njord.toml successfully copied to the current directory.")
+            }
+        } else {
+            println!("njord.toml already exists in the current directory. Skipping copy.")
+        }
+    } else {
+        eprintln!("Error determining the current directory.")
+    }
 }
 
 /// Handles the "migration" subcommand based on the provided `ArgMatches`.
