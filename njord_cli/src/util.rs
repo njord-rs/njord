@@ -1,5 +1,6 @@
 use core::fmt;
 use std::error::Error as StdError;
+use std::num::ParseIntError;
 use std::path::Path;
 use std::{env, fs};
 use toml::Value as Config;
@@ -101,8 +102,11 @@ pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::
 
     match max_version {
         Some(max_version) => {
-            let next_version: u64 = max_version.parse()?;
-            Ok(format!("{:014}", next_version + 1))
+            let next_version: Result<u64, ParseIntError> = max_version.parse();
+            match next_version {
+                Ok(n) => Ok(format!("{:014}", n + 1)),
+                Err(err) => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, err)),
+            }
         }
         None => Ok("00000000000001".to_string()), // initial version
     }
