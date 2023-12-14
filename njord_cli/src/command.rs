@@ -11,14 +11,6 @@ use crate::migration::{generate, rollback, run};
 /// migrations directory and a `njord.toml` configuration file. This allows users to start fresh
 /// with an initial setup for managing database migrations.
 ///
-/// # Example
-///
-/// ```rust
-/// use njord_cli::handle_setup;
-///
-/// handle_setup();
-/// ```
-///
 /// # Panics
 ///
 /// This function does not panic.
@@ -87,19 +79,6 @@ pub fn handle_setup() {
 /// * `file_name` - A string slice representing the name of the migration file.
 /// * `content` - A string slice containing the content to be written to the migration file.
 ///
-/// # Example
-///
-/// ```rust
-/// use std::path::Path;
-/// use my_njord_module::write_migration_file;
-///
-/// let migrations_path = Path::new("migrations/00000000000000_diesel_initial_setup");
-/// let file_name = "up.sql";
-/// let content = "/* SQL statements for the 'up' migration */";
-///
-/// write_migration_file(&migrations_path, file_name, content);
-/// ```
-///
 /// # Errors
 ///
 /// If there is an error writing to the file, an error message is printed to standard error
@@ -126,17 +105,6 @@ fn write_migration_file(migrations_path: &Path, file_name: &str, content: &str) 
 /// # Arguments
 ///
 /// * `sub_matches` - The `ArgMatches` object containing subcommand-specific matches.
-///
-/// # Example
-///
-/// ```rust
-/// use clap::App;
-/// use crate::handle_migration_subcommand;
-///
-/// let matches = App::new("MyApp").get_matches();
-/// let sub_matches = matches.subcommand_matches("migration").unwrap();
-/// handle_migration_subcommand(sub_matches);
-/// ```
 pub fn handle_migration_subcommand(sub_matches: &ArgMatches) {
     match sub_matches.subcommand() {
         Some(("generate", generate_matches)) => {
@@ -172,18 +140,6 @@ pub fn handle_migration_subcommand(sub_matches: &ArgMatches) {
 ///
 /// * `cmd` - The name of the command.
 /// * `sub_matches` - The `ArgMatches` object containing command-specific matches.
-///
-/// # Example
-///
-/// ```rust
-/// use clap::App;
-/// use crate::handle_command;
-///
-/// let matches = App::new("MyApp").get_matches();
-/// let cmd = "migration";
-/// let sub_matches = matches.subcommand_matches(cmd).unwrap();
-/// handle_command(cmd, sub_matches);
-/// ```
 pub fn handle_command(cmd: &str, sub_matches: &ArgMatches) {
     match cmd {
         "migration" => handle_migration_subcommand(sub_matches),
