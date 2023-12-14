@@ -1,6 +1,6 @@
-use std::path::Path;
-
-use crate::util::{create_migration_files, get_next_migration_version, read_config};
+use crate::util::{
+    create_migration_files, get_migrations_directory_path, get_next_migration_version, read_config,
+};
 
 /// Generates migration files with the specified name, environment, and dry-run option.
 ///
@@ -17,25 +17,28 @@ use crate::util::{create_migration_files, get_next_migration_version, read_confi
 /// ```
 pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&String>) {
     if let Ok(config) = read_config() {
-        let migrations_dir = Path::new(&config.migrations_directory.dir);
+        if let Some(migrations_dir) = get_migrations_directory_path(&config) {
+            // get the next migration version based on existing ones
+            if let Ok(version) = get_next_migration_version(&migrations_dir) {
+                let migration_name = name.map(|s| s.as_str()).unwrap_or("example_name");
 
-        // get the next migration version based on existing ones
-        if let Ok(version) = get_next_migration_version(migrations_dir) {
-            let migration_name = name.unwrap_or(&"example_name".to_string());
+                // create migration files
+                if let Err(err) = create_migration_files(&migrations_dir, &version, migration_name)
+                {
+                    eprintln!("Error creating migration files: {}", err);
+                    return;
+                }
 
-            // create migration files
-            if let Err(err) = create_migration_files(migrations_dir, &version, &migration_name) {
-                eprintln!("Error creating migration files: {}", err);
-                return;
+                println!("Migration files generated successfully:");
+                println!("Version: {}", version);
+                println!("Name: {}", migration_name);
+                println!("Environment: {:?}", env);
+                println!("Dry-run: {:?}", dry_run);
+            } else {
+                eprintln!("Error determining next migration version.");
             }
-
-            println!("Migration files generated successfully:");
-            println!("Version: {}", version);
-            println!("Name: {}", migration_name);
-            println!("Environment: {:?}", env);
-            println!("Dry-run: {:?}", dry_run);
         } else {
-            eprintln!("Error determining next migration version.");
+            eprintln!("Error determining migrations directory.");
         }
     } else {
         eprintln!("Error reading configuration file.");
