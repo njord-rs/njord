@@ -8,8 +8,7 @@
 [![njord_derive: rustc 1.74+](https://img.shields.io/badge/njord_derive-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
-
-Lightweight, Extensible ORM library and Query Builder for Rust.
+A lightweight and extensible ORM framework for Rust.
 
 ## Getting Help
 
