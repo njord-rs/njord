@@ -10,4 +10,4 @@ Versions currently supported. Will update this file once the project matures.
 
 ## Reporting a Vulnerability
 
-If you find any vulnerability, please report them as an issue here or on Twitter as a DM: https://twitter.com/mjovanc.
+If you find any vulnerability, please report them as an issue here or on [Discord](https://discord.gg/2uppTzjUHE).
