@@ -25,7 +25,6 @@ rust-project.json
 .idea
 
 # Rules for njord_cli
-migrations/
 njord.toml
 njord_cli/njord.toml
 njord_cli/migrations/

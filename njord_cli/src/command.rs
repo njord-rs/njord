@@ -32,6 +32,38 @@ pub fn handle_setup() {
         include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/down.sql"),
     );
 
+    #[cfg(feature = "postgres")]
+    let (up_sql_content, down_sql_content) = (
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/postgres/up.sql"),
+        include_str!(
+            "../templates/migrations/00000000000000_njord_initial_setup/postgres/down.sql"
+        ),
+    );
+
+    #[cfg(feature = "mysql")]
+    let (up_sql_content, down_sql_content) = (
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/mysql/up.sql"),
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/mysql/down.sql"),
+    );
+
+    #[cfg(feature = "mariadb")]
+    let (up_sql_content, down_sql_content) = (
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/mariadb/up.sql"),
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/mariadb/down.sql"),
+    );
+
+    #[cfg(feature = "oracle")]
+    let (up_sql_content, down_sql_content) = (
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/oracle/up.sql"),
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/oracle/down.sql"),
+    );
+
+    #[cfg(feature = "mssql")]
+    let (up_sql_content, down_sql_content) = (
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/mssql/up.sql"),
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/mssql/down.sql"),
+    );
+
     // determine the current dir where njord is running from
     if let Ok(current_dir) = std::env::current_dir() {
         let destination_path = current_dir.join("njord.toml");
