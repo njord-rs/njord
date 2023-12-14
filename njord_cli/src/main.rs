@@ -1,5 +1,6 @@
 mod migration;
 mod command;
+mod util;
 use clap::Arg;
 use command::handle_command;
 
