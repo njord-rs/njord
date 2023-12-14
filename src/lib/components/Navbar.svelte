@@ -12,7 +12,7 @@
         <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"> <img src="logo.png" alt="Logo" class="w-12" /> Njord</a>
         <div class="flex gap-6">
           <a target="_blank" href="https://x.com/njord_rs">News</a>
-          <a target="_blank" href="http://docs.rs/njord/0.1.0/njord">Docs</a>
+          <a target="_blank" href="https://docs.rs/njord/latest/njord/">Docs</a>
           <a target="_blank" href="https://discord.com/invite/2uppTzjUHE">Discord</a>
         </div>
        
@@ -57,7 +57,7 @@
           }}>News</a
         >
         <a
-          href="http://docs.rs/njord/0.1.0/njord"
+          href="https://docs.rs/njord/latest/njord/"
           on:click={() => {
             openMenu = !openMenu;
           }}>Docs</a
