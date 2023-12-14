@@ -56,8 +56,8 @@ pub fn handle_setup() {
                 return;
             }
 
-            write_migration_file(&migrations_path, "up.sql", sqlite_up_sql_content);
-            write_migration_file(&migrations_path, "down.sql", sqlite_down_sql_content);
+            write_migration_file(&migrations_path, "up.sql", up_sql_content);
+            write_migration_file(&migrations_path, "down.sql", down_sql_content);
         } else {
             println!("Initial migration files already exist. Skipping creation.");
         }
