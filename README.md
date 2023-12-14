@@ -14,7 +14,7 @@ A lightweight and extensible ORM framework for Rust.
 
 Are you having trouble with Njord? We want to help!
 
-- Read through the documentation on our [docs](https://docs.rs/njord/0.1.0/njord/).
+- Read through the documentation on our [docs](https://docs.rs/njord/latest/njord/).
 
 - If you are upgrading, read the release notes for upgrade instructions and "new and noteworthy" features.
 
