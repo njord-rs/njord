@@ -1,14 +1,34 @@
 use core::fmt;
+use serde::Deserialize;
 use std::error::Error as StdError;
 use std::num::ParseIntError;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::{env, fs};
-use toml::Value as Config;
+use toml::Value as TomlConfig;
 
 #[derive(Debug)]
-enum ConfigError {
+pub enum ConfigError {
     Io(std::io::Error),
     Toml(toml::de::Error),
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+pub struct Config {
+    migrations_directory: Option<MigrationsDirectory>,
+    schema_file: Option<SchemaFile>,
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+pub struct MigrationsDirectory {
+    dir: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+pub struct SchemaFile {
+    file: String,
 }
 
 impl fmt::Display for ConfigError {
@@ -46,7 +66,7 @@ impl From<toml::de::Error> for ConfigError {
 /// Returns a `ConfigError` if there is an issue with reading the file or
 /// parsing its content.
 ///
-pub fn read_config() -> Result<Config, ConfigError> {
+pub fn read_config() -> Result<TomlConfig, ConfigError> {
     let current_dir = env::current_dir()?;
 
     // construct the path to njord.toml in the root of the repository
@@ -62,7 +82,7 @@ pub fn read_config() -> Result<Config, ConfigError> {
     };
 
     // parse the content
-    let config: Config = match toml::from_str(&config_content) {
+    let config: TomlConfig = match toml::from_str(&config_content) {
         Ok(value) => value,
         Err(err) => {
             eprintln!("Error parsing config.toml: {}", err);
@@ -144,4 +164,14 @@ pub fn create_migration_files(
     fs::File::create(down_sql_path)?;
 
     Ok(())
+}
+
+pub fn get_migrations_directory_path(config: &TomlConfig) -> Option<PathBuf> {
+    let migrations_dir = config
+        .get("migrations_directory") // Adjust this based on the actual structure of your toml::Value
+        .and_then(|value| value.get("dir"))
+        .and_then(|dir| dir.as_str())
+        .map(PathBuf::from);
+
+    migrations_dir
 }
