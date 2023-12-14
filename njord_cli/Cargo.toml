@@ -17,3 +17,4 @@ doc = false
 
 [dependencies]
 clap = { version = "4.4.11", features = ["cargo", "derive"] }
+toml = "0.8.8"

@@ -1,3 +1,7 @@
+use std::path::Path;
+
+use crate::util::{create_migration_files, get_next_migration_version, read_config};
+
 /// Generates migration files with the specified name, environment, and dry-run option.
 ///
 /// # Arguments
@@ -12,10 +16,30 @@
 /// generate(Some("example_name"), Some("development"), Some("true"));
 /// ```
 pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&String>) {
-    println!(
-        "Generating migration file '{:?}' env '{:?}', dry-run: {:?}",
-        name, env, dry_run
-    );
+    if let Ok(config) = read_config() {
+        let migrations_dir = Path::new(&config.migrations_directory.dir);
+
+        // get the next migration version based on existing ones
+        if let Ok(version) = get_next_migration_version(migrations_dir) {
+            let migration_name = name.unwrap_or(&"example_name".to_string());
+
+            // create migration files
+            if let Err(err) = create_migration_files(migrations_dir, &version, &migration_name) {
+                eprintln!("Error creating migration files: {}", err);
+                return;
+            }
+
+            println!("Migration files generated successfully:");
+            println!("Version: {}", version);
+            println!("Name: {}", migration_name);
+            println!("Environment: {:?}", env);
+            println!("Dry-run: {:?}", dry_run);
+        } else {
+            eprintln!("Error determining next migration version.");
+        }
+    } else {
+        eprintln!("Error reading configuration file.");
+    }
 }
 
 /// Runs migration files with the specified environment and log level.
