@@ -16,6 +16,9 @@ path = "src/main.rs"
 doc = false
 
 [features]
+default = [
+    "sqlite",
+] # to disable this the user needs to run with the flag --no-default-features
 sqlite = []
 
 
