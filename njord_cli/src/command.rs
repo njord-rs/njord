@@ -60,7 +60,7 @@ pub fn handle_setup() {
             write_migration_file(&migrations_path, "up.sql", sqlite_up_sql_content);
             write_migration_file(&migrations_path, "down.sql", sqlite_down_sql_content);
         } else {
-            println!("Migration files already exist. Skipping creation.");
+            println!("Initial migration files already exist. Skipping creation.");
         }
     } else {
         eprintln!("Error determining the current directory.")
