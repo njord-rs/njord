@@ -25,13 +25,12 @@ pub fn handle_setup() {
     // include content of njord.toml template
     let toml_content = include_str!("../templates/njord.toml");
 
-    //TODO: use a different .sql file depending on what connector using (Sqlite, MySQL, PostgreSQL etc)
-
     // include the content of up.sql and down.sql templates
-    let sqlite_up_sql_content =
-        include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/up.sql");
-    let sqlite_down_sql_content =
-        include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/down.sql");
+    #[cfg(feature = "sqlite")]
+    let (up_sql_content, down_sql_content) = (
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/up.sql"),
+        include_str!("../templates/migrations/00000000000000_njord_initial_setup/sqlite/down.sql"),
+    );
 
     // determine the current dir where njord is running from
     if let Ok(current_dir) = std::env::current_dir() {
