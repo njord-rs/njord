@@ -15,6 +15,11 @@ name = "njord"
 path = "src/main.rs"
 doc = false
 
+[features]
+sqlite = []
+#postgres = []
+
+
 [dependencies]
 clap = { version = "4.4.11", features = ["cargo", "derive"] }
 toml = "0.8.8"
