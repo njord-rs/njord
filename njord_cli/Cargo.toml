@@ -17,7 +17,6 @@ doc = false
 
 [features]
 sqlite = []
-#postgres = []
 
 
 [dependencies]
