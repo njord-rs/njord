@@ -33,7 +33,18 @@ impl From<toml::de::Error> for ConfigError {
     }
 }
 
-/// Read the configuration from the file.
+/// Reads the configuration from the file.
+///
+/// This function reads the content of the `njord.toml` file located in the root
+/// of the repository, parses it into a `Config` struct, and returns the result.
+/// If any error occurs during the file reading or parsing, it returns a
+/// `ConfigError`.
+///
+/// # Errors
+///
+/// Returns a `ConfigError` if there is an issue with reading the file or
+/// parsing its content.
+///
 pub fn read_config() -> Result<Config, ConfigError> {
     let current_dir = env::current_dir()?;
 
@@ -61,7 +72,22 @@ pub fn read_config() -> Result<Config, ConfigError> {
     Ok(config)
 }
 
-/// Get the next migration version based on the existing ones in the migrations directory.
+/// Gets the next migration version based on the existing ones in the migrations directory.
+///
+/// This function reads the existing migration versions from the specified
+/// `migrations_dir`, determines the maximum version, increments it, and
+/// returns the next migration version as a string.
+///
+/// # Arguments
+///
+/// * `migrations_dir` - The path to the directory containing existing
+///   migration versions.
+///
+/// # Errors
+///
+/// Returns a `std::io::Error` if there is an issue reading the existing
+/// migration versions.
+///
 pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::io::Error> {
     let entries = fs::read_dir(migrations_dir)?;
     let max_version = entries
@@ -82,7 +108,22 @@ pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::
     }
 }
 
-/// Create migration files in the specified directory.
+/// Creates migration files in the specified directory.
+///
+/// This function creates migration files in the specified directory based on
+/// the provided `version` and `name`. It creates two files: `up.sql` and
+/// `down.sql` within the migration directory.
+///
+/// # Arguments
+///
+/// * `migrations_dir` - The path to the directory where migration files will be created.
+/// * `version` - The version of the migration.
+/// * `name` - The name of the migration.
+///
+/// # Errors
+///
+/// Returns a `std::io::Error` if there is an issue creating the migration files.
+///
 pub fn create_migration_files(
     migrations_dir: &Path,
     version: &str,
