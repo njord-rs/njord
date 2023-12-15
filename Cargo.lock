@@ -249,6 +249,10 @@ dependencies = [
 [[package]]
 name = "njord_example"
 version = "0.1.0"
+dependencies = [
+ "njord",
+ "njord_derive",
+]
 
 [[package]]
 name = "once_cell"
