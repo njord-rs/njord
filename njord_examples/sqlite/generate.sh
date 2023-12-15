@@ -5,5 +5,5 @@
 # Author: Marcus Cvjeticanin
 # Date: December 15, 2023
 # -----------------------------------------------------------------------------
-cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration generate update_users --env=development --dry-run
-cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration generate update_users --env=development
+cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration generate -- --name=update_users -- --env=development --dry-run
+cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration generate -- --name=update_users -- --env=development

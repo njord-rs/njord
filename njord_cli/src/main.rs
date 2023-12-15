@@ -16,6 +16,10 @@ fn main() {
                 .subcommand(
                     clap::command!("generate")
                         .about("Generates a new migration file with the specified name.")
+
+                        .arg(Arg::new("name")
+                            .help("Specifies the name of the schema change.")
+                            .value_name("name"))
                         
                         .arg(Arg::new("env")
                             .help("Specifies the environment (e.g., development, test, staging, production).")
