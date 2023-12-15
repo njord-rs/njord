@@ -237,6 +237,37 @@ To rollback to a specific change we can to that by adding the flag `--to` with i
 njord rollback --env=development --to=00000000000000
 ```
 
+## Usage
+
+So how can we establish a connection and actually select or insert data to our database? Let's go through it.
+
+### Establish a connection
+
+#### SQlite
+
+To establish a connection we first need to call
+
+```rust
+fn main () {
+    let db_name = "njord.db"
+    match sqlite::open(db_name) {
+        Ok(conn) => {
+            println!("Database opened successfully!");
+            
+            // additional logic when we are connected...
+        }
+        Err(err) => eprintln!("Error opening the database: {}", err),
+    }
+}
+```
+
+### Insert data
+
+#### SQlite
+
+### Select data
+
+#### SQlite
 
 ## Getting Help
 
