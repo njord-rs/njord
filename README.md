@@ -1,6 +1,6 @@
 <img align="right" width="128" height="128" alt="njord" src="https://github.com/njord-rs/resources/raw/master/logo.png">
 
-# Njord
+# Njord <!-- omit in toc -->
 
 ![build](https://img.shields.io/github/actions/workflow/status/njord-rs/njord/ci.yml?branch=master)
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
@@ -9,6 +9,28 @@
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
 A lightweight and extensible ORM framework for Rust.
+
+# Table of Contents <!-- omit in toc -->
+- [Supported Databases](#supported-databases)
+- [Getting Started](#getting-started)
+  - [Initializing a new project](#initializing-a-new-project)
+  - [Installing Njord CLI](#installing-njord-cli)
+  - [Setup Njord for your project](#setup-njord-for-your-project)
+  - [Add a schema file](#add-a-schema-file)
+  - [Generate a new migration](#generate-a-new-migration)
+  - [Apply new schema changes](#apply-new-schema-changes)
+  - [Rollback schema changes](#rollback-schema-changes)
+- [Usage](#usage)
+  - [SQlite](#sqlite)
+    - [Establish a connection](#establish-a-connection)
+    - [Insert data](#insert-data)
+    - [Select data](#select-data)
+- [Getting Help](#getting-help)
+- [Reporting Issues](#reporting-issues)
+- [Contributors](#contributors)
+- [License](#license)
+
+
 
 ## Supported Databases
 
@@ -251,9 +273,9 @@ njord rollback --env=development --to=00000000000000
 
 So how can we establish a connection and actually select or insert data to our database? Let's go through it. Note that these examples might be outdated, so dont treat it as a source of truth.
 
-### Establish a connection
+### SQlite 
 
-#### SQlite
+#### Establish a connection
 
 To establish a connection we first need to call the `sqlite::open()` function and use it with a match statement.
 
@@ -272,9 +294,7 @@ fn main () {
 }
 ```
 
-### Insert data
-
-#### SQlite
+#### Insert data
 
 ```rust
 fn main () {
@@ -299,9 +319,7 @@ fn main () {
 }
 ```
 
-### Select data
-
-#### SQlite
+#### Select data
 
 ```rust
 use njord::table::Table;
