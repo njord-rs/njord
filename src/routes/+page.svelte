@@ -37,68 +37,8 @@
             <Alert></Alert>
          </Box>
         </div>
-    <div class="flex flex-col gap-6">
-        <div>
-            <p class="text-lg mb-4">Getting started</p>
-            <div class="relative">
-                <button class="hover:bg-zinc-800 p-2 rounded-sm absolute top-3 right-3" on:click={() => {copy("code-0")}} aria-label="Copy code"><Copy></Copy></button>
-                <textarea id="code-0" class="px-6 rounded-sm bg-zinc-950 py-6 w-full overflow-hidden lg:h-56 h-64 resize-none outline-none font-secondary" spellcheck="false" readonly>
-[dependencies]
-
-# The core APIs, including the Table trait. Always
-# required when using njord. The "derive" feature is only required when
-# using #[derive(Table)] to make njord work with structs
-# and enums defined in your crate.
-njord = {'{'} version = "0.1.0", features = ["derive"] {'}'}
-                </textarea>
-            </div>
-        </div>
-
-        <div>
-            <p class="text-lg mb-4">Setup connection</p>
-            <div class="relative">
-                <button class="hover:bg-zinc-800 p-2 rounded-sm absolute top-3 right-3" on:click={() => {copy("code-1")}} aria-label="Copy code"><Copy></Copy></button>
-                <textarea id="code-1" class="px-6 rounded-sm bg-zinc-950 py-6 w-full overflow-hidden lg:h-36 h-40 resize-none outline-none font-secondary" spellcheck="false" readonly>
-let table_row: Posts = Posts {'{'}
-    title: "A post title".to_string(),
-    description: "Some description for for a post".to_string(),
-{'}'};
-                </textarea>
-            </div>
-        </div>
-    
-        <div>
-            <p class="text-lg mb-4">Initialize database with tables</p>
-            <div class="relative">
-                <button class="hover:bg-zinc-800 p-2 rounded-sm absolute top-3 right-3" on:click={() => {copy("code-1")}} aria-label="Copy code"><Copy></Copy></button>
-                <textarea id="code-2" class="px-6 rounded-sm bg-zinc-950 py-6 w-full overflow-hidden lg:h-44 h-52 resize-none outline-none font-secondary" spellcheck="false" readonly>
-let posts_table = Box::<Posts>::default();
-let categories_table = Box::<Categories>::default();
-        
-let mut tables: Vec<Box<dyn Table>> = vec![posts_table, categories_table];
-sqlite::init(conn, tables);
-            </textarea>
-            </div>
-        </div>
-    
-        <div>
-            <p class="text-lg mb-4">Insert data to table</p>
-            <div class="relative">
-                <button class="hover:bg-zinc-800 p-2 rounded-sm absolute top-3 right-3" on:click={() => {copy("code-1")}} aria-label="Copy code"><Copy></Copy></button>
-                <textarea id="code-3" class="px-6 rounded-sm bg-zinc-950 py-6 w-full overflow-hidden lg:h-48 h-52 resize-none outline-none font-secondary" spellcheck="false" readonly>
-let table_row: Posts = Posts {'{'}
-    title: "A post title".to_string(),
-    description: "Some description for for a post".to_string(),
-{'}'};
-    
-sqlite::insert(conn, &table_row);
-            </textarea>
-            </div>
-        </div>
-    
     </div>
         
-</div>
 </div>
 
 <style>
