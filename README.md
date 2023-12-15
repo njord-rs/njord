@@ -60,6 +60,17 @@ migrations/00000000000000_njord_initial_setup/down.sql
 
 We also get a `njord.toml` file which is the configuration file where to load our `schema.rs` file and where to store our migrations directory. Default for the schema file is under `src/schema.rs` and migrations in the root directory. 
 
+```toml
+# For documentation on how to configure this file,
+# see https://njord.rs
+
+[schema]
+file = "src/schema.rs"
+
+[migrations_directory]
+dir = "migrations"
+```
+
 ## Add a schema file
 
 Now we are going to define our schema file that we will create under `src/schema.rs`. We will store basically our structs that will map against the database. 
