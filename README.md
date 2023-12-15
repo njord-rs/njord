@@ -239,17 +239,18 @@ njord rollback --env=development --to=00000000000000
 
 ## Usage
 
-So how can we establish a connection and actually select or insert data to our database? Let's go through it.
+So how can we establish a connection and actually select or insert data to our database? Let's go through it. Note that these examples might be outdated, so dont treat it as a source of truth.
 
 ### Establish a connection
 
 #### SQlite
 
-To establish a connection we first need to call
+To establish a connection we first need to call the `sqlite::open()` function and use it with a match statement.
 
 ```rust
 fn main () {
-    let db_name = "njord.db"
+    let db_name = "njord.db";
+
     match sqlite::open(db_name) {
         Ok(conn) => {
             println!("Database opened successfully!");
@@ -265,9 +266,95 @@ fn main () {
 
 #### SQlite
 
+```rust
+fn main () {
+    let db_name = "njord.db";
+
+    match sqlite::open(db_name) {
+        Ok(conn) => {
+            println!("Database opened successfully!");
+
+            let user = User {
+                user_id: 1,
+                username: String::from("john_doe"),
+                email: String::from("john@example.com"),
+                address: String::from("123 Main St"),
+            };
+            
+            let result = sqlite::insert(conn, &user);
+            assert!(result.is_ok());
+        }
+        Err(err) => eprintln!("Error opening the database: {}", err),
+    }
+}
+```
+
 ### Select data
 
 #### SQlite
+
+```rust
+use njord::table::Table;
+use njord_derive::Table;
+
+mod schema;
+use schema::User;
+
+fn main () {
+    let db_name = "njord.db";
+
+    match sqlite::open(db_name) {
+        Ok(conn) => {
+            println!("Database opened successfully!");
+            
+            // SELECT
+            let columns = vec![
+                "user_id".to_string(),
+                "username".to_string(),
+                "email".to_string(),
+                "address".to_string(),
+            ];
+
+            // WHERE
+            let where_condition = Condition::Eq(
+                "username".to_string(),
+                "john_doe".to_string(),
+            );
+
+            // GROUP BY
+            let group_by = vec!["username".to_string(), "address".to_string()];
+
+            // ORDER BY
+            let mut order_by = HashMap::new();
+            order_by.insert(vec!["user_id".to_string()], "ASC".to_string());
+            order_by.insert(vec!["email".to_string()], "DESC".to_string());
+            
+            // HAVING
+            let having_condition = Condition::Gt("user_id".to_string(), "1".to_string());
+
+            // Build the query and return a Result<User>
+            // We need to pass the struct User with the Default trait in .from()
+            let result = sqlite::select(conn, columns)
+                .from(User::default())
+                .where_clause(where_condition)
+                .order_by(order_by)
+                .group_by(group_by)
+                .having(having_condition)
+                .build();
+
+            // Match the result
+            match result {
+                Ok(result) => {
+                    assert_eq!(result.len(), 1);
+                }
+                Err(error) => panic!("Failed to SELECT: {:?}", error),
+            };
+            
+        }
+        Err(err) => eprintln!("Error opening the database: {}", err),
+    }
+}
+```
 
 ## Getting Help
 
