@@ -28,8 +28,7 @@ Now, let’s add Njord to our dependencies. We’re also going to use a tool cal
 # The core APIs, including the Table trait. 
 # using #[derive(Table)] to make njord work with structs
 # and enums defined in your crate.
-njord = "0.1.0"
-njord_derive = "0.1.0"
+njord = { version = "<version>", features = ["sqlite"] }
 dotenvy = "0.15"
 ```
 
@@ -41,7 +40,7 @@ Njord provides a separate CLI tool to help manage your project. Since it’s a s
 cargo install njord --no-default-features --features "sqlite"
 ```
 
-SQlite is per default, so the above command only illustrates how you could use a different feature such as `postgres`, `mysql`, `mariadb`, `oracle` and `mssql` etc.
+SQlite is per default, so the above command only illustrates how you could use a different feature such as `postgres`, `mysql`, `mariadb`, `oracle` and `mssql` etc. Note that these others are not done yet. Will come in future release!
 
 ### Setup Njord for your project
 
