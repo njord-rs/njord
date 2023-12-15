@@ -104,7 +104,7 @@ pub struct Order {
 }
 ```
 
-Now that we have that in place, we need to create the SQL for setting this up in the database so go to `migrations/00000000000000_njord_initial_setup` and open up first `up.sql` and add:
+Now that we have that in place, we need to create the SQL for setting this up in the database so go to `migrations/00000000000000_njord_initial_setup` and open up first `up.sql` and add the following.
 
 ```sql
 -- users table
@@ -152,10 +152,65 @@ DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
 ```
 
-Now we are going to generate a new migration so we can
+Now we are going to generate a new migration so we can update existing schema.
 
 ```sh
 njord migration generate --name=update_something -- --env=development
+```
+
+Now we should have the following in our `migrations` directory.
+
+```
+migrations/00000000000001_update_something/up.sql
+migrations/00000000000001_update_something/down.sql
+```
+
+Let's make a change. Open up the `up.sql` file and add the following.
+
+```sql
+-- products table: Add discount column
+ALTER TABLE products ADD COLUMN discount REAL;
+```
+
+And we also need to define how we can revert these changes by adding the following.
+
+```sql
+-- products table: Remove discount column
+CREATE TEMPORARY TABLE products_backup AS SELECT * FROM products;
+
+-- Drop original products table
+DROP TABLE products;
+
+-- Recreate products table without the discount column
+CREATE TABLE products (
+    product_id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    price REAL NOT NULL,
+    stock_quantity INTEGER NOT NULL,
+    category TEXT NOT NULL
+);
+
+-- Restore data from backup
+INSERT INTO products SELECT * FROM products_backup;
+
+-- Drop temporary backup table
+DROP TABLE products_backup;
+```
+
+Finally we need to modify our `schema.rs` file so it will map correctly.
+
+```rust
+#[derive(Table, Default)]
+pub struct Product {
+    product_id: usize,
+    name: String,
+    description: String,
+    price: f64,
+    stock_quantity: usize,
+    category: String,
+    discount: Option<f64>,  // We added a new column here
+}
 ```
 
 ### Apply new schema changes
