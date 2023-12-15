@@ -270,16 +270,16 @@ fn main () {
 fn main () {
     let db_name = "njord.db";
 
+    let user = User {
+        user_id: 1,
+        username: String::from("john_doe"),
+        email: String::from("john@example.com"),
+        address: String::from("123 Main St"),
+    };
+
     match sqlite::open(db_name) {
         Ok(conn) => {
             println!("Database opened successfully!");
-
-            let user = User {
-                user_id: 1,
-                username: String::from("john_doe"),
-                email: String::from("john@example.com"),
-                address: String::from("123 Main St"),
-            };
             
             let result = sqlite::insert(conn, &user);
             assert!(result.is_ok());
