@@ -303,35 +303,35 @@ use schema::User;
 fn main () {
     let db_name = "njord.db";
 
+    // SELECT
+    let columns = vec![
+        "user_id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
+
+    // WHERE
+    let where_condition = Condition::Eq(
+        "username".to_string(),
+        "john_doe".to_string(),
+    );
+
+    // GROUP BY
+    let group_by = vec!["username".to_string(), "address".to_string()];
+
+    // ORDER BY
+    let mut order_by = HashMap::new();
+    order_by.insert(vec!["user_id".to_string()], "ASC".to_string());
+    order_by.insert(vec!["email".to_string()], "DESC".to_string());
+    
+    // HAVING
+    let having_condition = Condition::Gt("user_id".to_string(), "1".to_string());
+
     match sqlite::open(db_name) {
         Ok(conn) => {
             println!("Database opened successfully!");
             
-            // SELECT
-            let columns = vec![
-                "user_id".to_string(),
-                "username".to_string(),
-                "email".to_string(),
-                "address".to_string(),
-            ];
-
-            // WHERE
-            let where_condition = Condition::Eq(
-                "username".to_string(),
-                "john_doe".to_string(),
-            );
-
-            // GROUP BY
-            let group_by = vec!["username".to_string(), "address".to_string()];
-
-            // ORDER BY
-            let mut order_by = HashMap::new();
-            order_by.insert(vec!["user_id".to_string()], "ASC".to_string());
-            order_by.insert(vec!["email".to_string()], "DESC".to_string());
-            
-            // HAVING
-            let having_condition = Condition::Gt("user_id".to_string(), "1".to_string());
-
             // Build the query and return a Result<User>
             // We need to pass the struct User with the Default trait in .from()
             let result = sqlite::select(conn, columns)
