@@ -1,9 +1,9 @@
 #!/bin/bash
 # -----------------------------------------------------------------------------
-# Script: generate.sh
-# Description: Generate new migration files application with SQLite support.
+# Script: rollback.sh
+# Description: Rollback migration changes to specified change with SQLite support.
 # Author: Marcus Cvjeticanin
 # Date: December 15, 2023
 # -----------------------------------------------------------------------------
 
-cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration generate update_users
+cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration rollback
