@@ -6,4 +6,4 @@
 # Date: December 15, 2023
 # -----------------------------------------------------------------------------
 
-cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration run
+cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration run --env=development --log-level=debug

@@ -6,4 +6,4 @@
 # Date: December 15, 2023
 # -----------------------------------------------------------------------------
 
-cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration rollback --to=00000000000000
+cargo run --manifest-path=../../njord_cli/Cargo.toml -- migration rollback --env=development --to=00000000000000
