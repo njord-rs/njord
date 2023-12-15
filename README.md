@@ -10,7 +10,7 @@
 
 A lightweight and extensible ORM framework for Rust.
 
-# Table of Contents <!-- omit in toc -->
+## Table of Contents <!-- omit in toc -->
 - [Supported Databases](#supported-databases)
 - [Getting Started](#getting-started)
   - [Initializing a new project](#initializing-a-new-project)
