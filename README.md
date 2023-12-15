@@ -27,6 +27,7 @@ A lightweight and extensible ORM framework for Rust.
     - [Select data](#select-data)
 - [Getting Help](#getting-help)
 - [Reporting Issues](#reporting-issues)
+- [Contributing](#contributing)
 - [Contributors](#contributors)
 - [License](#license)
 
@@ -401,6 +402,10 @@ Njord uses GitHub’s integrated issue tracking system to record bugs and featur
 - If you need to paste code or include a stack trace, use Markdown. ``` escapes before and after your text.
 
 - If possible, try to create a test case or project that replicates the problem and attach it to the issue.
+
+## Contributing
+
+Before contributing, please read the [contribution](https://github.com/njord-rs/njord/blob/master/CONTRIBUTING.md) guide for useful information how to get started with Njord as well as what should be included when submitting a contribution to the project.
 
 ## Contributors
 
