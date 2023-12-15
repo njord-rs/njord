@@ -1,7 +1,7 @@
 #!/bin/bash
 # -----------------------------------------------------------------------------
 # Script: setup.sh
-# Description: Build and run the njord_cli application with SQLite support.
+# Description: Build and setup the njord project with SQLite support.
 # Author: Marcus Cvjeticanin
 # Date: December 15, 2023
 # -----------------------------------------------------------------------------
