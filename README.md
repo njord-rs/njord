@@ -10,6 +10,17 @@
 
 A lightweight and extensible ORM framework for Rust.
 
+## Supported Databases
+
+| Database   | Support   | Status                |
+|------------|-----------|-----------------------|
+| SQLite     | ✅        | Currently supported.  |
+| PostgreSQL | ❌        | Not supported, help us impelement it?        |
+| MySQL      | ❌        | Not supported, help us impelement it?        |
+| MariaDB    | ❌        | Not supported, help us impelement it?        |
+| Oracle     | ❌        | Not supported, help us impelement it?        |
+| MSSQL      | ❌        | Not supported, help us impelement it?        |
+
 ## Getting Started
 
 ### Initializing a new project
