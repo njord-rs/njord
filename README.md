@@ -332,9 +332,9 @@ fn main () {
         Ok(conn) => {
             println!("Database opened successfully!");
             
-            // Build the query and return a Result<User>
+            // Build the query
             // We need to pass the struct User with the Default trait in .from()
-            let result = sqlite::select(conn, columns)
+            let result: Result<User> = sqlite::select(conn, columns)
                 .from(User::default())
                 .where_clause(where_condition)
                 .order_by(order_by)
