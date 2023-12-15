@@ -71,7 +71,7 @@ file = "src/schema.rs"
 dir = "migrations"
 ```
 
-## Add a schema file
+### Add a schema file
 
 Now we are going to define our schema file that we will create under `src/schema.rs`. We will store basically our structs that will map against the database. 
 
