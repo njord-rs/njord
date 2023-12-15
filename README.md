@@ -152,6 +152,8 @@ DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
 ```
 
+### Generate a new migration
+
 Now we are going to generate a new migration so we can update existing schema.
 
 ```sh
