@@ -1,0 +1,8 @@
+[package]
+name = "sqlite"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+njord = { version = "0.1.0", path = "../../njord" }
+njord_derive = { version = "0.1.0", optional = true, path = "../../njord_derive" }
