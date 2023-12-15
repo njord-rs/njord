@@ -304,18 +304,10 @@ fn main () {
     let db_name = "njord.db";
 
     // SELECT
-    let columns = vec![
-        "user_id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
-    ];
+    let columns = vec!["user_id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
 
     // WHERE
-    let where_condition = Condition::Eq(
-        "username".to_string(),
-        "john_doe".to_string(),
-    );
+    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
 
     // GROUP BY
     let group_by = vec!["username".to_string(), "address".to_string()];
