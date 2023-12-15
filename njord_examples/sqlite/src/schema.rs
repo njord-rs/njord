@@ -1,5 +1,5 @@
 #[derive(Table, Default)]
-struct User {
+pub struct User {
     user_id: usize,
     username: String,
     email: String,
@@ -7,7 +7,7 @@ struct User {
 }
 
 #[derive(Table, Default)]
-struct Product {
+pub struct Product {
     product_id: usize,
     name: String,
     description: String,
@@ -17,7 +17,7 @@ struct Product {
 }
 
 #[derive(Table, Default)]
-struct Order {
+pub struct Order {
     order_id: usize,
     user_id: usize,
     products: Vec<Product>,
