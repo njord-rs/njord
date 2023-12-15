@@ -157,7 +157,7 @@ DROP TABLE IF EXISTS users;
 Now we are going to generate a new migration so we can update existing schema.
 
 ```sh
-njord migration generate --name=update_something -- --env=development
+njord migration generate --name=update_something --env=development
 ```
 
 Now we should have the following in our `migrations` directory.
