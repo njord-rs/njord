@@ -15,6 +15,15 @@ struct TableA {
     amount: u32,
 }
 
+// need to update njord_derive/src/lib.rs
+#[derive(Table, Default)]
+struct TableB {
+    title: String,
+    description: String,
+    amount: u32,
+    test: TableA,
+}
+
 #[test]
 fn open_db() {
     let result = sqlite::open("test_database.db");
