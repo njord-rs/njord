@@ -48,6 +48,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             let field_names = named.iter().map(|f| &f.ident);
             let field_names_clone = field_names.clone();
             let field_names_clone2 = field_names.clone();
+            let field_names_clone3 = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
             let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
@@ -77,6 +78,12 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<f64>" | "Option<f32>" => "REAL",
                             "Option<Vec<u8>>" => "BLOB",
                             "bool" => "TEXT",
+
+                            // for vectors of structs, include their columns
+                            stringify!(Vec<$field_types_clone>) => {
+                                columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
+                                "VECTOR_OF_STRUCT"
+                            }
                             
                             // for nested structs, we include their columns
                             stringify!($field_types_clone) if $field_types_clone: Table => {
@@ -95,12 +102,12 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     )*
                     columns
                 }
-            });
+            }); // columns_stream
 
             // implement the get_column_fields() function
             column_fields_stream.extend(quote! {
                 fn get_column_fields(&self) -> Vec<String> {
-                    vec![#(stringify!(#field_names_clone).to_string()),*]
+                    vec![#(stringify!(#field_names_clone2.clone()).to_string()),*]
                 }
             });
 
@@ -115,24 +122,34 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 fn set_column_value(&mut self, column: &str, value: &str) {
                     match column {
                         #(
-                            stringify!(#field_names_clone2) => {
+                            stringify!(#field_names_clone3) => {
                                 if let Ok(val) = value.parse::<#field_types_clone>() {
-                                    self.#field_names_clone2 = val;
+                                    self.#field_names_clone3 = val;
                                 } else {
                                     eprintln!("Error: Failed to convert value for column '{}'", column);
                                 }
                             }
                         )*
 
+                        // for vectors of structs, set their column values
+                        $(
+                            stringify!(Vec<$field_types_clone>) => {
+                                eprintln!("Warning: Handling vectors of structs not implemented");
+                            }
+                        )*
+
                         // for nested structs, we set their column values
-                        $(stringify!($field_types) if $field_types: Table => {
-                            <$field_types as Table>::set_column_value(&mut self.$field_names, column, value);
-                        })*
+                        $(
+                            stringify!($field_types) if $field_types: Table => {
+                                <$field_types as Table>::set_column_value(&mut self.$field_names.clone(), column, value);
+                            }
+                        )*
 
                         _ => eprintln!("Warning: Unknown column '{}'", column),
                     }
                 }
-            });
+            }); // set_column_values_stream
+
         }
     };
 
