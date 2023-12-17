@@ -16,10 +16,18 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 /// use njord_derive::Table;
 /// use njord::table::Table;
 /// #[derive(Table)]
-/// struct MyTable {
+/// struct TableA {
 ///     name: String,
 ///     price: f64,
 ///     in_stock: bool
+/// }
+/// 
+/// #[derive(Table)]
+/// struct TableB {
+///     name: String,
+///     price: f64,
+///     in_stock: bool,
+///     table: TableA
 /// }
 /// ```
 ///
