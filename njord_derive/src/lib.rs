@@ -43,6 +43,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     let mut column_values_stream = TokenStream2::default();
     let mut set_column_values_stream = TokenStream2::default();
 
+    let mut display_impl = TokenStream2::default();
+    let mut from_str_impl = TokenStream2::default();
+
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
@@ -54,6 +57,52 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
                 quote! { self.#field_name.to_string() }
+            });
+
+            // implement the std::fmt::Display trait
+            display_impl.extend(quote! {
+                impl std::fmt::Display for #ident {
+                    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(f, "{}", self.get_name())?;
+                        for (name, value) in self.get_column_fields().iter().zip(self.get_column_values()) {
+                            write!(f, ", {}: {}", name, value)?;
+                        }
+                        Ok(())
+                    }
+                }
+            });
+
+            // implement the std::str::FromStr trait
+            from_str_impl.extend(quote! {
+                impl std::str::FromStr for #ident {
+                    type Err = std::string::ParseError;
+
+                    fn from_str(s: &str) -> Result<Self, Self::Err> {
+                        let parts: Vec<&str> = s.split(',').map(|s| s.trim()).collect();
+
+                        // create a hashmap to store column name-value pairs
+                        let mut column_values = std::collections::HashMap::new();
+
+                        // iterate over parts and extract column name-value pairs
+                        for part in parts {
+                            let pair: Vec<&str> = part.split(':').map(|s| s.trim()).collect();
+                            if pair.len() == 2 {
+                                let name = pair[0];
+                                let value = pair[1];
+                                column_values.insert(name.to_string(), value.to_string());
+                            }
+                        }
+
+                        let mut instance = Self::default();
+
+                        // set column values based on the parsed values
+                        for (name, value) in column_values.iter() {
+                            instance.set_column_value(name, value);
+                        }
+
+                        Ok(instance)
+                    }
+                }
             });
 
             // implement the get_name() function
@@ -161,6 +210,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             #column_values_stream
             #set_column_values_stream
         }
+
+        #display_impl
+        #from_str_impl
     };
 
     output.into()
