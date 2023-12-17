@@ -129,6 +129,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "bool" => "TEXT",
 
                             // for vectors of structs, include their columns
+                            //TODO: this does not work for some reason
                             stringify!(Vec<$field_types_clone>) => {
                                 columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
                                 "VECTOR_OF_STRUCT"
