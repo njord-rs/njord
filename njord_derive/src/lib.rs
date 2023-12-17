@@ -69,6 +69,12 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<f64>" | "Option<f32>" => "REAL",
                             "Option<Vec<u8>>" => "BLOB",
                             "bool" => "TEXT",
+                            
+                            // for nested structs, we include their columns
+                            stringify!($field_types_clone) if $field_types_clone: Table => {
+                                columns.extend_from_hashmap(<$field_types_clone as Table>::get_columns(&self.$field_names_clone));
+                            }
+
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
                                 "UNKNOWN_TYPE"
@@ -109,6 +115,12 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                                 }
                             }
                         )*
+
+                        // for nested structs, we set their column values
+                        $(stringify!($field_types) if $field_types: Table => {
+                            <$field_types as Table>::set_column_value(&mut self.$field_names, column, value);
+                        })*
+
                         _ => eprintln!("Warning: Unknown column '{}'", column),
                     }
                 }
