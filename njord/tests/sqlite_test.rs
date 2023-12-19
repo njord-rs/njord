@@ -15,11 +15,11 @@ struct TableA {
 }
 
 // ONE-TO-ONE / MANY-TO-ONE
-// #[derive(Table, Default)]
-// struct TableB {
-//     title: String,
-//     table_a: TableA,
-// }
+#[derive(Table)]
+struct TableB {
+    title: String,
+    table_a: TableA,
+}
 
 #[test]
 fn open_db() {
