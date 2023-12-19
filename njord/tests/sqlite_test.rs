@@ -14,7 +14,7 @@ struct TableA {
     amount: u32,
 }
 
-// ONE-TO-ONE / MANY-TO-ONE
+// ONE-TO-ONE
 //TODO: not really done?
 #[derive(Table)]
 struct TableB {
@@ -22,6 +22,7 @@ struct TableB {
     table_a: TableA,
 }
 
+// ONE-TO-MANY
 #[derive(Table)]
 struct TableC {
     title: String,
