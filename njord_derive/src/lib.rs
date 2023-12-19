@@ -85,8 +85,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 quote! { self.#field_name.to_string() }
             });
 
-            //TODO: implement default here as well so we dont need to add it with #[derive(Table, Default)] instead only #[dervive(Table)]
-
             // implement the std::fmt::Display trait
             display_impl.extend(quote! {
                 impl std::fmt::Display for #ident {
