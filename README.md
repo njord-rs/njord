@@ -110,7 +110,7 @@ dir = "migrations"
 Now we are going to define our schema file that we will create under `src/schema.rs`. We will store basically our structs that will map against the database. 
 
 ```rust
-#[derive(Table, Default)]
+#[derive(Table)]
 pub struct User {
     user_id: usize,
     username: String,
@@ -118,7 +118,7 @@ pub struct User {
     address: String,
 }
 
-#[derive(Table, Default)]
+#[derive(Table)]
 pub struct Product {
     product_id: usize,
     name: String,
@@ -128,7 +128,7 @@ pub struct Product {
     category: String,
 }
 
-#[derive(Table, Default)]
+#[derive(Table)]
 pub struct Order {
     order_id: usize,
     user_id: usize,
