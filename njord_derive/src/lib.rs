@@ -256,10 +256,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             #column_fields_stream
             #column_values_stream
             #set_column_values_stream
-
-            #default_impl
         }
 
+        #default_impl
         #display_impl
         #from_str_impl
     };
