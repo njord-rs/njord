@@ -5,6 +5,27 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 
+/// Check if the Default trait is implemented for the struct.
+fn has_default_impl(input: &syn::DeriveInput) -> bool {
+    if let syn::Data::Struct(s) = &input.data {
+        let generics = &input.generics;
+        return generics.params.iter().any(|param| {
+            if let syn::GenericParam::Type(type_param) = param {
+                type_param.bounds.iter().any(|bound| {
+                    if let syn::TypeParamBound::Trait(tb) = bound {
+                        tb.path.is_ident("Default")
+                    } else {
+                        false
+                    }
+                })
+            } else {
+                false
+            }
+        });
+    }
+    false
+}
+
 /// Derives the `Table` trait for a struct.
 ///
 /// This procedural macro generates implementations of the `Table` trait for a struct.
@@ -16,10 +37,18 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 /// use njord_derive::Table;
 /// use njord::table::Table;
 /// #[derive(Table)]
-/// struct MyTable {
+/// struct TableA {
 ///     name: String,
 ///     price: f64,
 ///     in_stock: bool
+/// }
+/// 
+/// #[derive(Table)]
+/// struct TableB {
+///     name: String,
+///     price: f64,
+///     in_stock: bool,
+///     table: TableA
 /// }
 /// ```
 ///
@@ -27,7 +56,9 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 /// based on the struct's field names and types.
 #[proc_macro_derive(Table)]
 pub fn table_derive(input: TokenStream) -> TokenStream {
-    let DeriveInput { ident, data, .. } = parse_macro_input!(input);
+    let cloned_input = input.clone();
+    let derive_input: syn::DeriveInput = parse_macro_input!(cloned_input);
+    let DeriveInput { ident, data, .. } = derive_input.clone();
 
     let mut name_stream = TokenStream2::default();
     let mut columns_stream = TokenStream2::default();
@@ -35,16 +66,71 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     let mut column_values_stream = TokenStream2::default();
     let mut set_column_values_stream = TokenStream2::default();
 
+    let mut display_impl = TokenStream2::default();
+    let mut from_str_impl = TokenStream2::default();
+
+    let mut default_impl = TokenStream2::default();
+
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
             let field_names_clone = field_names.clone();
             let field_names_clone2 = field_names.clone();
+            let field_names_clone3 = field_names.clone();
+            let field_names_clone4 = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
             let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
                 quote! { self.#field_name.to_string() }
+            });
+
+            //TODO: implement default here as well so we dont need to add it with #[derive(Table, Default)] instead only #[dervive(Table)]
+
+            // implement the std::fmt::Display trait
+            display_impl.extend(quote! {
+                impl std::fmt::Display for #ident {
+                    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(f, "{}", self.get_name())?;
+                        for (name, value) in self.get_column_fields().iter().zip(self.get_column_values()) {
+                            write!(f, ", {}: {}", name, value)?;
+                        }
+                        Ok(())
+                    }
+                }
+            });
+
+            // implement the std::str::FromStr trait
+            from_str_impl.extend(quote! {
+                impl std::str::FromStr for #ident {
+                    type Err = std::string::ParseError;
+
+                    fn from_str(s: &str) -> Result<Self, Self::Err> {
+                        let parts: Vec<&str> = s.split(',').map(|s| s.trim()).collect();
+
+                        // create a hashmap to store column name-value pairs
+                        let mut column_values = std::collections::HashMap::new();
+
+                        // iterate over parts and extract column name-value pairs
+                        for part in parts {
+                            let pair: Vec<&str> = part.split(':').map(|s| s.trim()).collect();
+                            if pair.len() == 2 {
+                                let name = pair[0];
+                                let value = pair[1];
+                                column_values.insert(name.to_string(), value.to_string());
+                            }
+                        }
+
+                        let mut instance = Self::default();
+
+                        // set column values based on the parsed values
+                        for (name, value) in column_values.iter() {
+                            instance.set_column_value(name, value);
+                        }
+
+                        Ok(instance)
+                    }
+                }
             });
 
             // implement the get_name() function
@@ -69,6 +155,20 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<f64>" | "Option<f32>" => "REAL",
                             "Option<Vec<u8>>" => "BLOB",
                             "bool" => "TEXT",
+
+                            // for vectors of structs, include their columns
+                            //TODO: this does not work for some reason
+                            // stringify!($field_types_clone) if $field_types_clone: Table => {
+                            //     columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
+                            // }
+                            
+                            // for nested structs, we include their columns
+                            // $(
+                            //     stringify!($field_types_clone) if $field_types_clone: Table => {
+                            //         columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
+                            //     };
+                            // )*
+
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
                                 "UNKNOWN_TYPE"
@@ -81,12 +181,12 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     )*
                     columns
                 }
-            });
+            }); // columns_stream
 
             // implement the get_column_fields() function
             column_fields_stream.extend(quote! {
                 fn get_column_fields(&self) -> Vec<String> {
-                    vec![#(stringify!(#field_names_clone).to_string()),*]
+                    vec![#(stringify!(#field_names_clone2.clone()).to_string()),*]
                 }
             });
 
@@ -101,18 +201,51 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 fn set_column_value(&mut self, column: &str, value: &str) {
                     match column {
                         #(
-                            stringify!(#field_names_clone2) => {
+                            stringify!(#field_names_clone3) => {
                                 if let Ok(val) = value.parse::<#field_types_clone>() {
-                                    self.#field_names_clone2 = val;
+                                    self.#field_names_clone3 = val;
                                 } else {
                                     eprintln!("Error: Failed to convert value for column '{}'", column);
                                 }
                             }
                         )*
+
+                        // for vectors of structs, set their column values
+                        // $(
+                        //     stringify!(Vec<$field_types_clone>) => {
+                        //         eprintln!("Warning: Handling vectors of structs not implemented");
+                        //     }
+                        // )*
+
+                        // for nested structs, we set their column values
+                        // $(
+                        //     if let Ok(val) = value.parse::<$field_types>() {
+                        //         <$field_types as Table>::set_column_value(&mut self.$field_names.clone(), column, &val.to_string());
+                        //     }
+                        // )*
+
                         _ => eprintln!("Warning: Unknown column '{}'", column),
                     }
                 }
-            });
+            }); // set_column_values_stream
+
+            // If Default trait is not implemented, generate an implementation
+            default_impl = if !has_default_impl(&derive_input) {
+                quote! {
+                    impl Default for #ident {
+                        fn default() -> Self {
+                            Self {
+                                #(
+                                    #field_names_clone4: Default::default(),
+                                )*
+                            }
+                        }
+                    }
+                }
+            } else {
+                TokenStream2::new()
+            };
+
         }
     };
 
@@ -124,6 +257,10 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             #column_values_stream
             #set_column_values_stream
         }
+
+        #default_impl
+        #display_impl
+        #from_str_impl
     };
 
     output.into()

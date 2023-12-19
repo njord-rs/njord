@@ -2,17 +2,23 @@
 
 use njord::sqlite::{self};
 use njord::table::Table;
-
-#[cfg(feature = "derive")]
 use njord_derive::Table;
 
 mod common;
 
-#[derive(Table, Default)]
+// NO RELATIONSHIP
+#[derive(Table)]
 struct TableA {
     title: String,
     description: String,
     amount: u32,
+}
+
+// ONE-TO-ONE / MANY-TO-ONE
+#[derive(Table)]
+struct TableB {
+    title: String,
+    table_a: TableA,
 }
 
 #[test]
