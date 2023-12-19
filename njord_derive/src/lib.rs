@@ -42,7 +42,7 @@ fn has_default_impl(input: &syn::DeriveInput) -> bool {
 ///     price: f64,
 ///     in_stock: bool
 /// }
-/// 
+///
 /// #[derive(Table)]
 /// struct TableB {
 ///     name: String,
@@ -159,13 +159,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             // stringify!($field_types_clone) if $field_types_clone: Table => {
                             //     columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
                             // }
-                            
-                            // for nested structs, we include their columns
-                            // $(
-                            //     stringify!($field_types_clone) if $field_types_clone: Table => {
-                            //         columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
-                            //     };
-                            // )*
 
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
@@ -208,20 +201,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             }
                         )*
 
-                        // for vectors of structs, set their column values
-                        // $(
-                        //     stringify!(Vec<$field_types_clone>) => {
-                        //         eprintln!("Warning: Handling vectors of structs not implemented");
-                        //     }
-                        // )*
-
-                        // for nested structs, we set their column values
-                        // $(
-                        //     if let Ok(val) = value.parse::<$field_types>() {
-                        //         <$field_types as Table>::set_column_value(&mut self.$field_names.clone(), column, &val.to_string());
-                        //     }
-                        // )*
-
                         _ => eprintln!("Warning: Unknown column '{}'", column),
                     }
                 }
@@ -243,7 +222,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             } else {
                 TokenStream2::new()
             };
-
         }
     };
 

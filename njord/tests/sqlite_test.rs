@@ -15,10 +15,17 @@ struct TableA {
 }
 
 // ONE-TO-ONE / MANY-TO-ONE
+//TODO: not really done?
 #[derive(Table)]
 struct TableB {
     title: String,
     table_a: TableA,
+}
+
+#[derive(Table)]
+struct TableC {
+    title: String,
+    table_b: Vec<TableB>,
 }
 
 #[test]
