@@ -154,12 +154,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<Vec<u8>>" => "BLOB",
                             "bool" => "TEXT",
 
-                            // for vectors of structs, include their columns
-                            //TODO: this does not work for some reason
-                            // stringify!($field_types_clone) if $field_types_clone: Table => {
-                            //     columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
-                            // }
-
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
                                 "UNKNOWN_TYPE"
