@@ -7,6 +7,7 @@ mod util;
 
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, FieldsNamed};
+use util::extract_table_name;
 
 /// Derives the `Table` trait for a struct.
 ///
@@ -36,11 +37,15 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 ///
 /// This macro will generate implementations for `get_name`, `get_columns`, and `get_column_fields`
 /// based on the struct's field names and types.
-#[proc_macro_derive(Table)]
+#[proc_macro_derive(Table, attributes(table_name))]
 pub fn table_derive(input: TokenStream) -> TokenStream {
     let cloned_input = input.clone();
     let derive_input: syn::DeriveInput = parse_macro_input!(cloned_input);
-    let DeriveInput { ident, data, .. } = derive_input.clone();
+    let DeriveInput {
+        ident, data, attrs, ..
+    } = derive_input.clone();
+
+    let table_name = extract_table_name(&attrs);
 
     let mut name_stream = TokenStream2::default();
     let mut columns_stream = TokenStream2::default();
@@ -115,7 +120,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             // implement the get_name() function
             name_stream.extend::<TokenStream2>(quote! {
                 fn get_name(&self) -> &str {
-                    stringify!(#ident)
+                    stringify!(#table_name)
                 }
             }); // name_stream
 

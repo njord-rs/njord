@@ -1,3 +1,5 @@
+use syn::Meta;
+
 /// Check if the Default trait is implemented for the struct.
 ///
 /// This function takes a `syn::DeriveInput` as input and checks if the Default trait is
@@ -29,4 +31,21 @@ pub fn has_default_impl(input: &syn::DeriveInput) -> bool {
         });
     }
     false
+}
+
+pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
+    for attr in attrs {
+        if let Some(attr_meta_name) = attr.path().get_ident() {
+            if attr_meta_name == "table_name" {
+                let attr_meta = &attr.meta;
+
+                match attr_meta {
+                    Meta::NameValue(val) => val,
+                    _ => panic!("Incorrect format for using the `table_name` attribute."),
+                };
+            }
+        }
+    }
+    // Default table name if not specified
+    "default_table_name".to_string()
 }

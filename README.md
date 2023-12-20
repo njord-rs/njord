@@ -112,29 +112,30 @@ Now we are going to define our schema file that we will create under `src/schema
 ```rust
 #[derive(Table)]
 pub struct User {
-    user_id: usize,
     username: String,
     email: String,
     address: String,
 }
 
 #[derive(Table)]
+pub struct Category {
+    name: String,
+}
+
+#[derive(Table)]
 pub struct Product {
-    product_id: usize,
     name: String,
     description: String,
     price: f64,
     stock_quantity: usize,
-    category: String,
+    category: Category,     // one-to-one relationship
 }
 
 #[derive(Table)]
 pub struct Order {
-    order_id: usize,
-    user_id: usize,
-    products: Vec<Product>,
+    user: User,             // one-to-one relationship
+    products: Vec<Product>, // one-to-many relationship - creates a new junction table to store foreign keys order_id and product_id
     total_cost: f64,
-    order_date: NaiveDateTime,
 }
 ```
 
@@ -164,7 +165,6 @@ CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users(user_id),
     total_cost REAL NOT NULL,
-    order_date TEXT NOT NULL
 );
 
 -- order_products table

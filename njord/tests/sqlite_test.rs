@@ -6,27 +6,36 @@ use njord_derive::Table;
 
 mod common;
 
-// NO RELATIONSHIP
 #[derive(Table)]
-struct TableA {
-    title: String,
+#[table_name = "users"]
+pub struct User {
+    username: String,
+    email: String,
+    address: String,
+}
+
+#[derive(Table)]
+#[table_name = "categories"]
+pub struct Category {
+    name: String,
+}
+
+#[derive(Table)]
+#[table_name = "products"]
+pub struct Product {
+    name: String,
     description: String,
-    amount: u32,
+    price: f64,
+    stock_quantity: usize,
+    category: Category, // one-to-one relationship
 }
 
-// ONE-TO-ONE / ONE-TO-MANY
-#[derive(Table)]
-struct TableB {
-    title: String,
-    table_a: TableA,
-}
-
-// MANY-TO-MANY (JUNCTION TABLE)
-#[derive(Table)]
-struct TableC {
-    table_a: TableA,
-    table_b: TableB,
-}
+// #[derive(Table)]
+// pub struct Order {
+//     user: User,             // one-to-one relationship
+//     products: Vec<Product>, // one-to-many relationship - creates a new junction table to store foreign keys order_id and product_id
+//     total_cost: f64,
+// }
 
 #[test]
 fn open_db() {
