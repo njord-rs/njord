@@ -14,19 +14,18 @@ struct TableA {
     amount: u32,
 }
 
-// ONE-TO-ONE
-//TODO: not really done?
+// ONE-TO-ONE / ONE-TO-MANY
 #[derive(Table)]
 struct TableB {
     title: String,
     table_a: TableA,
 }
 
-// ONE-TO-MANY
+// MANY-TO-MANY
 #[derive(Table)]
 struct TableC {
-    title: String,
-    table_b: Vec<TableB>,
+    table_a: TableA,
+    table_b: TableB,
 }
 
 #[test]

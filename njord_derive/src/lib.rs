@@ -56,7 +56,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
-            let field_names_clone = field_names.clone();
             let field_names_clone2 = field_names.clone();
             let field_names_clone3 = field_names.clone();
             let field_names_clone4 = field_names.clone();
@@ -78,7 +77,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                         Ok(())
                     }
                 }
-            });
+            }); // display_impl
 
             // implement the std::str::FromStr trait
             from_str_impl.extend(quote! {
@@ -111,14 +110,14 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                         Ok(instance)
                     }
                 }
-            });
+            }); // from_str_impl
 
             // implement the get_name() function
             name_stream.extend::<TokenStream2>(quote! {
                 fn get_name(&self) -> &str {
                     stringify!(#ident)
                 }
-            });
+            }); // name_stream
 
             // implement the get_columns() function
             columns_stream.extend(quote! {
@@ -155,14 +154,14 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 fn get_column_fields(&self) -> Vec<String> {
                     vec![#(stringify!(#field_names_clone2.clone()).to_string()),*]
                 }
-            });
+            }); // column_fields_stream
 
             // implement the get_column_values() function
             column_values_stream.extend(quote! {
                 fn get_column_values(&self) -> Vec<String> {
                     vec![#(#field_values),*]
                 }
-            });
+            }); // column_values_stream
 
             set_column_values_stream.extend(quote! {
                 fn set_column_value(&mut self, column: &str, value: &str) {
@@ -197,7 +196,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             } else {
                 TokenStream2::new()
-            };
+            }; // default_impl
         }
     };
 

@@ -1,6 +1,6 @@
 /// Check if the Default trait is implemented for the struct.
 pub fn has_default_impl(input: &syn::DeriveInput) -> bool {
-    if let syn::Data::Struct(s) = &input.data {
+    if let syn::Data::Struct(_s) = &input.data {
         let generics = &input.generics;
         return generics.params.iter().any(|param| {
             if let syn::GenericParam::Type(type_param) = param {
