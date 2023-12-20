@@ -307,7 +307,6 @@ fn main () {
     let db_name = "njord.db";
 
     let user = User {
-        user_id: 1,
         username: String::from("john_doe"),
         email: String::from("john@example.com"),
         address: String::from("123 Main St"),
@@ -338,7 +337,7 @@ fn main () {
     let db_name = "njord.db";
 
     // SELECT
-    let columns = vec!["user_id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
 
     // WHERE
     let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
@@ -348,7 +347,7 @@ fn main () {
 
     // ORDER BY
     let mut order_by = HashMap::new();
-    order_by.insert(vec!["user_id".to_string()], "ASC".to_string());
+    order_by.insert(vec!["id".to_string()], "ASC".to_string());
     order_by.insert(vec!["email".to_string()], "DESC".to_string());
     
     // HAVING
