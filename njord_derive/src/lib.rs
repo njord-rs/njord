@@ -1,30 +1,12 @@
 extern crate proc_macro;
+use crate::util::has_default_impl;
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 
+mod util;
+
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, FieldsNamed};
-
-/// Check if the Default trait is implemented for the struct.
-fn has_default_impl(input: &syn::DeriveInput) -> bool {
-    if let syn::Data::Struct(s) = &input.data {
-        let generics = &input.generics;
-        return generics.params.iter().any(|param| {
-            if let syn::GenericParam::Type(type_param) = param {
-                type_param.bounds.iter().any(|bound| {
-                    if let syn::TypeParamBound::Trait(tb) = bound {
-                        tb.path.is_ident("Default")
-                    } else {
-                        false
-                    }
-                })
-            } else {
-                false
-            }
-        });
-    }
-    false
-}
 
 /// Derives the `Table` trait for a struct.
 ///
