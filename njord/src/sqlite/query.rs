@@ -1,12 +1,10 @@
-use crate::table::Table;
+use crate::{condition::Condition, table::Table};
 use std::collections::HashMap;
 
 use rusqlite::{Connection, Result};
 
 use log::info;
 use rusqlite::types::Value;
-
-use super::Condition;
 
 pub struct QueryBuilder<T: Table + Default> {
     conn: Connection,
