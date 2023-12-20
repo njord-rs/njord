@@ -33,6 +33,18 @@ pub fn has_default_impl(input: &syn::DeriveInput) -> bool {
     false
 }
 
+/// Extracts the table name from attributes.
+///
+/// This function searches for the `table_name` attribute in the given attributes and returns
+/// the specified table name if found. If the attribute is not present, it returns a default table name.
+///
+/// # Arguments
+///
+/// * `attrs` - A slice of `syn::Attribute` representing the attributes of a struct.
+///
+/// # Returns
+///
+/// A `String` representing the extracted table name or the default table name if not specified.
 pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
     for attr in attrs {
         if let Some(attr_meta_name) = attr.path().get_ident() {
