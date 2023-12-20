@@ -21,7 +21,7 @@ struct TableB {
     table_a: TableA,
 }
 
-// MANY-TO-MANY
+// MANY-TO-MANY (JUNCTION TABLE)
 #[derive(Table)]
 struct TableC {
     table_a: TableA,
