@@ -241,14 +241,14 @@ DROP TABLE products_backup;
 Finally we need to modify our `schema.rs` file so it will map correctly.
 
 ```rust
-#[derive(Table, Default)]
+#[derive(Table)]
+#[table_name = "products"]
 pub struct Product {
-    product_id: usize,
     name: String,
     description: String,
     price: f64,
     stock_quantity: usize,
-    category: String,
+    category: Category,
     discount: Option<f64>,  // We added a new column here
 }
 ```
