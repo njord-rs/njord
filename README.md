@@ -351,7 +351,7 @@ fn main () {
     order_by.insert(vec!["email".to_string()], "DESC".to_string());
     
     // HAVING
-    let having_condition = Condition::Gt("user_id".to_string(), "1".to_string());
+    let having_condition = Condition::Gt("id".to_string(), "1".to_string());
 
     match sqlite::open(db_name) {
         Ok(conn) => {
