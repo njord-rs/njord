@@ -1,30 +1,12 @@
 extern crate proc_macro;
+use crate::util::has_default_impl;
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 
+mod util;
+
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, FieldsNamed};
-
-/// Check if the Default trait is implemented for the struct.
-fn has_default_impl(input: &syn::DeriveInput) -> bool {
-    if let syn::Data::Struct(s) = &input.data {
-        let generics = &input.generics;
-        return generics.params.iter().any(|param| {
-            if let syn::GenericParam::Type(type_param) = param {
-                type_param.bounds.iter().any(|bound| {
-                    if let syn::TypeParamBound::Trait(tb) = bound {
-                        tb.path.is_ident("Default")
-                    } else {
-                        false
-                    }
-                })
-            } else {
-                false
-            }
-        });
-    }
-    false
-}
 
 /// Derives the `Table` trait for a struct.
 ///
@@ -42,7 +24,7 @@ fn has_default_impl(input: &syn::DeriveInput) -> bool {
 ///     price: f64,
 ///     in_stock: bool
 /// }
-/// 
+///
 /// #[derive(Table)]
 /// struct TableB {
 ///     name: String,
@@ -74,7 +56,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     if let syn::Data::Struct(s) = data {
         if let syn::Fields::Named(FieldsNamed { named, .. }) = s.fields {
             let field_names = named.iter().map(|f| &f.ident);
-            let field_names_clone = field_names.clone();
             let field_names_clone2 = field_names.clone();
             let field_names_clone3 = field_names.clone();
             let field_names_clone4 = field_names.clone();
@@ -84,8 +65,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 let field_name = &f.ident;
                 quote! { self.#field_name.to_string() }
             });
-
-            //TODO: implement default here as well so we dont need to add it with #[derive(Table, Default)] instead only #[dervive(Table)]
 
             // implement the std::fmt::Display trait
             display_impl.extend(quote! {
@@ -98,7 +77,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                         Ok(())
                     }
                 }
-            });
+            }); // display_impl
 
             // implement the std::str::FromStr trait
             from_str_impl.extend(quote! {
@@ -131,14 +110,14 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                         Ok(instance)
                     }
                 }
-            });
+            }); // from_str_impl
 
             // implement the get_name() function
             name_stream.extend::<TokenStream2>(quote! {
                 fn get_name(&self) -> &str {
                     stringify!(#ident)
                 }
-            });
+            }); // name_stream
 
             // implement the get_columns() function
             columns_stream.extend(quote! {
@@ -155,19 +134,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<f64>" | "Option<f32>" => "REAL",
                             "Option<Vec<u8>>" => "BLOB",
                             "bool" => "TEXT",
-
-                            // for vectors of structs, include their columns
-                            //TODO: this does not work for some reason
-                            // stringify!($field_types_clone) if $field_types_clone: Table => {
-                            //     columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
-                            // }
-                            
-                            // for nested structs, we include their columns
-                            // $(
-                            //     stringify!($field_types_clone) if $field_types_clone: Table => {
-                            //         columns.extend(<$field_types_clone as Table>::get_columns(&self.#field_names_clone));
-                            //     };
-                            // )*
 
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
@@ -188,14 +154,14 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 fn get_column_fields(&self) -> Vec<String> {
                     vec![#(stringify!(#field_names_clone2.clone()).to_string()),*]
                 }
-            });
+            }); // column_fields_stream
 
             // implement the get_column_values() function
             column_values_stream.extend(quote! {
                 fn get_column_values(&self) -> Vec<String> {
                     vec![#(#field_values),*]
                 }
-            });
+            }); // column_values_stream
 
             set_column_values_stream.extend(quote! {
                 fn set_column_value(&mut self, column: &str, value: &str) {
@@ -209,20 +175,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                                 }
                             }
                         )*
-
-                        // for vectors of structs, set their column values
-                        // $(
-                        //     stringify!(Vec<$field_types_clone>) => {
-                        //         eprintln!("Warning: Handling vectors of structs not implemented");
-                        //     }
-                        // )*
-
-                        // for nested structs, we set their column values
-                        // $(
-                        //     if let Ok(val) = value.parse::<$field_types>() {
-                        //         <$field_types as Table>::set_column_value(&mut self.$field_names.clone(), column, &val.to_string());
-                        //     }
-                        // )*
 
                         _ => eprintln!("Warning: Unknown column '{}'", column),
                     }
@@ -244,8 +196,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             } else {
                 TokenStream2::new()
-            };
-
+            }; // default_impl
         }
     };
 

@@ -10,7 +10,6 @@ pub enum Condition {
 }
 
 impl Condition {
-
     fn is_numeric(value: &str) -> bool {
         value.parse::<f64>().is_ok() || value.parse::<i64>().is_ok()
     }

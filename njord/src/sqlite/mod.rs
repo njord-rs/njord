@@ -6,8 +6,6 @@ pub mod insert;
 pub use insert::insert;
 pub mod select;
 pub use select::select;
-pub mod condition;
-pub use condition::Condition;
 pub mod query;
 
 /// Open a database connection
