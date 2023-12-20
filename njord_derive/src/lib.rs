@@ -35,7 +35,7 @@ use util::extract_table_name;
 /// }
 /// ```
 ///
-/// This macro will generate implementations for `get_name`, `get_columns`, and `get_column_fields`
+/// This macro will generate implementations the `Table` trait
 /// based on the struct's field names and types.
 #[proc_macro_derive(Table, attributes(table_name))]
 pub fn table_derive(input: TokenStream) -> TokenStream {
