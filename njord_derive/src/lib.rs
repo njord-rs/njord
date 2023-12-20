@@ -21,6 +21,7 @@ use util::extract_table_name;
 /// use njord::table::Table;
 /// #[derive(Table)]
 /// struct TableA {
+///     id: usize,
 ///     name: String,
 ///     price: f64,
 ///     in_stock: bool
@@ -28,6 +29,7 @@ use util::extract_table_name;
 ///
 /// #[derive(Table)]
 /// struct TableB {
+///     id: usize,
 ///     name: String,
 ///     price: f64,
 ///     in_stock: bool,
