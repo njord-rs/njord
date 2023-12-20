@@ -9,6 +9,7 @@ mod common;
 #[derive(Table)]
 #[table_name = "users"]
 pub struct User {
+    id: usize,
     username: String,
     email: String,
     address: String,
@@ -17,12 +18,14 @@ pub struct User {
 #[derive(Table)]
 #[table_name = "categories"]
 pub struct Category {
+    id: usize,
     name: String,
 }
 
 #[derive(Table)]
 #[table_name = "products"]
 pub struct Product {
+    id: usize,
     name: String,
     description: String,
     price: f64,
@@ -32,6 +35,7 @@ pub struct Product {
 
 // #[derive(Table)]
 // pub struct Order {
+//     id: usize,
 //     user: User,             // one-to-one relationship
 //     products: Vec<Product>, // one-to-many relationship - creates a new junction table to store foreign keys order_id and product_id
 //     total_cost: f64,
