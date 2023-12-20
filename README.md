@@ -148,7 +148,7 @@ Now that we have that in place, we need to create the SQL for setting this up in
 ```sql
 -- users table
 CREATE TABLE users (
-    user_id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     username TEXT NOT NULL,
     email TEXT NOT NULL,
     address TEXT NOT NULL
@@ -156,25 +156,25 @@ CREATE TABLE users (
 
 -- products table
 CREATE TABLE products (
-    product_id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     price REAL NOT NULL,
     stock_quantity INTEGER NOT NULL,
-    category TEXT NOT NULL
+    category INTEGER REFERENCES categories(id)
 );
 
 -- orders table
 CREATE TABLE orders (
-    order_id INTEGER PRIMARY KEY,
-    user_id INTEGER REFERENCES users(user_id),
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
     total_cost REAL NOT NULL,
 );
 
 -- order_products table
 CREATE TABLE order_products (
-    order_id INTEGER REFERENCES orders(order_id),
-    product_id INTEGER REFERENCES products(product_id),
+    order_id INTEGER REFERENCES orders(id),
+    product_id INTEGER REFERENCES products(id),
     PRIMARY KEY (order_id, product_id)
 );
 ```
