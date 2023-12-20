@@ -113,6 +113,7 @@ Now we are going to define our schema file that we will create under `src/schema
 #[derive(Table)]
 #[table_name = "users"]
 pub struct User {
+    id: usize,
     username: String,
     email: String,
     address: String,
@@ -121,12 +122,14 @@ pub struct User {
 #[derive(Table)]
 #[table_name = "categories"]
 pub struct Category {
+    id: usize,
     name: String,
 }
 
 #[derive(Table)]
 #[table_name = "products"]
 pub struct Product {
+    id: usize,
     name: String,
     description: String,
     price: f64,
@@ -137,6 +140,7 @@ pub struct Product {
 #[derive(Table)]
 #[table_name = "orders"]
 pub struct Order {
+    id: usize,
     user: User,             // one-to-one relationship
     products: Vec<Product>, // one-to-many relationship - populates from based on junction table (gets from macro attribute "table_name" and combines them for example, orders_products)
     total_cost: f64,
