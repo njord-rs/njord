@@ -33,14 +33,15 @@ pub struct Product {
     category: Category, // one-to-one relationship
 }
 
-#[derive(Table)]
-#[table_name = "orders"]
-pub struct Order {
-    id: usize,
-    user: User,             // one-to-one relationship
-    products: Vec<Product>, // one-to-many relationship - Gets data from junction table (example orders_products)
-    total_cost: f64,
-}
+//TODO: need to implement display for vector of structs before this will work!
+// #[derive(Table)]
+// #[table_name = "orders"]
+// pub struct Order {
+//     id: usize,
+//     user: User,             // one-to-one relationship
+//     products: Vec<Product>, // one-to-many relationship - Gets data from junction table (example orders_products)
+//     total_cost: f64,
+// }
 
 #[test]
 fn open_db() {
