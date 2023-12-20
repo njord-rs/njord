@@ -14,11 +14,18 @@ struct TableA {
     amount: u32,
 }
 
-// ONE-TO-ONE / MANY-TO-ONE
+// ONE-TO-ONE / ONE-TO-MANY
 #[derive(Table)]
 struct TableB {
     title: String,
     table_a: TableA,
+}
+
+// MANY-TO-MANY (JUNCTION TABLE)
+#[derive(Table)]
+struct TableC {
+    table_a: TableA,
+    table_b: TableB,
 }
 
 #[test]
