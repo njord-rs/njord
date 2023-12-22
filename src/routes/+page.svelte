@@ -5,6 +5,7 @@
   import Coffee from "$lib/components/icons/Coffee.svelte";
   import Code from "$lib/components/icons/Code.svelte";
   import Alert from "$lib/components/icons/Alert.svelte";
+  import DatabaseBar from "$lib/components/DatabaseBar.svelte";
   export let data;
 
   function copy(id) {
@@ -21,6 +22,7 @@
             <h1 class="header text-8xl mb-4">Njord</h1>
             <h2 class="text-2xl">Lightweight, Extensible ORM and Query Builder for Rust</h2>
             <GithubBar repo={data.repo}></GithubBar> 
+            <DatabaseBar></DatabaseBar>
         </div>
 
     </div>
