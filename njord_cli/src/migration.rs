@@ -1,3 +1,5 @@
+use njord::sqlite;
+
 use crate::util::{
     create_migration_files, get_migrations_directory_path, get_next_migration_version, read_config,
 };
@@ -58,6 +60,13 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
 /// run(Some("production"), Some("debug"));
 /// ```
 pub fn run(env: Option<&String>, log_level: Option<&String>) {
+    let conn = sqlite::open("sqlite.db");
+
+    match conn {
+        Ok(_) => println!("LOL"),
+        Err(_) => println!("Err..."),
+    };
+
     println!(
         "Running migration with env '{:?}' and log-level '{:?}'",
         env, log_level

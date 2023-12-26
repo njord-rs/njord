@@ -41,7 +41,6 @@ fn main() {
                         .about("Applies all pending migrations to the database.")
                         
                         .arg(Arg::new("env")
-                            .long("env")
                             .help("Target a specific environment."))
                         
                         .arg(Arg::new("log-level")
@@ -58,7 +57,6 @@ fn main() {
                             .value_name("change"))
                         
                         .arg(Arg::new("env")
-                            .long("env")
                             .help("Target a specific environment."))
                             
                         .arg(Arg::new("log-level")
