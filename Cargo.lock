@@ -232,6 +232,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "njord",
+ "rusqlite",
  "serde",
  "serde_derive",
  "toml",
