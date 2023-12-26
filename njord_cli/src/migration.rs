@@ -1,4 +1,7 @@
+use std::fs;
+
 use njord::sqlite;
+use rusqlite::Connection;
 
 use crate::util::{
     create_migration_files, get_migrations_directory_path, get_next_migration_version, read_config,
@@ -63,7 +66,22 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
     let conn = sqlite::open("sqlite.db");
 
     match conn {
-        Ok(_) => println!("Database connection established successfully."),
+        Ok(conn) => {
+            println!("Database connection established successfully.");
+
+            if let Err(up_err) = execute_sql_from_file(&conn, "path/to/up.sql") {
+                // if up.sql fails, run down.sql
+                if let Err(down_err) = execute_sql_from_file(&conn, "path/to/down.sql") {
+                    eprintln!("Error executing down.sql: {}", down_err);
+                } else {
+                    println!("down.sql executed successfully.");
+                }
+
+                eprintln!("Error executing up.sql: {}", up_err);
+            } else {
+                println!("up.sql executed successfully.");
+            }
+        }
         Err(err) => eprintln!("Error establishing database connection: {}", err),
     };
 
@@ -91,4 +109,25 @@ pub fn rollback(env: Option<&String>, to: Option<&String>, log_level: Option<&St
         "Rolling back migration with env '{:?}' to '{:?}' log_level '{:?}'",
         env, to, log_level
     );
+}
+
+fn execute_sql_from_file(conn: &Connection, file_path: &str) -> Result<(), rusqlite::Error> {
+    let sql_content = match fs::read_to_string(file_path) {
+        Ok(content) => content,
+        Err(err) => {
+            eprintln!("Error reading {}: {}", file_path, err);
+            return Err(rusqlite::Error::QueryReturnedNoRows); // Placeholder error
+        }
+    };
+
+    match conn.execute_batch(&sql_content) {
+        Ok(_) => {
+            println!("{} executed successfully.", file_path);
+            Ok(())
+        }
+        Err(err) => {
+            eprintln!("Error executing {}: {}", file_path, err);
+            Err(err)
+        }
+    }
 }
