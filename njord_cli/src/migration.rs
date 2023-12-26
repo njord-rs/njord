@@ -63,6 +63,8 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
 /// run(Some("production"), Some("debug"));
 /// ```
 pub fn run(env: Option<&String>, log_level: Option<&String>) {
+    //TODO: this doesnt load since it looks in the wrong directory
+    // need to update the open() function to look for either ../target or ./target dir
     let conn = sqlite::open("sqlite.db");
 
     match conn {
