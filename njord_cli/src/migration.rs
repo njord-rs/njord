@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, path::Path};
 
 use njord::sqlite;
 use rusqlite::Connection;
@@ -69,17 +69,27 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
         Ok(conn) => {
             println!("Database connection established successfully.");
 
-            if let Err(up_err) = execute_sql_from_file(&conn, "path/to/up.sql") {
-                // if up.sql fails, run down.sql
-                if let Err(down_err) = execute_sql_from_file(&conn, "path/to/down.sql") {
-                    eprintln!("Error executing down.sql: {}", down_err);
-                } else {
-                    println!("down.sql executed successfully.");
-                }
+            // obtain the latest version from the "migration_history" table
+            if let Ok(latest_version) = get_latest_migration_version(&conn) {
+                // construct paths to migration directories
+                let migrations_dir = format!("migrations/{}", latest_version);
 
-                eprintln!("Error executing up.sql: {}", up_err);
+                // execute up.sql in directories that have not been applied yet
+                if let Err(up_err) = execute_sql_from_file(&conn, &migrations_dir, "up.sql") {
+                    // if up.sql fails, run down.sql
+                    if let Err(down_err) = execute_sql_from_file(&conn, &migrations_dir, "down.sql")
+                    {
+                        eprintln!("Error executing down.sql: {}", down_err);
+                    } else {
+                        println!("down.sql executed successfully.");
+                    }
+
+                    eprintln!("Error executing up.sql: {}", up_err);
+                } else {
+                    println!("up.sql executed successfully.");
+                }
             } else {
-                println!("up.sql executed successfully.");
+                eprintln!("Error obtaining latest migration version.");
             }
         }
         Err(err) => eprintln!("Error establishing database connection: {}", err),
@@ -111,22 +121,66 @@ pub fn rollback(env: Option<&String>, to: Option<&String>, log_level: Option<&St
     );
 }
 
-fn execute_sql_from_file(conn: &Connection, file_path: &str) -> Result<(), rusqlite::Error> {
-    let sql_content = match fs::read_to_string(file_path) {
+/// Retrieves the latest migration version from the "migration_history" table.
+///
+/// # Arguments
+///
+/// * `conn` - A reference to a `rusqlite::Connection`.
+///
+/// # Returns
+///
+/// A `Result` containing the latest migration version as a `String` or a `rusqlite::Error` if an error occurs.
+///
+/// # Note
+///
+/// This function queries the "migration_history" table to obtain the latest version.
+fn get_latest_migration_version(conn: &Connection) -> Result<String, rusqlite::Error> {
+    let query = "SELECT version FROM migration_history ORDER BY version DESC LIMIT 1;";
+    let result: Result<String, rusqlite::Error> = conn.query_row(query, [], |row| row.get(0));
+
+    result.map_err(|err| {
+        eprintln!("Error getting latest migration version: {}", err);
+        err
+    })
+}
+
+/// Executes SQL content from a file on the provided database connection.
+///
+/// # Arguments
+///
+/// * `conn` - A reference to a `rusqlite::Connection`.
+/// * `migrations_dir` - A string slice representing the path to the migrations directory.
+/// * `file_name` - A string slice representing the name of the SQL file to execute.
+///
+/// # Returns
+///
+/// A `Result` indicating success (`Ok(())`) or a `rusqlite::Error` if an error occurs.
+///
+/// # Note
+///
+/// This function reads the SQL content from the specified file and executes it on the provided database connection.
+fn execute_sql_from_file(
+    conn: &Connection,
+    migrations_dir: &str,
+    file_name: &str,
+) -> Result<(), rusqlite::Error> {
+    let file_path = Path::new(migrations_dir).join(file_name);
+
+    let sql_content = match fs::read_to_string(&file_path) {
         Ok(content) => content,
         Err(err) => {
-            eprintln!("Error reading {}: {}", file_path, err);
-            return Err(rusqlite::Error::QueryReturnedNoRows); // Placeholder error
+            eprintln!("Error reading {}: {}", file_path.display(), err);
+            return Err(rusqlite::Error::QueryReturnedNoRows); // placeholder error
         }
     };
 
     match conn.execute_batch(&sql_content) {
         Ok(_) => {
-            println!("{} executed successfully.", file_path);
+            println!("{} executed successfully.", file_path.display());
             Ok(())
         }
         Err(err) => {
-            eprintln!("Error executing {}: {}", file_path, err);
+            eprintln!("Error executing {}: {}", file_path.display(), err);
             Err(err)
         }
     }
