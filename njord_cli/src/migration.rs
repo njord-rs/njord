@@ -63,8 +63,8 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
     let conn = sqlite::open("sqlite.db");
 
     match conn {
-        Ok(_) => println!("LOL"),
-        Err(_) => println!("Err..."),
+        Ok(_) => println!("Database connection established successfully."),
+        Err(err) => eprintln!("Error establishing database connection: {}", err),
     };
 
     println!(
