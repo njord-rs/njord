@@ -65,6 +65,7 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
 pub fn run(env: Option<&String>, log_level: Option<&String>) {
     //TODO: this doesnt load since it looks in the wrong directory
     // need to update the open() function to look for either ../target or ./target dir
+    // it should not be hardcoded here as well, we need a more elgant solution
     let conn = sqlite::open("sqlite.db");
 
     match conn {
@@ -117,10 +118,36 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
 /// rollback(Some("development"), Some("20231204120000"), Some("info"));
 /// ```
 pub fn rollback(env: Option<&String>, to: Option<&String>, log_level: Option<&String>) {
-    println!(
-        "Rolling back migration with env '{:?}' to '{:?}' log_level '{:?}'",
-        env, to, log_level
-    );
+    if let Some(target_version) = to {
+        //TODO: this doesn't load since it looks in the wrong directory
+        // need to update the open() function to look for either ../target or ./target dir
+        // it should not be hardcoded here as well, we need a more elgant solution
+        let conn = sqlite::open("sqlite.db");
+
+        match conn {
+            Ok(conn) => {
+                println!("Database connection established successfully.");
+
+                // construct paths to migration directories
+                let migrations_dir = format!("migrations/{}", target_version);
+
+                // execute down.sql for the specified version
+                if let Err(down_err) = execute_sql_from_file(&conn, &migrations_dir, "down.sql") {
+                    eprintln!("Error executing down.sql: {}", down_err);
+                } else {
+                    println!("down.sql executed successfully.");
+                }
+            }
+            Err(err) => eprintln!("Error establishing database connection: {}", err),
+        };
+
+        println!(
+            "Rolling back migration with env '{:?}' to '{:?}' log_level '{:?}'",
+            env, target_version, log_level
+        );
+    } else {
+        eprintln!("Error: Please provide a target version to rollback to.");
+    }
 }
 
 /// Retrieves the latest migration version from the "migration_history" table.
