@@ -39,11 +39,11 @@ A lightweight and extensible ORM framework for Rust.
 | Database   | Support   | Status                |
 |------------|-----------|-----------------------|
 | SQLite     | ✅        | Currently supported.  |
-| PostgreSQL | ❌        | Not supported, help us impelement it?        |
-| MySQL      | ❌        | Not supported, help us impelement it?        |
-| MariaDB    | ❌        | Not supported, help us impelement it?        |
-| Oracle     | ❌        | Not supported, help us impelement it?        |
-| MSSQL      | ❌        | Not supported, help us impelement it?        |
+| PostgreSQL | ❌        | Not supported, help us implement it?        |
+| MySQL      | ❌        | Not supported, help us implement it?        |
+| MariaDB    | ❌        | Not supported, help us implement it?        |
+| Oracle     | ❌        | Not supported, help us implement it?        |
+| MSSQL      | ❌        | Not supported, help us implement it?        |
 
 ## Getting Started
 
