@@ -4,4 +4,5 @@
     <img src="dbs/mysql.png" alt="" class="h-16 grayscale opacity-60">
     <img src="dbs/mariadb.png" alt="" class="h-16 grayscale opacity-60">
     <img src="dbs/oracle.png" alt="" class="h-16 grayscale opacity-60">
+    <img src="dbs/mssql.png" alt="" class="h-16 grayscale opacity-60">
 </div>
