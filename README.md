@@ -427,7 +427,7 @@ being awesome contributors to this project. **We'd like to take a moment to reco
 
 [<img src="https://github.com/mjovanc.png?size=72" alt="mjovanc" width="72">](https://github.com/mjovanc)
 [<img src="https://github.com/appelskrutt34.png?size=72" alt="appelskrutt34" width="72">](https://github.com/appelskrutt34)
-[<img src="https://github.com/ahsentekdemir.png?size=72">](https://github.com/ahsentekdemir)
+[<img src="https://github.com/ahsentekd?size=72">](https://github.com/ahsentekd)
 
 ## License
 
