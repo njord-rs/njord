@@ -1,4 +1,5 @@
 use std::env;
+use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, Error};
 
@@ -6,12 +7,18 @@ pub mod insert;
 pub use insert::insert;
 pub mod select;
 pub use select::select;
+use crate::util::find_target_directory;
+
 pub mod query;
 
 /// Open a database connection
 pub fn open(db_name: &str) -> Result<Connection, Error> {
-    let target_dir = env::var("OUT_DIR").unwrap_or_else(|_| "../target".to_string());
-    let db_file_path = format!("{}/{}", target_dir, &db_name);
+    let target_dir = find_target_directory(Path::new(".")).unwrap_or_else(|| {
+        println!("Target directory not found, using default '../target'."); // TODO: use logging later
+        PathBuf::from("../target")
+    });
+    let db_file_path = target_dir.join(db_name);
+
     let conn = Connection::open(db_file_path)?;
 
     Ok(conn)

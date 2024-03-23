@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 /// Converts values for SQL INSERT
 ///
 /// # Arguments
@@ -27,3 +29,20 @@ pub fn convert_insert_values(values: Vec<String>) -> Vec<String> {
 
     result
 }
+
+pub fn find_target_directory(start_dir: &Path) -> Option<PathBuf> {
+    let mut current_dir = start_dir.to_path_buf();
+
+    loop {
+        let target_dir = current_dir.join("target");
+
+        if target_dir.is_dir() {
+            return Some(target_dir);
+        }
+
+        if !current_dir.pop() {
+            return None;
+        }
+    }
+}
+
