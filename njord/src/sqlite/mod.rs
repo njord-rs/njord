@@ -1,4 +1,3 @@
-use std::env;
 use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, Error};
