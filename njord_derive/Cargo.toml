@@ -18,7 +18,7 @@ proc-macro = true
 proc-macro2 = "1.0.70"
 quote = "1.0"
 syn = "2.0.43"
-rusqlite = { version = "0.30.0", features = ["bundled"] }
+rusqlite = { version = "0.31.0", features = ["bundled"] }
 
 [dev-dependencies]
 njord = { version = "0.1.0", path = "../njord" }
