@@ -24,6 +24,10 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
         if let Some(migrations_dir) = get_migrations_directory_path(&config) {
             // get the next migration version based on existing ones
             if let Ok(next_version) = get_next_migration_version(&migrations_dir) {
+                //TODO: doesnt generate new version
+                // 00000000000001 doesnt increment to 00000000000002 and it just overwrites the current directory if I have the same
+                // migration name, it should be njord_examples/sqlite/migrations/00000000000001_init_tables and
+                // njord_examples/sqlite/migrations/00000000000002_init_tables
                 println!("next_version: {}", next_version);
                 let migration_name = name.map(|s| s.as_str()).unwrap_or("example_name");
 
