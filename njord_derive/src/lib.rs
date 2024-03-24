@@ -161,7 +161,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             // implement the get_column_fields() function
             column_fields_stream.extend(quote! {
                 fn get_column_fields(&self) -> Vec<String> {
-                    vec![#(stringify!(#field_names_clone2.clone()).to_string()),*]
+                    vec![#(stringify!(#field_names_clone2).to_string()),*]
                 }
             }); // column_fields_stream
 
