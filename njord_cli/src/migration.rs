@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use njord::sqlite;
-use rusqlite::Connection;
+use rusqlite::{Connection, Error, ErrorCode};
 
 use crate::util::{
     create_migration_files, get_migrations_directory_path, get_next_migration_version, read_config,
@@ -63,12 +63,7 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
 /// run(Some("production"), Some("debug"));
 /// ```
 pub fn run(env: Option<&String>, log_level: Option<&String>) {
-    //TODO: this doesnt load since it looks in the wrong directory
-    // need to update the open() function to look for either ../target or ./target dir
-    // it should not be hardcoded here as well, we need a more elegant solution
     let conn = sqlite::open("sqlite.db");
-
-    println!("{}", conn.is_ok());
 
     match conn {
         Ok(conn) => {
@@ -165,14 +160,24 @@ pub fn rollback(env: Option<&String>, to: Option<&String>, log_level: Option<&St
 /// # Note
 ///
 /// This function queries the "migration_history" table to obtain the latest version.
-fn get_latest_migration_version(conn: &Connection) -> Result<String, rusqlite::Error> {
+fn get_latest_migration_version(conn: &Connection) -> Result<String, Error> {
     let query = "SELECT version FROM migration_history ORDER BY version DESC LIMIT 1;";
-    let result: Result<String, rusqlite::Error> = conn.query_row(query, [], |row| row.get(0));
+    let result: Result<String, Error> = conn.query_row(query, [], |row| row.get(0));
 
-    result.map_err(|err| {
-        eprintln!("Error getting latest migration version: {}", err);
-        err
-    })
+    match result {
+        Ok(version) => Ok(version),
+        Err(err) => {
+            match err {
+                Error::SqliteFailure(error, _) if error.code == ErrorCode::Unknown => {
+                    Ok("00000000000000_njord_initial_setup".to_string())
+                }
+                _ => {
+                    eprintln!("Error getting latest migration version: {}", err);
+                    Err(err)
+                }
+            }
+        }
+    }
 }
 
 /// Executes SQL content from a file on the provided database connection.
