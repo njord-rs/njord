@@ -66,7 +66,7 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
     //TODO: this doesnt load since it looks in the wrong directory
     // need to update the open() function to look for either ../target or ./target dir
     // it should not be hardcoded here as well, we need a more elegant solution
-    let conn = sqlite::open("test_database.db");
+    let conn = sqlite::open("sqlite.db");
 
     match conn {
         Ok(conn) => {
