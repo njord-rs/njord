@@ -44,6 +44,9 @@ fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
         values_str.push_str(", ");
     }
 
+    // sanitize table name from unwanted quotations or backslashes
+    let table_name = table_row.get_name().replace("\"", "").replace("\\", "");
+
     // remove the trailing comma and space
     columns_str.pop();
     columns_str.pop();
@@ -52,7 +55,7 @@ fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
 
     let sql = format!(
         "INSERT INTO {} ({}) VALUES ({});",
-        table_row.get_name(),
+        table_name,
         columns_str,
         values_str
     );
