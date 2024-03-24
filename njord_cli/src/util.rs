@@ -162,7 +162,10 @@ pub fn create_migration_files(
     version: &str,
     name: &str,
 ) -> Result<(), std::io::Error> {
-    let dir_path = migrations_dir.join(version).join(name);
+    let mut dir_path = PathBuf::from(migrations_dir);
+    dir_path.push(format!("{}_{}", version, name));
+
+    println!("{:?}", dir_path);
 
     fs::create_dir_all(&dir_path)?;
 
