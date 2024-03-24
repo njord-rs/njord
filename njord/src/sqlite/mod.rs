@@ -1,4 +1,3 @@
-use std::fs;
 use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, Error};
@@ -18,13 +17,8 @@ pub fn open(db_name: &str) -> Result<Connection, Error> {
         PathBuf::from("../target")
     });
     let db_file_path = target_dir.join(db_name);
-    let full_db_file_path = match fs::canonicalize(&db_file_path) {
-        Ok(path) => path,
-        Err(_e) => return Err(Error::ExecuteReturnedResults),
-    };
-    println!("db_file_path = {:?}", full_db_file_path);
 
-    let conn = Connection::open(full_db_file_path)?;
+    let conn = Connection::open(db_file_path)?;
 
     Ok(conn)
 }
