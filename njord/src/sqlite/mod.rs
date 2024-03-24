@@ -12,9 +12,10 @@ pub mod query;
 
 /// Open a database connection
 pub fn open(db_name: &str) -> Result<Connection, Error> {
+    // TODO: this needs to be updated to a more elegant solution
     let target_dir = find_target_directory(Path::new(".")).unwrap_or_else(|| {
-        println!("Target directory not found, using default '../target'."); // TODO: use logging later
-        PathBuf::from("../target")
+        println!("Target directory not found, using default '../../target'."); // TODO: use logging later
+        PathBuf::from("../../target")
     });
     let db_file_path = target_dir.join(db_name);
 
