@@ -3,9 +3,7 @@ use std::{fs, path::Path};
 use njord::sqlite;
 use rusqlite::{Connection, Error, ErrorCode};
 
-use crate::util::{
-    create_migration_files, get_migrations_directory_path, get_next_migration_version, read_config,
-};
+use crate::util::{create_migration_files, get_migrations_directory_path, get_next_migration_version, MigrationHistory, read_config};
 
 /// Generates migration files with the specified name, environment, and dry-run option.
 ///
@@ -87,6 +85,10 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
                     eprintln!("Error executing up.sql: {}", up_err);
                 } else {
                     println!("up.sql executed successfully.");
+
+                    // TODO: insert new row with the version
+                    let row = MigrationHistory { id: 0, version: "Test".to_string() };
+                    sqlite::insert(conn, &row).expect("TODO: panic message");
                 }
             } else {
                 eprintln!("Error obtaining latest migration version.");

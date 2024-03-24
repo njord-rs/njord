@@ -5,6 +5,8 @@ use std::num::ParseIntError;
 use std::path::{Path, PathBuf};
 use std::{env, fs};
 use toml::Value as TomlConfig;
+use njord_derive::Table;
+use njord::table::Table;
 
 #[derive(Debug)]
 pub enum ConfigError {
@@ -29,6 +31,13 @@ pub struct MigrationsDirectory {
 #[allow(dead_code)]
 pub struct SchemaFile {
     file: String,
+}
+
+#[derive(Table)]
+#[table_name = "migration_history"]
+pub struct MigrationHistory {
+    pub id: usize,
+    pub version: String,
 }
 
 impl fmt::Display for ConfigError {
