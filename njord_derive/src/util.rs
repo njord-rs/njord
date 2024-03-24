@@ -1,3 +1,4 @@
+use quote::quote;
 use syn::Meta;
 
 /// Check if the Default trait is implemented for the struct.
@@ -52,7 +53,13 @@ pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
                 let attr_meta = &attr.meta;
 
                 match attr_meta {
-                    Meta::NameValue(val) => val,
+                    Meta::NameValue(val) => {
+                        let expr = &val.value;
+                        let expr_token_stream = quote! { #expr };
+                        let table_value = expr_token_stream.to_string();
+
+                        return table_value;
+                    },
                     _ => panic!("Incorrect format for using the `table_name` attribute."),
                 };
             }
