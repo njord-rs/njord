@@ -68,6 +68,8 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
     // it should not be hardcoded here as well, we need a more elegant solution
     let conn = sqlite::open("sqlite.db");
 
+    println!("{}", conn.is_ok());
+
     match conn {
         Ok(conn) => {
             println!("Database connection established successfully.");
