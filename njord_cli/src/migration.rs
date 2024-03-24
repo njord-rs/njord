@@ -2,8 +2,9 @@ use std::{fs, path::Path};
 
 use njord::sqlite;
 use rusqlite::{Connection, Error, ErrorCode};
+use toml::Value;
 
-use crate::util::{create_migration_files, get_migrations_directory_path, get_next_migration_version, MigrationHistory, read_config};
+use crate::util::{ConfigError, create_migration_files, get_migrations_directory_path, get_next_migration_version, MigrationHistory, read_config};
 
 /// Generates migration files with the specified name, environment, and dry-run option.
 ///
@@ -22,18 +23,19 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
     if let Ok(config) = read_config() {
         if let Some(migrations_dir) = get_migrations_directory_path(&config) {
             // get the next migration version based on existing ones
-            if let Ok(version) = get_next_migration_version(&migrations_dir) {
+            if let Ok(next_version) = get_next_migration_version(&migrations_dir) {
+                println!("next_version: {}", next_version);
                 let migration_name = name.map(|s| s.as_str()).unwrap_or("example_name");
 
                 // create migration files
-                if let Err(err) = create_migration_files(&migrations_dir, &version, migration_name)
+                if let Err(err) = create_migration_files(&migrations_dir, &next_version, migration_name)
                 {
                     eprintln!("Error creating migration files: {}", err);
                     return;
                 }
 
                 println!("Migration files generated successfully:");
-                println!("Version: {}", version);
+                println!("Version: {}", next_version);
                 println!("Name: {}", migration_name);
                 println!("Environment: {:?}", env);
                 println!("Dry-run: {:?}", dry_run);
@@ -61,46 +63,58 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
 /// run(Some("production"), Some("debug"));
 /// ```
 pub fn run(env: Option<&String>, log_level: Option<&String>) {
-    let conn = sqlite::open("sqlite.db");
+    if let Ok(config) = read_config() {
+        if let Some(migrations_dir) = get_migrations_directory_path(&config) {
+            if let Ok(next_version) = get_next_migration_version(&migrations_dir) {
 
-    match conn {
-        Ok(conn) => {
-            println!("Database connection established successfully.");
+                let conn = sqlite::open("sqlite.db");
 
-            // obtain the latest version from the "migration_history" table
-            if let Ok(latest_version) = get_latest_migration_version(&conn) {
-                // construct paths to migration directories
-                let migrations_dir = format!("migrations/{}", latest_version);
+                match conn {
+                    Ok(conn) => {
+                        println!("Database connection established successfully.");
 
-                // execute up.sql in directories that have not been applied yet
-                if let Err(up_err) = execute_sql_from_file(&conn, &migrations_dir, "up.sql") {
-                    // if up.sql fails, run down.sql
-                    if let Err(down_err) = execute_sql_from_file(&conn, &migrations_dir, "down.sql")
-                    {
-                        eprintln!("Error executing down.sql: {}", down_err);
-                    } else {
-                        println!("down.sql executed successfully.");
+                        // obtain the latest version from the "migration_history" table
+                        if let Ok(latest_version) = get_latest_migration_version(&conn) {
+                            // construct paths to migration directories
+
+                            // check for new migration direc
+
+                            if latest_version != next_version {
+                                let migrations_dir = format!("migrations/{}", next_version);
+
+                                // execute up.sql in directories that have not been applied yet
+                                if let Err(up_err) = execute_sql_from_file(&conn, &migrations_dir, "up.sql") {
+                                    // if up.sql fails, run down.sql
+                                    if let Err(down_err) = execute_sql_from_file(&conn, &migrations_dir, "down.sql")
+                                    {
+                                        eprintln!("Error executing down.sql: {}", down_err);
+                                    } else {
+                                        println!("down.sql executed successfully.");
+                                    }
+
+                                    eprintln!("Error executing up.sql: {}", up_err);
+                                } else {
+                                    println!("up.sql executed successfully.");
+
+                                    // TODO: insert new row with the version
+                                    let row = MigrationHistory { version: next_version.to_string() };
+                                    sqlite::insert(conn, &row).expect("TODO: panic message");
+                                }
+                            }
+                        } else {
+                            eprintln!("Error obtaining latest migration version.");
+                        }
                     }
+                    Err(err) => eprintln!("Error establishing database connection: {}", err),
+                };
 
-                    eprintln!("Error executing up.sql: {}", up_err);
-                } else {
-                    println!("up.sql executed successfully.");
-
-                    // TODO: insert new row with the version
-                    let row = MigrationHistory { version: "00000000000000_njord_initial_setup".to_string() };
-                    sqlite::insert(conn, &row).expect("TODO: panic message");
-                }
-            } else {
-                eprintln!("Error obtaining latest migration version.");
+                println!(
+                    "Running migration with env '{:?}' and log-level '{:?}'",
+                    env, log_level
+                );
             }
         }
-        Err(err) => eprintln!("Error establishing database connection: {}", err),
-    };
-
-    println!(
-        "Running migration with env '{:?}' and log-level '{:?}'",
-        env, log_level
-    );
+    }
 }
 
 /// Rolls back migration changes to a specific version, with optional environment and log level.
@@ -198,14 +212,14 @@ fn execute_sql_from_file(
     conn: &Connection,
     migrations_dir: &str,
     file_name: &str,
-) -> Result<(), rusqlite::Error> {
+) -> Result<(), Error> {
     let file_path = Path::new(migrations_dir).join(file_name);
 
     let sql_content = match fs::read_to_string(&file_path) {
         Ok(content) => content,
         Err(err) => {
             eprintln!("Error reading {}: {}", file_path.display(), err);
-            return Err(rusqlite::Error::QueryReturnedNoRows); // placeholder error
+            return Err(Error::QueryReturnedNoRows); // placeholder error
         }
     };
 
