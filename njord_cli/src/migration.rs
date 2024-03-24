@@ -87,7 +87,7 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
                     println!("up.sql executed successfully.");
 
                     // TODO: insert new row with the version
-                    let row = MigrationHistory { id: 0, version: "Test".to_string() };
+                    let row = MigrationHistory { version: "00000000000000_njord_initial_setup".to_string() };
                     sqlite::insert(conn, &row).expect("TODO: panic message");
                 }
             } else {
@@ -118,9 +118,6 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
 /// ```
 pub fn rollback(env: Option<&String>, to: Option<&String>, log_level: Option<&String>) {
     if let Some(target_version) = to {
-        //TODO: this doesn't load since it looks in the wrong directory
-        // need to update the open() function to look for either ../target or ./target dir
-        // it should not be hardcoded here as well, we need a more elgant solution
         let conn = sqlite::open("sqlite.db");
 
         match conn {
