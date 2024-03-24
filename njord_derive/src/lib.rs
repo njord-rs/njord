@@ -42,7 +42,7 @@ use util::extract_table_name;
 #[proc_macro_derive(Table, attributes(table_name))]
 pub fn table_derive(input: TokenStream) -> TokenStream {
     let cloned_input = input.clone();
-    let derive_input: syn::DeriveInput = parse_macro_input!(cloned_input);
+    let derive_input: DeriveInput = parse_macro_input!(cloned_input);
     let DeriveInput {
         ident, data, attrs, ..
     } = derive_input.clone();
