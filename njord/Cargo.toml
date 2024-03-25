@@ -14,6 +14,7 @@ rust-version = "1.74.0"
 njord_derive = { version = "0.1.0", optional = true, path = "../njord_derive" }
 rusqlite = { version = "0.31.0", features = ["bundled"] }
 log = "0.4.21"
+rand = "0.8.4"
 
 [dev-dependencies]
 njord_derive = { version = "0.1.0", path = "../njord_derive" }
