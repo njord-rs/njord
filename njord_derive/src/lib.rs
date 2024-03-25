@@ -122,9 +122,10 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             }); // from_str_impl
 
             // implement the get_name() function
+            let clean_table_name = table_name.trim_matches(|c| c == '\\' || c == '"');
             name_stream.extend::<TokenStream2>(quote! {
                 fn get_name(&self) -> &str {
-                    stringify!(#table_name)
+                    #clean_table_name
                 }
             }); // name_stream
 
