@@ -94,7 +94,6 @@ fn select() {
     let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
-    // TODO: fix the issue with sqlite::select()
     match conn {
         Ok(c) => {
             let result = sqlite::select(c, columns)
@@ -103,11 +102,7 @@ fn select() {
                 .build();
 
             match result {
-                Ok(r) => {
-                    println!("\nSELECT ROWS: ");
-                    // print_rows(&result);
-                    assert_eq!(r.len(), 2);
-                },
+                Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
         }
