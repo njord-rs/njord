@@ -7,7 +7,7 @@ description = "A lightweight ORM library in Rust."
 license = "BSD-3-Clause"
 documentation = "https://docs.rs/njord/latest/njord/"
 repository = "https://github.com/mjovanc/njord"
-readme = "crates-io.md"
+readme = "../README.md"
 rust-version = "1.74.0"
 homepage = "https://njord.rs"
 keywords = ["orm", "database", "sql"]
@@ -19,7 +19,7 @@ log = "0.4.21"
 rand = "0.8.4"
 
 [dev-dependencies]
-njord_derive = { version = "0.2.0", path = "../njord_derive" }
+njord_derive = { version = "0.1.0", path = "../njord_derive" }
 
 [features]
 
