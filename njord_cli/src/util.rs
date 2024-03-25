@@ -1,10 +1,9 @@
 use core::fmt;
 use serde::Deserialize;
 use std::error::Error as StdError;
-use std::num::ParseIntError;
 use std::path::{Path, PathBuf};
 use std::{env, fs};
-use chrono::{DateTime, Local};
+use std::collections::HashSet;
 use toml::Value as TomlConfig;
 use njord_derive::Table;
 use njord::table::Table;
@@ -126,7 +125,6 @@ pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::
                 .and_then(|e| e.file_name().to_str().map(String::from))
         })
         .filter_map(|version| {
-            // Split the version string by '_' and take the first part
             version.split('_').next().unwrap_or_default().parse().ok()
         })
         .collect();
@@ -138,8 +136,25 @@ pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::
             let next_version = max_value + 1;
             Ok(format!("{:014}", next_version))
         }
-        None => Ok("00000000000001_unknown".to_string()), // initial version
+        None => Ok("00000000000001_unknown".to_string()), // default version
     }
+}
+
+pub fn get_local_migration_versions(migrations_dir: &Path) -> Result<HashSet<String>, std::io::Error> {
+    let entries = fs::read_dir(migrations_dir)?;
+    let local_versions: HashSet<String> = entries
+        .filter_map(|entry| {
+            entry.ok()
+                .and_then(|e| e.file_name().to_str().map(String::from))
+        })
+        .filter(|version| version.len() == 14)
+        .collect();
+
+    Ok(local_versions)
+}
+
+pub fn is_version_in_database(local_version: &String, latest_version: &String) -> bool {
+    false
 }
 
 /// Creates migration files in the specified directory.
