@@ -154,8 +154,9 @@ To establish a connection we first need to call the `sqlite::open()` function an
 ```rust
 fn main () {
     let db_name = "njord.db";
+    let db_path = Path::new(&db_name);
 
-    match sqlite::open(db_name) {
+    match sqlite::open(db_path) {
         Ok(conn) => {
             println!("Database opened successfully!");
             

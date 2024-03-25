@@ -86,10 +86,13 @@ impl<T: Table + Default> QueryBuilder<T> {
     pub fn build(self) -> Result<Vec<T>> {
         let columns_str = self.columns.join(", ");
 
-        let table_name_str = self
+        let table_name = self
             .table
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
+
+        // sanitize table name from unwanted quotations or backslashes
+        let table_name_str = table_name.replace("\"", "").replace("\\", "");
 
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
 
