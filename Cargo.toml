@@ -2,6 +2,7 @@
 members = [
     "njord",
     "njord_derive",
+    "njord_examples/sqlite",
 ]
 
 resolver = "2"
