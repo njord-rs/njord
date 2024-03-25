@@ -91,7 +91,7 @@ fn select() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["username".to_string()];
+    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     // TODO: fix the issue with sqlite::select()
