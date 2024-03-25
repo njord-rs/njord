@@ -2,6 +2,7 @@ use std::path::Path;
 use reqwest::Error;
 use reqwest::header::ACCEPT;
 use serde_json::Value;
+use njord::sqlite;
 use crate::schema::NearEarthObject;
 
 mod schema;
@@ -13,20 +14,16 @@ async fn main() -> Result<(), Error> {
     // setting up a sqlite db and connection
     let db_relative_path = "./njord_examples/sqlite/neo.db";
     let db_path = Path::new(&db_relative_path);
-    let conn = njord::sqlite::open(db_path);
 
     let neo = get_near_earth_objects(0, 10).await;
 
     match neo {
         Ok(data) => {
-            match conn {
-                Ok(_) => {
-                    for obj in data["near_earth_objects"].as_array().unwrap() {
-                        let near_earth_obj: NearEarthObject = serde_json::from_value(obj.clone()).unwrap();
-                        println!("{:#?}", near_earth_obj);
-                    }
-                }
-                Err(err) => eprintln!("Error: {}", err)
+            for obj in data["near_earth_objects"].as_array().unwrap() {
+                let near_earth_obj: NearEarthObject = serde_json::from_value(obj.clone()).unwrap();
+                println!("{:#?}", near_earth_obj);
+                let conn = sqlite::open(db_path).unwrap();
+                let _ = sqlite::insert(conn, &near_earth_obj);
             }
         }
         Err(err) => eprintln!("Error: {}", err),
