@@ -4,7 +4,7 @@ use std::ops::Deref;
 use njord::sqlite;
 use rusqlite::{Connection, Error, ErrorCode};
 
-use crate::util::{create_migration_files, get_local_migration_versions, get_migrations_directory_path, get_next_migration_version, is_version_in_database, MigrationHistory, read_config};
+use crate::util::{create_migration_files, get_local_migration_versions, get_migrations_directory_path, get_next_migration_version, version_in_database, MigrationHistory, read_config};
 
 /// Generates migration files with the specified name, environment, and dry-run option.
 ///
@@ -83,21 +83,21 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
                             }
                         };
 
-                        println!("HashSet:");
                         for value in &local_versions {
                             println!("Value: {}", value);
                         }
 
                         for local_version in &local_versions {
-                            if !is_version_in_database(&local_version, &latest_db_version) {
-                                println!("Version {} not found in database. Executing code...", local_version);
+                            match version_in_database(&conn, &local_version) {
+                                Ok(_) => {
+                                    println!("Version {} not found in database. Executing code...", local_version);
 
-                                let migrations_dir = format!("migrations/{}", local_version);
-                                execute_pending_migration(&conn, &migrations_dir, &local_version).unwrap();
+                                    let migrations_dir = format!("migrations/{}", local_version);
+                                    execute_pending_migration(&conn, &migrations_dir, &local_version).unwrap();
+                                }
+                                Err(_) => {}
                             }
                         }
-
-
                     } else {
                         eprintln!("Error obtaining latest migration version.");
                     }
