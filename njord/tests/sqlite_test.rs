@@ -1,8 +1,10 @@
 // integrations tests for sqlite
 
+use std::collections::HashMap;
 use std::path::Path;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
+use rusqlite::{Connection, Error};
 use njord::condition::Condition;
 use njord::sqlite::{self};
 use njord::table::Table;
@@ -110,208 +112,158 @@ fn select() {
     };
 }
 
-// #[test]
-// fn select_distinct() {
-//     let db_name = "select_distinct.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     common::insert_rows_sqlite_distinct(db_name).expect("Failed to insert rows to sqlite.");
+#[test]
+fn select_distinct() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
-//     let condition = Condition::Eq(
-//         "description".to_string(),
-//         "Some description for Table A".to_string(),
-//     );
+    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::select(conn, columns)
-//                 .from(&TableA::default())
-//                 .where_clause(condition)
-//                 .distinct()
-//                 .build::<TableA>();
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(c, columns)
+                .from(User::default())
+                .where_clause(condition)
+                .distinct()
+                .build();
 
-//             match result {
-//                 Ok(result) => {
-//                     println!("\nSELECT DISTINCT ROWS: ");
-//                     // print_rows(&result);
-//                     assert_eq!(result.len(), 1);
-//                 },
-//                 Err(error) => panic!("Failed to SELECT: {:?}", error),
-//             };
-//         }
-//         Err(error) => panic!("Failed to select: {:?}", error),
-//     };
-// }
+            match result {
+                Ok(r) => {
+                    assert_eq!(r.len(), 1);
+                },
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
 
-// #[test]
-// fn select_group_by() {
-//     let db_name = "select_group_by.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+#[test]
+fn select_group_by() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
-//     let condition = Condition::Eq(
-//         "description".to_string(),
-//         "Some description for Table A".to_string(),
-//     );
-//     let group_by = vec![
-//         "description".to_string(),
-//         "amount".to_string(),
-//     ];
+    let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+    let condition = Condition::Eq("description".to_string(), "Some description for Table A".to_string());
+    let group_by = vec!["description".to_string(), "amount".to_string()];
 
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::select(conn, columns)
-//                 .from(&TableA::default())
-//                 .where_clause(condition)
-//                 .group_by(group_by)
-//                 .build::<TableA>();
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(c, columns)
+                .from(User::default())
+                .where_clause(condition)
+                .group_by(group_by)
+                .build();
 
-//             match result {
-//                 Ok(result) => {
-//                     println!("\nSELECT GROUP BY ROWS: ");
-//                     // print_rows(&result);
-//                     assert_eq!(result.len(), 2);
-//                 },
-//                 Err(error) => panic!("Failed to SELECT: {:?}", error),
-//             };
-//         }
-//         Err(error) => panic!("Failed to select: {:?}", error),
-//     };
-// }
+            match result {
+                Ok(r) => assert_eq!(r.len(), 2),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
 
-// #[test]
-// fn select_order_by() {
-//     let db_name = "select_order_by.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+#[test]
+fn select_order_by() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
-//     let condition = Condition::Eq(
-//         "description".to_string(),
-//         "Some description for Table A".to_string(),
-//     );
-//     let group_by = vec![
-//         "description".to_string(),
-//         "amount".to_string(),
-//     ];
-//     let mut order_by = HashMap::new();
-//     order_by.insert(vec!["amount".to_string()], "DESC".to_string());
-//     order_by.insert(vec!["description".to_string()], "ASC".to_string());
+    let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+    let condition = Condition::Eq("description".to_string(), "Some description for Table A".to_string());
+    let group_by = vec!["description".to_string(), "amount".to_string()];
 
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::select(conn, columns)
-//                 .from(&TableA::default())
-//                 .where_clause(condition)
-//                 .order_by(order_by)
-//                 .group_by(group_by)
-//                 .build::<TableA>();
+    let mut order_by = HashMap::new();
+    order_by.insert(vec!["amount".to_string()], "DESC".to_string());
+    order_by.insert(vec!["description".to_string()], "ASC".to_string());
 
-//             match result {
-//                 Ok(result) => {
-//                     println!("\nSELECT ORDER BY ROWS: ");
-//                     // print_rows(&result);
-//                     assert_eq!(result.len(), 2);
-//                 },
-//                 Err(error) => panic!("Failed to SELECT: {:?}", error),
-//             };
-//         }
-//         Err(error) => panic!("Failed to select: {:?}", error),
-//     };
-// }
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(c, columns)
+                .from(User::default())
+                .where_clause(condition)
+                .order_by(order_by)
+                .group_by(group_by)
+                .build();
 
-// #[test]
-// fn select_limit_offset() {
-//     let db_name = "select_limit_offset.db";
-//     // let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     // let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     // common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+            match result {
+                Ok(r) => assert_eq!(r.len(), 2),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
 
-//     let columns = vec![
-//         "title".to_string(),
-//         "description".to_string(),
-//         "amount".to_string(),
-//     ];
-//     let condition = Condition::Eq(
-//         "description".to_string(),
-//         "Some description for Table A".to_string(),
-//     );
-//     let group_by = vec!["description".to_string(), "amount".to_string()];
-//     let mut order_by = HashMap::new();
-//     order_by.insert(vec!["amount".to_string()], "ASC".to_string());
-//     order_by.insert(vec!["description".to_string()], "DESC".to_string());
+#[test]
+fn select_limit_offset() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     match init_tables_result {
-//         Ok(_) => {
-//             //TODO we should probably get back a vector of the table that was used so we can more
-//             // easily pass around that struct in the code
-//             let result = sqlite::select(conn, columns)
-//                 .from(&TableA::default())
-//                 .where_clause(condition)
-//                 .order_by(order_by)
-//                 .group_by(group_by)
-//                 .limit(1)
-//                 .offset(1)
-//                 .build::<TableA>();
+    let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+    let condition = Condition::Eq("description".to_string(), "Some description for Table A".to_string());
+    let group_by = vec!["description".to_string(), "amount".to_string()];
 
-//             match result {
-//                 Ok(result) => {
-//                     println!("\nSELECT LIMIT & OFFSET ROWS: ");
-//                     // print_rows(&result);
-//                     assert_eq!(result.len(), 1);
-//                 }
-//                 Err(error) => panic!("Failed to SELECT: {:?}", error),
-//             };
-//         }
-//         Err(error) => panic!("Failed to select: {:?}", error),
-//     };
-// }
+    let mut order_by = HashMap::new();
+    order_by.insert(vec!["amount".to_string()], "ASC".to_string());
+    order_by.insert(vec!["description".to_string()], "DESC".to_string());
 
-// #[test]
-// fn select_having() {
-//     let db_name = "select_having.db";
-//     // let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     // let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     // common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(c, columns)
+                .from(User::default())
+                .where_clause(condition)
+                .order_by(order_by)
+                .group_by(group_by)
+                .limit(1)
+                .offset(1)
+                .build();
 
-//     let columns = vec![
-//         "title".to_string(),
-//         "description".to_string(),
-//         "amount".to_string(),
-//     ];
-//     let where_condition = Condition::Eq(
-//         "description".to_string(),
-//         "Some description for Table A".to_string(),
-//     );
-//     let group_by = vec!["description".to_string(), "amount".to_string()];
-//     let mut order_by = HashMap::new();
-//     order_by.insert(vec!["amount".to_string()], "ASC".to_string());
-//     order_by.insert(vec!["description".to_string()], "DESC".to_string());
-//     let having_condition = Condition::Gt("amount".to_string(), "10".to_string());
+            match result {
+                Ok(r) => assert_eq!(r.len(), 1),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(error) => panic!("Failed to SELECT: {:?}", error),
+    };
+}
 
-//     let result = sqlite::select(conn, columns)
-//         .from(TableA::default())
-//         .where_clause(where_condition)
-//         .order_by(order_by)
-//         .group_by(group_by)
-//         .having(having_condition)
-//         .build();
+#[test]
+fn select_having() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     match result {
-//         Ok(result) => {
-//             println!("\nSELECT HAVING: ");
-//             // print_rows(&result);
-//             assert_eq!(result.len(), 1);
-//         }
-//         Err(error) => panic!("Failed to SELECT: {:?}", error),
-//     };
-// }
+    let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
+    let where_condition = Condition::Eq("description".to_string(), "Some description for Table A".to_string());
+    let group_by = vec!["description".to_string(), "amount".to_string()];
+
+    let mut order_by = HashMap::new();
+    order_by.insert(vec!["amount".to_string()], "ASC".to_string());
+    order_by.insert(vec!["description".to_string()], "DESC".to_string());
+
+    let having_condition = Condition::Gt("amount".to_string(), "10".to_string());
+
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(c, columns)
+                .from(User::default())
+                .where_clause(where_condition)
+                .order_by(order_by)
+                .group_by(group_by)
+                .having(having_condition)
+                .build();
+
+            match result {
+                Ok(r) => assert_eq!(r.len(), 1),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e)
+    }
+}
