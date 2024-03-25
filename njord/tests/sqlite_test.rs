@@ -18,6 +18,7 @@ pub struct User {
     address: String,
 }
 
+//TODO: add these later and test it in respective integration test
 // #[derive(Table)]
 // #[table_name = "categories"]
 // pub struct Category {
@@ -50,7 +51,7 @@ pub struct User {
 fn open_db() {
     let db_relative_path = "./db/open.db";
     let db_path = Path::new(&db_relative_path);
-    
+
     let result = sqlite::open(db_path);
     assert!(result.is_ok());
 }
