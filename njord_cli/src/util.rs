@@ -181,13 +181,13 @@ pub fn get_local_migration_versions(migrations_dir: &Path) -> Result<HashSet<Str
 /// # Errors
 ///
 /// Returns a `rusqlite::Error` if there is an issue with the database query.
-pub fn version_in_database(conn: &Connection, version: &str) -> Result<bool, Error> {
+pub fn version_not_in_database(conn: &Connection, version: &str) -> Result<bool, Error> {
     let query = "SELECT EXISTS(SELECT 1 FROM migration_history WHERE version = ?)";
     let result: Result<i32, Error> = conn.query_row(query, &[&version], |row| row.get(0));
 
     match result {
-        Ok(1) => Ok(true),
-        Ok(0) => Ok(false),
+        Ok(1) => Ok(false),
+        Ok(0) => Ok(true),
         Err(err) => Err(err),
         _ => Ok(false),
     }

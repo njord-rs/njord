@@ -4,7 +4,7 @@ use std::ops::Deref;
 use njord::sqlite;
 use rusqlite::{Connection, Error, ErrorCode};
 
-use crate::util::{create_migration_files, get_local_migration_versions, get_migrations_directory_path, get_next_migration_version, version_in_database, MigrationHistory, read_config};
+use crate::util::{create_migration_files, get_local_migration_versions, get_migrations_directory_path, get_next_migration_version, MigrationHistory, read_config, version_not_in_database};
 
 /// Generates migration files with the specified name, environment, and dry-run option.
 ///
@@ -62,9 +62,10 @@ pub fn generate(name: Option<&String>, env: Option<&String>, dry_run: Option<&St
 /// run(Some("production"), Some("debug"));
 /// ```
 pub fn run(env: Option<&String>, log_level: Option<&String>) {
+    let conn = sqlite::open("sqlite.db");
+
     if let Ok(config) = read_config() {
         if let Some(migrations_dir) = get_migrations_directory_path(&config) {
-            let conn = sqlite::open("sqlite.db");
 
             match conn {
                 Ok(conn) => {
@@ -92,13 +93,18 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
                         // for example it can be run with 00000000000001_init_tables first and
                         // then run 00000000000000_njord_initial_setup which is not incremental
                         for local_version in &local_versions {
-                            match version_in_database(&conn, &local_version) {
+                            match version_not_in_database(&conn, &local_version) {
                                 Ok(_) => {
-                                    println!("Version {} not found in database. Executing code...", local_version);
+                                    println!("Migration {} not found in database. Executing migration...", local_version);
 
                                     let migrations_dir = format!("migrations/{}", local_version);
                                     println!("migrations_dir: {}", migrations_dir);
-                                    execute_pending_migration(&conn, &migrations_dir, &local_version).unwrap();
+                                    let conn = sqlite::open("sqlite.db");
+
+                                    match conn {
+                                        Ok(c) => execute_pending_migration(c, &migrations_dir, &local_version).unwrap(),
+                                        Err(_) => {}
+                                    }
                                 }
                                 Err(_) => {}
                             }
@@ -248,7 +254,7 @@ fn execute_sql_from_file(
 ///
 /// Returns a `rusqlite::Error` if there is an issue executing the SQL scripts or inserting into the database.
 fn execute_pending_migration(
-    conn: &Connection,
+    conn: Connection,
     migrations_dir: &str,
     next_version: &str,
 ) -> Result<(), Error> {
@@ -257,7 +263,7 @@ fn execute_pending_migration(
             println!("up.sql executed successfully.");
             // insert new row with the version into the database
             let row = MigrationHistory { version: next_version.to_string() };
-            // sqlite::insert(conn, &row)?;
+            sqlite::insert(conn, &row)?;
         }
         Err(up_err) => {
             eprintln!("Error executing up.sql: {}", up_err);
