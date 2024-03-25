@@ -1,6 +1,6 @@
 [package]
 name = "njord_derive"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "You should not use this crate directly, it is internal to Njord."
@@ -23,4 +23,4 @@ syn = "2.0.55"
 rusqlite = { version = "0.31.0", features = ["bundled"] }
 
 [dev-dependencies]
-njord = { version = "0.2.0", path = "../njord" }
+njord = { version = "0.2.1", path = "../njord" }
