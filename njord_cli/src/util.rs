@@ -120,24 +120,25 @@ pub fn read_config() -> Result<TomlConfig, ConfigError> {
 ///
 pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::io::Error> {
     let entries = fs::read_dir(migrations_dir)?;
-    let max_version = entries
+    let versions: Vec<u64> = entries
         .filter_map(|entry| {
-            entry
-                .ok()
+            entry.ok()
                 .and_then(|e| e.file_name().to_str().map(String::from))
         })
-        .filter(|version| version.len() == 14)
-        .max();
+        .filter_map(|version| {
+            // Split the version string by '_' and take the first part
+            version.split('_').next().unwrap_or_default().parse().ok()
+        })
+        .collect();
+
+    let max_version = versions.into_iter().max();
 
     match max_version {
-        Some(max_version) => {
-            let next_version: Result<u64, ParseIntError> = max_version.parse();
-            match next_version {
-                Ok(n) => Ok(format!("{:014}", n + 1)),
-                Err(err) => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, err)),
-            }
+        Some(max_value) => {
+            let next_version = max_value + 1;
+            Ok(format!("{:014}", next_version))
         }
-        None => Ok("00000000000001".to_string()), // initial version
+        None => Ok("00000000000001_unknown".to_string()), // initial version
     }
 }
 
