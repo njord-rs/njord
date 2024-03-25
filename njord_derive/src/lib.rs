@@ -49,8 +49,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 
     let table_name = extract_table_name(&attrs);
 
-    println!("{}", table_name);
-
     let mut name_stream = TokenStream2::default();
     let mut columns_stream = TokenStream2::default();
     let mut column_fields_stream = TokenStream2::default();
