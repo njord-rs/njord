@@ -93,28 +93,28 @@ fn select() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["username".to_string(), "address".to_string()];
+    let columns = vec!["username".to_string()];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     // TODO: fix the issue with sqlite::select()
-    // match conn {
-    //     Ok(c) => {
-    //         let result = sqlite::select(c, columns)
-    //             .from(&User::default())
-    //             .where_clause(condition)
-    //             .build::<User>();
-    //
-    //         match result {
-    //             Ok(r) => {
-    //                 println!("\nSELECT ROWS: ");
-    //                 // print_rows(&result);
-    //                 assert_eq!(r.len(), 2);
-    //             },
-    //             Err(e) => panic!("Failed to SELECT: {:?}", e),
-    //         };
-    //     }
-    //     Err(e) => panic!("Failed to select: {:?}", e),
-    // };
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(c, columns)
+                .from(User::default())
+                .where_clause(condition)
+                .build();
+
+            match result {
+                Ok(r) => {
+                    println!("\nSELECT ROWS: ");
+                    // print_rows(&result);
+                    assert_eq!(r.len(), 2);
+                },
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to select: {:?}", e),
+    };
 }
 
 // #[test]
