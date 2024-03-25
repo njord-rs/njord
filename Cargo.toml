@@ -2,8 +2,6 @@
 members = [
     "njord",
     "njord_derive",
-    "njord_cli",
-    "njord_examples/sqlite",
     # "test_suite", perhaps move the tests here?
 ]
 
