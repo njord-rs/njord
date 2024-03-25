@@ -158,7 +158,6 @@ impl<T: Table + Default> QueryBuilder<T> {
             // dynamically create an instance of the struct based on the Table trait
             let mut instance = T::default();
             let columns = instance.get_column_fields();
-            println!("{:?}", columns);
 
             for (index, column) in columns.iter().enumerate() {
                 // use the index to get the value from the row and set it in the struct

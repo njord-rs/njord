@@ -130,7 +130,7 @@ CREATE TABLE products (
 CREATE TABLE orders (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    total_cost REAL NOT NULL,
+    total_cost REAL NOT NULL
 );
 
 -- order_products table

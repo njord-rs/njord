@@ -8,8 +8,6 @@ use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
 
-mod common;
-
 #[derive(Table)]
 #[table_name = "users"]
 pub struct User {
@@ -82,7 +80,7 @@ fn insert_row() {
             assert!(result.is_ok());
         }
         Err(e) => {
-            panic!("Failed to drop table: {:?}", e);
+            panic!("Failed to INSERT: {:?}", e);
         }
     }
 }
@@ -113,7 +111,7 @@ fn select() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
         }
-        Err(e) => panic!("Failed to select: {:?}", e),
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
 }
 
