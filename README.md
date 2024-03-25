@@ -14,8 +14,6 @@ A lightweight and extensible ORM framework for Rust.
 - [Supported Databases](#supported-databases)
 - [Getting Started](#getting-started)
   - [Initializing a new project](#initializing-a-new-project)
-  - [Installing Njord CLI](#installing-njord-cli)
-  - [Setup Njord for your project](#setup-njord-for-your-project)
   - [Add a schema file](#add-a-schema-file)
   - [Generate a new migration](#generate-a-new-migration)
   - [Apply new schema changes](#apply-new-schema-changes)
@@ -67,44 +65,6 @@ njord = { version = "<version>", features = ["sqlite"] }
 dotenvy = "0.15"
 ```
 
-### Installing Njord CLI
-
-Njord provides a separate CLI tool to help manage your project. Since it’s a standalone binary, and doesn’t affect your project’s code directly, we don’t add it to `Cargo.toml`. Instead, we just install it on our system.
-
-```sh
-cargo install njord --no-default-features --features "sqlite"
-```
-
-SQlite is per default, so the above command only illustrates how you could use a different feature such as `postgres`, `mysql`, `mariadb`, `oracle` and `mssql` etc. Note that these others are not done yet. Will come in future release!
-
-### Setup Njord for your project
-
-We now use the setup command of the Njord CLI application to create our `.toml` file as well as an initial migrations directory and two `.sql` files.
-
-```sh
-njord setup
-```
-
-Two empty files now exists in a directory called `migrations`.
-
-```
-migrations/00000000000000_njord_initial_setup/up.sql
-migrations/00000000000000_njord_initial_setup/down.sql
-```
-
-We also get a `njord.toml` file which is the configuration file where to load our `schema.rs` file and where to store our migrations directory. Default for the schema file is under `src/schema.rs` and migrations in the root directory. 
-
-```toml
-# For documentation on how to configure this file,
-# see https://njord.rs
-
-[schema]
-file = "src/schema.rs"
-
-[migrations_directory]
-dir = "migrations"
-```
-
 ### Add a schema file
 
 Now we are going to define our schema file that we will create under `src/schema.rs`. We will store basically our structs that will map against the database. 
@@ -135,6 +95,7 @@ pub struct Product {
     price: f64,
     stock_quantity: usize,
     category: Category,     // one-to-one relationship
+    discount: Option<f64>,
 }
 
 #[derive(Table)]
@@ -147,7 +108,7 @@ pub struct Order {
 }
 ```
 
-Now that we have that in place, we need to create the SQL for setting this up in the database so go to `migrations/00000000000000_njord_initial_setup` and open up first `up.sql` and add the following.
+Now that we have that in place, we need to create the SQL for setting this up in the database and execute it.
 
 ```sql
 -- users table
@@ -181,102 +142,6 @@ CREATE TABLE order_products (
     product_id INTEGER REFERENCES products(id),
     PRIMARY KEY (order_id, product_id)
 );
-```
-
-Now we need to also setup a `down.sql` file that will revert back the change.
-
-```sql
--- Drop tables in reverse order to handle foreign key constraints
-
-DROP TABLE IF EXISTS order_products;
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS products;
-DROP TABLE IF EXISTS users;
-```
-
-### Generate a new migration
-
-Now we are going to generate a new migration so we can update existing schema.
-
-```sh
-njord migration generate --name=update_something --env=development
-```
-
-Now we should have the following in our `migrations` directory.
-
-```
-migrations/00000000000001_update_something/up.sql
-migrations/00000000000001_update_something/down.sql
-```
-
-Let's make a change. Open up the `up.sql` file and add the following.
-
-```sql
--- products table: Add discount column
-ALTER TABLE products ADD COLUMN discount REAL;
-```
-
-And we also need to define how we can revert these changes by adding the following.
-
-```sql
--- products table: Remove discount column
-CREATE TEMPORARY TABLE products_backup AS SELECT * FROM products;
-
--- Drop original products table
-DROP TABLE products;
-
--- Recreate products table without the discount column
-CREATE TABLE products (
-    product_id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    price REAL NOT NULL,
-    stock_quantity INTEGER NOT NULL,
-    category TEXT NOT NULL
-);
-
--- Restore data from backup
-INSERT INTO products SELECT * FROM products_backup;
-
--- Drop temporary backup table
-DROP TABLE products_backup;
-```
-
-Finally we need to modify our `schema.rs` file so it will map correctly.
-
-```rust
-#[derive(Table)]
-#[table_name = "products"]
-pub struct Product {
-    name: String,
-    description: String,
-    price: f64,
-    stock_quantity: usize,
-    category: Category,
-    discount: Option<f64>,  // We added a new column here
-}
-```
-
-### Apply new schema changes
-
-We apply the newly created migration files by running `migration run` command with the `--env` flag for which target enviroment and we can also set a `--log-level` flag to get either more or less log output.
-
-```sh
-njord migration run --env=development --log-level=debug
-```
-
-### Rollback schema changes
-
-To rollback to last previous change we can do that by running the `rollback` command and specifying which enviroment we are in.
-
-```sh
-njord rollback --env=development --to=00000000000000
-```
-
-To rollback to a specific change we can to that by adding the flag `--to` with its ID.
-
-```sh
-njord rollback --env=development --to=00000000000000
 ```
 
 ## Usage
