@@ -6,7 +6,6 @@ pub mod insert;
 pub use insert::insert;
 pub mod select;
 pub use select::select;
-use crate::util::find_target_directory;
 
 pub mod query;
 
