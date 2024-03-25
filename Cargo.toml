@@ -2,7 +2,6 @@
 members = [
     "njord",
     "njord_derive",
-    # "test_suite", perhaps move the tests here?
 ]
 
 resolver = "2"

@@ -1,7 +1,3 @@
-// use std::{env, fs, vec};
-
-// use njord::{sqlite, table::Table};
-
 // // #[cfg(feature = "derive")]
 // use njord_derive::Table;
 // use rusqlite::types::Value;
@@ -27,17 +23,6 @@
 //     product_name: String,
 //     price: f64,
 //     in_stock: bool,
-// }
-
-// pub fn open_db_sqlite(db_name: &str) -> Result<Connection, Error> {
-//     let conn = sqlite::open(db_name).unwrap();
-//     Ok(conn)
-// }
-
-// pub fn drop_db_sqlite(db_name: &str) -> Result<(), std::io::Error> {
-//     let target_dir = env::var("OUT_DIR").unwrap_or_else(|_| "../target".to_string());
-//     let db_file_path = format!("{}/{}", target_dir, db_name);
-//     fs::remove_file(db_file_path)
 // }
 
 // // pub fn initialize_tables_sqlite(db_name: &str) -> Result<(), Error> {

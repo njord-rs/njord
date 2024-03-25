@@ -1,5 +1,6 @@
 // integrations tests for sqlite
 
+use std::path::Path;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
@@ -15,90 +16,68 @@ pub struct User {
     address: String,
 }
 
-#[derive(Table)]
-#[table_name = "categories"]
-pub struct Category {
-    id: usize,
-    name: String,
-}
-
-#[derive(Table)]
-#[table_name = "products"]
-pub struct Product {
-    id: usize,
-    name: String,
-    description: String,
-    price: f64,
-    stock_quantity: usize,
-    category: Category, // one-to-one relationship
-}
-
-//TODO: need to implement display for vector of structs before this will work!
+// #[derive(Table)]
+// #[table_name = "categories"]
+// pub struct Category {
+//     id: usize,
+//     name: String,
+// }
+//
+// #[derive(Table)]
+// #[table_name = "products"]
+// pub struct Product {
+//     id: usize,
+//     name: String,
+//     description: String,
+//     price: f64,
+//     stock_quantity: usize,
+//     category: Category,     // one-to-one relationship
+//     discount: Option<f64>,
+// }
+//
 // #[derive(Table)]
 // #[table_name = "orders"]
 // pub struct Order {
 //     id: usize,
 //     user: User,             // one-to-one relationship
-//     products: Vec<Product>, // one-to-many relationship - Gets data from junction table (example orders_products)
+//     products: Vec<Product>, // one-to-many relationship - populates from based on junction table (gets from macro attribute "table_name" and combines them for example, orders_products)
 //     total_cost: f64,
 // }
 
 #[test]
 fn open_db() {
-    let result = sqlite::open("test_database.db");
+    let db_relative_path = "./db/open.db";
+    let db_path = Path::new(&db_relative_path);
+
+    println!("{:?}", db_path);
+
+    let result = sqlite::open(db_path);
     assert!(result.is_ok());
 }
 
-// #[test]
-// fn init_tables() {
-//     let db_name = "init_tables.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
+#[test]
+fn insert_row() {
+    let db_relative_path = "./db/insert_row.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     let tables = common::generate_tables_sqlite();
+    let table_row: User = User {
+        id: 0,
+        username: "mjovanc".to_string(),
+        email: "mjovanc@icloud.com".to_string(),
+        address: "Some Random Address 1".to_string(),
+    };
 
-//     let result = sqlite::init(conn, tables);
-
-//     assert!(result.is_ok());
-// }
-
-// #[test]
-// fn insert_row() {
-//     let db_name = "insert_row.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-
-//     let table_row: TableA = TableA {
-//         title: "Table A".to_string(),
-//         description: "Some description for Table A".to_string(),
-//         amount: 0,
-//     };
-
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::insert(conn, &table_row);
-//             assert!(result.is_ok());
-//         }
-//         Err(error) => panic!("Failed to insert row: {:?}", error),
-//     };
-// }
-
-// #[test]
-// fn drop_table() {
-//     let db_name = "drop_table.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::drop_table(conn, TableA::default());
-//             assert!(result.is_ok());
-//         }
-//         Err(error) => panic!("Failed to drop table: {:?}", error),
-//     }
-// }
+    match conn {
+        Ok(c) => {
+            let result = sqlite::insert(c, &table_row);
+            assert!(result.is_ok());
+        }
+        Err(e) => {
+            panic!("Failed to drop table: {:?}", e);
+        }
+    }
+}
 
 // #[test]
 // fn select() {
