@@ -171,6 +171,7 @@ fn main () {
 ```rust
 fn main () {
     let db_name = "njord.db";
+    let db_path = Path::new(&db_name);
 
     let user = User {
         username: String::from("john_doe"),
@@ -178,7 +179,7 @@ fn main () {
         address: String::from("123 Main St"),
     };
 
-    match sqlite::open(db_name) {
+    match sqlite::open(db_path) {
         Ok(conn) => {
             println!("Database opened successfully!");
             
@@ -201,6 +202,7 @@ use schema::User;
 
 fn main () {
     let db_name = "njord.db";
+    let db_path = Path::new(&db_name);
 
     // SELECT
     let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
@@ -219,7 +221,7 @@ fn main () {
     // HAVING
     let having_condition = Condition::Gt("id".to_string(), "1".to_string());
 
-    match sqlite::open(db_name) {
+    match sqlite::open(db_path) {
         Ok(conn) => {
             println!("Database opened successfully!");
             
