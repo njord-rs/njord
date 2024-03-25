@@ -1,6 +1,9 @@
 // integrations tests for sqlite
 
 use std::path::Path;
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
+use njord::condition::Condition;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
@@ -61,8 +64,13 @@ fn insert_row() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
+    // generate random number
+    let mut rng = StdRng::from_entropy();
+    let max_usize = usize::MAX;
+    let random_number: usize = rng.gen_range(0..max_usize / 2);
+
     let table_row: User = User {
-        id: 0,
+        id: random_number,
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
@@ -79,39 +87,35 @@ fn insert_row() {
     }
 }
 
-// #[test]
-// fn select() {
-//     let db_name = "select.db";
-//     let _ = common::drop_db_sqlite(db_name);
-//     let conn = common::open_db_sqlite(db_name).unwrap();
-//     let init_tables_result = common::initialize_tables_sqlite(db_name);
-//     common::insert_rows_sqlite(db_name).expect("Failed to insert rows to sqlite.");
+#[test]
+fn select() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
 
-//     let columns = vec!["title".to_string(), "description".to_string(), "amount".to_string()];
-//     let condition = Condition::Eq(
-//         "description".to_string(),
-//         "Some description for Table A".to_string(),
-//     );
+    let columns = vec!["username".to_string(), "address".to_string()];
+    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
-//     match init_tables_result {
-//         Ok(_) => {
-//             let result = sqlite::select(conn, columns)
-//                 .from(&TableA::default())
-//                 .where_clause(condition)
-//                 .build::<TableA>();
-
-//             match result {
-//                 Ok(result) => {
-//                     println!("\nSELECT ROWS: ");
-//                     // print_rows(&result);
-//                     assert_eq!(result.len(), 2);
-//                 },
-//                 Err(error) => panic!("Failed to SELECT: {:?}", error),
-//             };
-//         }
-//         Err(error) => panic!("Failed to select: {:?}", error),
-//     };
-// }
+    // TODO: fix the issue with sqlite::select()
+    // match conn {
+    //     Ok(c) => {
+    //         let result = sqlite::select(c, columns)
+    //             .from(&User::default())
+    //             .where_clause(condition)
+    //             .build::<User>();
+    //
+    //         match result {
+    //             Ok(r) => {
+    //                 println!("\nSELECT ROWS: ");
+    //                 // print_rows(&result);
+    //                 assert_eq!(r.len(), 2);
+    //             },
+    //             Err(e) => panic!("Failed to SELECT: {:?}", e),
+    //         };
+    //     }
+    //     Err(e) => panic!("Failed to select: {:?}", e),
+    // };
+}
 
 // #[test]
 // fn select_distinct() {
