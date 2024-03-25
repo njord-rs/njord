@@ -141,6 +141,20 @@ pub fn get_next_migration_version(migrations_dir: &Path) -> Result<String, std::
     }
 }
 
+/// Retrieves local migration versions from the specified directory.
+///
+/// This function reads the names of files in the specified `migrations_dir`
+/// directory, filters out non-UTF-8 filenames and collects the valid filenames
+/// into a `HashSet<String>`.
+///
+/// # Arguments
+///
+/// * `migrations_dir` - The path to the directory containing migration versions.
+///
+/// # Returns
+///
+/// A `Result` containing a `HashSet<String>` of local migration versions if
+/// successful, or an `std::io::Error` if there is an issue reading the directory.
 pub fn get_local_migration_versions(migrations_dir: &Path) -> Result<HashSet<String>, std::io::Error> {
     let entries = fs::read_dir(migrations_dir)?;
     let local_versions: HashSet<String> = entries
@@ -153,6 +167,20 @@ pub fn get_local_migration_versions(migrations_dir: &Path) -> Result<HashSet<Str
     Ok(local_versions)
 }
 
+/// Checks if a specific version exists in the migration history table.
+///
+/// # Arguments
+///
+/// * `conn` - A reference to a `rusqlite::Connection`.
+/// * `version` - A string slice representing the version to check for.
+///
+/// # Returns
+///
+/// `true` if the version exists, `false` otherwise.
+///
+/// # Errors
+///
+/// Returns a `rusqlite::Error` if there is an issue with the database query.
 pub fn version_in_database(conn: &Connection, version: &str) -> Result<bool, Error> {
     let query = "SELECT EXISTS(SELECT 1 FROM migration_history WHERE version = ?)";
     let result: Result<i32, Error> = conn.query_row(query, &[&version], |row| row.get(0));
@@ -202,6 +230,20 @@ pub fn create_migration_files(
     Ok(())
 }
 
+/// Retrieves the path to the migrations directory from the configuration.
+///
+/// This function extracts the path to the migrations directory from the provided `config`.
+/// It expects the configuration to be in TOML format, and it assumes a specific structure
+/// where the migrations directory is nested within the `migrations_directory` key.
+///
+/// # Arguments
+///
+/// * `config` - A reference to a `toml::Value` representing the configuration.
+///
+/// # Returns
+///
+/// An `Option<PathBuf>` containing the path to the migrations directory if found in the configuration,
+/// or `None` if the migrations directory is not present or cannot be extracted.
 pub fn get_migrations_directory_path(config: &TomlConfig) -> Option<PathBuf> {
     let migrations_dir = config
         .get("migrations_directory") // Adjust this based on the actual structure of your toml::Value

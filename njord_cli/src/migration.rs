@@ -87,12 +87,17 @@ pub fn run(env: Option<&String>, log_level: Option<&String>) {
                             println!("Value: {}", value);
                         }
 
+                        // go over each migration schema version changes if they should be executed
+                        // TODO: need to check the ordering here
+                        // for example it can be run with 00000000000001_init_tables first and
+                        // then run 00000000000000_njord_initial_setup which is not incremental
                         for local_version in &local_versions {
                             match version_in_database(&conn, &local_version) {
                                 Ok(_) => {
                                     println!("Version {} not found in database. Executing code...", local_version);
 
                                     let migrations_dir = format!("migrations/{}", local_version);
+                                    println!("migrations_dir: {}", migrations_dir);
                                     execute_pending_migration(&conn, &migrations_dir, &local_version).unwrap();
                                 }
                                 Err(_) => {}
@@ -247,17 +252,17 @@ fn execute_pending_migration(
     migrations_dir: &str,
     next_version: &str,
 ) -> Result<(), Error> {
-    // Execute up.sql in the directory
     match execute_sql_from_file(&conn, &migrations_dir, "up.sql") {
         Ok(_) => {
             println!("up.sql executed successfully.");
-            // Insert new row with the version into the database
+            // insert new row with the version into the database
             let row = MigrationHistory { version: next_version.to_string() };
             // sqlite::insert(conn, &row)?;
         }
         Err(up_err) => {
-            // If up.sql fails, run down.sql
             eprintln!("Error executing up.sql: {}", up_err);
+
+            // TODO: we need to make sure that this is only run on error when it's not "table already exists" kind of errors
             if let Err(down_err) = execute_sql_from_file(&conn, &migrations_dir, "down.sql") {
                 eprintln!("Error executing down.sql: {}", down_err);
             } else {
