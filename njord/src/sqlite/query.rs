@@ -171,8 +171,6 @@ impl<T: Table + Default> QueryBuilder<T> {
                     Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
                 };
 
-                // println!("string_value: {:?}", string_value);
-
                 instance.set_column_value(column, &string_value);
             }
 
