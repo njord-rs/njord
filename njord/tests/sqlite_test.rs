@@ -58,7 +58,7 @@ fn open_db() {
 
 #[test]
 fn insert_row() {
-    let db_relative_path = "./db/insert_row.db";
+    let db_relative_path = "./db/insert.db";
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
