@@ -9,6 +9,8 @@ documentation = "https://docs.rs/njord/latest/njord/"
 repository = "https://github.com/mjovanc/njord"
 readme = "crates-io.md"
 rust-version = "1.74.0"
+homepage = "https://njord.rs"
+keywords = ["orm", "database", "sql"]
 
 [lib]
 name = "njord_derive"
