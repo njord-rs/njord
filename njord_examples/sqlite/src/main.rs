@@ -14,24 +14,20 @@ async fn main() -> Result<(), Error> {
     // setting up a sqlite db and connection
     let db_relative_path = "./njord_examples/sqlite/neo.db";
     let db_path = Path::new(&db_relative_path);
-    let conn = sqlite::open(db_path).unwrap();
 
     let neo = get_near_earth_objects(0, 10).await;
-
-    let mut rows: Vec<NearEarthObject> = vec![];
 
     match neo {
         Ok(data) => {
             for obj in data["near_earth_objects"].as_array().unwrap() {
                 let near_earth_obj: NearEarthObject = serde_json::from_value(obj.clone()).unwrap();
                 println!("{:#?}", near_earth_obj);
-                rows.push(near_earth_obj);
+                let conn = sqlite::open(db_path).unwrap();
+                let _ = sqlite::insert(conn, &near_earth_obj);
             }
         }
         Err(err) => eprintln!("Error: {}", err),
     }
-
-    let _ = sqlite::insert(conn, &rows);
 
     Ok(())
 }

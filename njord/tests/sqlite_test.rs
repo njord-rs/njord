@@ -76,7 +76,7 @@ fn insert_row() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::insert(c, &vec![table_row]);
+            let result = sqlite::insert(c, &table_row);
             assert!(result.is_ok());
         }
         Err(e) => {
