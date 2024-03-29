@@ -4,8 +4,8 @@
 
 ![build](https://img.shields.io/github/actions/workflow/status/njord-rs/njord/ci.yml?branch=master)
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
-[![njord: rustc 1.74+](https://img.shields.io/badge/njord-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
-[![njord_derive: rustc 1.74+](https://img.shields.io/badge/njord_derive-rustc_1.74+-lightgray.svg)](https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html)
+[![njord: rustc 1.77.1+](https://img.shields.io/badge/njord-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
+[![njord_derive: rustc 1.77+](https://img.shields.io/badge/njord_derive-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
 A lightweight and extensible ORM framework for Rust.
