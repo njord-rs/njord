@@ -5,19 +5,18 @@ use log::info;
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
-pub fn insert<T: Table>(mut conn: Connection, table_rows: &Vec<T>) -> Result<()> {
+pub fn insert<T: Table>(mut conn: Connection, table_row: &T) -> Result<()> {
     // create a transaction
     let tx = conn.transaction()?;
-    let mut statement = String::from("");
 
-    for row in table_rows {
-        match generate_statement(row) {
-            Ok(r) => statement.push_str(r.as_str()),
-            Err(e) => panic!("Problem generating statement: {:?}.", e)
-        }
-    }
+    let statement = generate_statement(table_row);
 
-    tx.execute(statement.as_str(), [])?;
+    let generated_statement = match statement {
+        Ok(statement) => statement,
+        Err(error) => panic!("Problem generating statement: {:?}.", error),
+    };
+
+    tx.execute(generated_statement.as_str(), [])?;
 
     // commit the transaction
     tx.commit()?;
