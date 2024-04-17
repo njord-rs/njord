@@ -68,3 +68,29 @@ pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
     // Default table name if not specified
     "default_table_name".to_string()
 }
+
+// Helper function to check if the type is Option<T>
+pub fn is_option_type(ty: &syn::Type) -> bool {
+    if let syn::Type::Path(type_path) = ty {
+        let segments = &type_path.path.segments;
+        if segments.len() == 1 && segments.first().unwrap().ident.to_string() == "Option" {
+            if let syn::PathArguments::AngleBracketed(args) = &segments.first().unwrap().arguments {
+                if args.args.len() == 1 {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+// Helper function to parse Option<T> values
+pub fn parse_option_value<T: std::str::FromStr>(value: &str) -> Option<String>
+    where T: std::fmt::Display
+{
+    if let Ok(parsed) = value.parse::<T>() {
+        Some(parsed.to_string())
+    } else {
+        None
+    }
+}
