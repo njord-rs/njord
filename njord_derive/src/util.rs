@@ -83,14 +83,3 @@ pub fn is_option_type(ty: &syn::Type) -> bool {
     }
     false
 }
-
-// Helper function to parse Option<T> values
-pub fn parse_option_value<T: std::str::FromStr>(value: &str) -> Option<String>
-    where T: std::fmt::Display
-{
-    if let Ok(parsed) = value.parse::<T>() {
-        Some(parsed.to_string())
-    } else {
-        None
-    }
-}
