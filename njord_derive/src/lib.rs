@@ -6,7 +6,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{DeriveInput, FieldsNamed, parse_macro_input};
 
-use util::{extract_table_name, parse_option_value, has_default_impl, is_option_type};
+use util::{extract_table_name, has_default_impl, is_option_type};
 
 mod util;
 
@@ -93,7 +93,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             }); // display_impl
 
-            // implement the std::str::FromStr trait
+            // Implement the std::str::FromStr trait
             from_str_impl.extend(quote! {
                 impl std::str::FromStr for #ident {
                     type Err = std::string::ParseError;
@@ -101,7 +101,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     fn from_str(s: &str) -> Result<Self, Self::Err> {
                         let parts: Vec<&str> = s.split(',').map(|s| s.trim()).collect();
 
-                        // create a hashmap to store column name-value pairs
+                        // Create a hashmap to store column name-value pairs
                         let mut column_values = std::collections::HashMap::new();
 
                         // iterate over parts and extract column name-value pairs
@@ -116,10 +116,29 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 
                         let mut instance = Self::default();
 
-                        // set column values based on the parsed values
+                        // Helper function since we cannot import functions in an .extend() function call
+                        fn is_option_type(ty: &str) -> bool {
+                            let trimmed_ty = ty.trim();
+
+                            // Check if the type starts with "Option<"
+                            if let Some(remaining) = trimmed_ty.strip_prefix("Option<") {
+                                if remaining.ends_with('>') {
+                                    // Check if there's only one type parameter inside "Option<...>"
+                                    let inner_type = &remaining[..remaining.len() - 1];
+                                    return !inner_type.contains('<') && !inner_type.contains('>');
+                                }
+                            }
+                            false
+                        }
+
+                        // Set column values based on the parsed values
                         for (name, value) in column_values.iter() {
-                            if let Some(parsed_value) = parse_option_value::<#ident>(value) {
-                                instance.set_column_value(name, &parsed_value);
+                            if is_option_type(&value) {
+                                if let Ok(parsed_value) = value.parse::<value>() {
+                                    instance.set_column_value(name, &parsed_value.to_string());
+                                } else {
+                                    instance.set_column_value(name, value);
+                                }
                             } else {
                                 instance.set_column_value(name, value);
                             }
@@ -130,7 +149,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             }); // from_str_impl
 
-            // implement the get_name() function
+            // Implement the get_name() function
             let clean_table_name = table_name.trim_matches(|c| c == '\\' || c == '"');
             name_stream.extend::<TokenStream2>(quote! {
                 fn get_name(&self) -> &str {
