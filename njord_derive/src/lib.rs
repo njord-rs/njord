@@ -6,9 +6,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{DeriveInput, FieldsNamed, parse_macro_input};
 
-use util::extract_table_name;
-
-use crate::util::{has_default_impl, is_option_type, parse_option_value};
+use util::{extract_table_name, parse_option_value, has_default_impl, is_option_type};
 
 mod util;
 
