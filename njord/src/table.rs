@@ -37,7 +37,7 @@ pub trait Table {
 
 #[test]
 fn create_tables() {
-    #[derive(Table, Debug)]
+    #[derive(Table)]
     #[table_name = "table_a"]
     struct TableA {
         title: String,
@@ -51,7 +51,7 @@ fn create_tables() {
         amount: 0,
     };
 
-    #[derive(Table, Debug)]
+    #[derive(Table)]
     #[table_name = "table_b"]
     struct TableB {
         name: String,
@@ -65,7 +65,7 @@ fn create_tables() {
         email: "john.doe@example.com".to_string(),
     };
 
-    #[derive(Table, Debug)]
+    #[derive(Table)]
     #[table_name = "table_c"]
     struct TableC {
         product_id: i64,
