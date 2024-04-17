@@ -134,13 +134,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                         // Set column values based on the parsed values
                         for (name, value) in column_values.iter() {
                             if is_option_type(&value) {
-                                // TODO: we should parse it to a f64 not Product (#ident)
-                                // its based on the Option inner type
-
-                                if let Ok(parsed_value) = value.parse::<#ident>() {
-                                    instance.set_column_value(name, &parsed_value.to_string());
-                                } else {
-                                    instance.set_column_value(name, value);
+                                match value {
+                                    Some(val) => instance.set_column_value(name, val),
+                                    None    => eprintln!("Value cannot be empty!"),
                                 }
                             } else {
                                 instance.set_column_value(name, value);
