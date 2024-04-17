@@ -137,10 +137,10 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "String" => "TEXT",
                             "f64" | "f32" => "REAL",
                             "Vec<u8>" => "BLOB",
-                            "Option<i64>" | "Option<i32>" | "Option<i16>" | "Option<i8>" | "Option<u64>" | "Option<u32>" | "Option<u16>" | "Option<u8>" | "Option<usize>" => "INTEGER",
-                            "Option<String>" => "TEXT",
-                            "Option<f64>" | "Option<f32>" => "REAL",
-                            "Option<Vec<u8>>" => "BLOB",
+                            "Option<i64>" | "Option<i32>" | "Option<i16>" | "Option<i8>" | "Option<u64>" | "Option<u32>" | "Option<u16>" | "Option<u8>" | "Option<usize>" => "INTEGER NULL",
+                            "Option<String>" => "TEXT NULL",
+                            "Option<f64>" | "Option<f32>" => "REAL NULL",
+                            "Option<Vec<u8>>" => "BLOB NULL",
                             "bool" => "TEXT",
 
                             _ => {
