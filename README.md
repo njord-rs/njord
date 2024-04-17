@@ -92,7 +92,7 @@ pub struct Product {
     price: f64,
     stock_quantity: usize,
     category: Category,     // one-to-one relationship
-    discount: Option<f64>,
+    discount: Option<f64>,  // allow for null 
 }
 
 #[derive(Table)]

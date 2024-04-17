@@ -18,25 +18,24 @@ pub struct User {
     address: String,
 }
 
-//TODO: add these later and test it in respective integration test
-// #[derive(Table)]
-// #[table_name = "categories"]
-// pub struct Category {
-//     id: usize,
-//     name: String,
-// }
-//
-// #[derive(Table)]
-// #[table_name = "products"]
-// pub struct Product {
-//     id: usize,
-//     name: String,
-//     description: String,
-//     price: f64,
-//     stock_quantity: usize,
-//     category: Category,     // one-to-one relationship
-//     discount: Option<f64>,
-// }
+#[derive(Table)]
+#[table_name = "categories"]
+pub struct Category {
+    id: usize,
+    name: String,
+}
+
+#[derive(Table)]
+#[table_name = "products"]
+pub struct Product {
+    id: usize,
+    name: String,
+    description: String,
+    price: f64,
+    stock_quantity: usize,
+    category: Category,     // one-to-one relationship
+    discount: Option<f64>,
+}
 //
 // #[derive(Table)]
 // #[table_name = "orders"]
