@@ -1,13 +1,16 @@
 extern crate proc_macro;
-use crate::util::has_default_impl;
+
 use proc_macro::TokenStream;
+
 use proc_macro2::TokenStream as TokenStream2;
+use quote::quote;
+use syn::{DeriveInput, FieldsNamed, parse_macro_input};
+
+use util::extract_table_name;
+
+use crate::util::{has_default_impl, is_option_type, parse_option_value};
 
 mod util;
-
-use quote::quote;
-use syn::{parse_macro_input, DeriveInput, FieldsNamed};
-use util::extract_table_name;
 
 /// Derives the `Table` trait for a struct.
 ///
@@ -70,7 +73,13 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
-                quote! { self.#field_name.to_string() }
+                if is_option_type(&f.ty) {
+                    quote! {
+                        self.#field_name.as_ref().map_or("None".to_string(), |v| v.to_string())
+                    }
+                } else {
+                    quote! { self.#field_name.to_string() }
+                }
             });
 
             // implement the std::fmt::Display trait
@@ -79,10 +88,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(f, "{}", self.get_name())?;
                         for (name, value) in self.get_column_fields().iter().zip(self.get_column_values()) {
-                            match value.as_str() {
-                                "NULL" => write!(f, ", {}: {}", name, value)?,
-                                value_str => write!(f, ", {}: {}", name, value_str)?,
-                            }
+                            write!(f, ", {}: {}", name, value);
                         }
                         Ok(())
                     }
@@ -114,7 +120,11 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 
                         // set column values based on the parsed values
                         for (name, value) in column_values.iter() {
-                            instance.set_column_value(name, value);
+                            if let Some(parsed_value) = parse_option_value::<#ident>(value) {
+                                instance.set_column_value(name, &parsed_value);
+                            } else {
+                                instance.set_column_value(name, value);
+                            }
                         }
 
                         Ok(instance)
