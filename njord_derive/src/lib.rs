@@ -95,47 +95,18 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             }); // display_impl
 
             // Implement the std::str::FromStr trait
-            /*from_str_impl.extend(quote! {
+            from_str_impl.extend(quote! {
                 impl std::str::FromStr for #ident {
                     type Err = std::string::ParseError;
 
+                    // #ident can be either T or Option<T>
+                    // if Option<T>
+
                     fn from_str(s: &str) -> Result<Self, Self::Err> {
-                        let parts: Vec<&str> = s.split(',').map(|s| s.trim()).collect();
-
-                        // Create a hashmap to store column name-value pairs
-                        let mut column_values = std::collections::HashMap::new();
-
-                        // iterate over parts and extract column name-value pairs
-                        for part in parts {
-                            let pair: Vec<&str> = part.split(':').map(|s| s.trim()).collect();
-                            if pair.len() == 2 {
-                                let name = pair[0];
-                                let value = pair[1];
-                                column_values.insert(name.to_string(), value.to_string());
-                            }
-                        }
-
-                        let mut instance = Self::default();
-
-                        // Set column values based on the parsed values
-                        for (name, value) in column_values.iter() {
-                            if let Some(inner_value) = value.strip_prefix("Option<") {
-                                if let Some(inner_value) = inner_value.strip_suffix('>') {
-                                    if inner_value.is_empty() {
-                                        instance.set_column_value(name, "");
-                                    } else {
-                                        instance.set_column_value(name, inner_value);
-                                    }
-                                }
-                            } else {
-                                instance.set_column_value(name, value);
-                            }
-                        }
-
-                        Ok(instance)
+                        Ok(#ident::default())
                     }
                 }
-            }); // from_str_impl*/
+            }); // from_str_impl
 
             // Implement the get_name() function
             let clean_table_name = table_name.trim_matches(|c| c == '\\' || c == '"');
