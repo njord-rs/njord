@@ -100,10 +100,10 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     type Err = std::string::ParseError;
 
                     // #ident can be either T or Option<T>
-                    // if Option<T>
+                    // #ident can be a struct with different fields
 
                     fn from_str(s: &str) -> Result<Self, Self::Err> {
-                        Ok(#ident::default())
+
                     }
                 }
             }); // from_str_impl
