@@ -25,7 +25,8 @@ mod util;
 ///     id: usize,
 ///     name: String,
 ///     price: f64,
-///     in_stock: bool
+///     in_stock: bool,
+///     discount: Option<f64>,
 /// }
 ///
 /// #[derive(Table)]
@@ -78,9 +79,9 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 } else {
                     quote! { self.#field_name.to_string() }
                 }
-            });
+            }); // field_values
 
-            // implement the std::fmt::Display trait
+            // Implement the std::fmt::Display trait
             display_impl.extend(quote! {
                 impl std::fmt::Display for #ident {
                     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -94,7 +95,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             }); // display_impl
 
             // Implement the std::str::FromStr trait
-            from_str_impl.extend(quote! {
+            /*from_str_impl.extend(quote! {
                 impl std::str::FromStr for #ident {
                     type Err = std::string::ParseError;
 
@@ -116,27 +117,15 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 
                         let mut instance = Self::default();
 
-                        // Helper function since we cannot import functions in an .extend() function call
-                        fn is_option_type(ty: &str) -> bool {
-                            let trimmed_ty = ty.trim();
-
-                            // Check if the type starts with "Option<"
-                            if let Some(remaining) = trimmed_ty.strip_prefix("Option<") {
-                                if remaining.ends_with('>') {
-                                    // Check if there's only one type parameter inside "Option<...>"
-                                    let inner_type = &remaining[..remaining.len() - 1];
-                                    return !inner_type.contains('<') && !inner_type.contains('>');
-                                }
-                            }
-                            false
-                        }
-
                         // Set column values based on the parsed values
                         for (name, value) in column_values.iter() {
-                            if is_option_type(&value) {
-                                match value {
-                                    Some(val) => instance.set_column_value(name, val),
-                                    None    => eprintln!("Value cannot be empty!"),
+                            if let Some(inner_value) = value.strip_prefix("Option<") {
+                                if let Some(inner_value) = inner_value.strip_suffix('>') {
+                                    if inner_value.is_empty() {
+                                        instance.set_column_value(name, "");
+                                    } else {
+                                        instance.set_column_value(name, inner_value);
+                                    }
                                 }
                             } else {
                                 instance.set_column_value(name, value);
@@ -146,7 +135,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                         Ok(instance)
                     }
                 }
-            }); // from_str_impl
+            }); // from_str_impl*/
 
             // Implement the get_name() function
             let clean_table_name = table_name.trim_matches(|c| c == '\\' || c == '"');
@@ -156,7 +145,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             }); // name_stream
 
-            // implement the get_columns() function
+            // Implement the get_columns() function
             columns_stream.extend(quote! {
                 fn get_columns(&self) -> std::collections::HashMap<String, String> {
                     let mut columns = std::collections::HashMap::new();
@@ -186,14 +175,14 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             }); // columns_stream
 
-            // implement the get_column_fields() function
+            // Implement the get_column_fields() function
             column_fields_stream.extend(quote! {
                 fn get_column_fields(&self) -> Vec<String> {
                     vec![#(stringify!(#field_names_clone2).to_string()),*]
                 }
             }); // column_fields_stream
 
-            // implement the get_column_values() function
+            // Implement the get_column_values() function
             column_values_stream.extend(quote! {
                 fn get_column_values(&self) -> Vec<String> {
                     vec![#(#field_values),*]
