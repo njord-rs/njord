@@ -69,7 +69,16 @@ pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
     "default_table_name".to_string()
 }
 
-// Helper function to check if the type is Option<T>
+/// Checks if the given type is an Option<T> type.
+///
+/// # Arguments
+///
+/// * `ty` - A reference to the `syn::Type` to be checked.
+///
+/// # Returns
+///
+/// A boolean indicating whether the type is an Option<T> type.
+/// ```
 pub fn is_option_type(ty: &syn::Type) -> bool {
     if let syn::Type::Path(type_path) = ty {
         let segments = &type_path.path.segments;
