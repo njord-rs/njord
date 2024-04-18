@@ -99,11 +99,10 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 impl std::str::FromStr for #ident {
                     type Err = std::string::ParseError;
 
-                    // #ident can be either T or Option<T>
-                    // #ident can be a struct with different fields
-
                     fn from_str(s: &str) -> Result<Self, Self::Err> {
+                        if stringify!(s).starts_with("Option<") {
 
+                        }
                     }
                 }
             }); // from_str_impl

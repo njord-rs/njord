@@ -123,7 +123,8 @@ CREATE TABLE products (
     description TEXT NOT NULL,
     price REAL NOT NULL,
     stock_quantity INTEGER NOT NULL,
-    category INTEGER REFERENCES categories(id)
+    category INTEGER REFERENCES categories(id),
+    discount: REAL NULL
 );
 
 -- orders table
