@@ -1,5 +1,6 @@
 <script>
   import Navbar from "$lib/components/Navbar.svelte";
+  import Footer from "$lib/components/Footer.svelte";
   import "../app.css";
   let pageTitle = 'Njord - A lightweight ORM library for Rust';
 </script>
@@ -22,7 +23,8 @@
 	<meta property="twitter:image" content="/meta.png" />
 </svelte:head>
 
-<div class="bg-zinc-900 text-zinc-50 font-primary pt-16 flex items-center flex-col">
+<div class="bg-zinc-900 text-zinc-50 font-primary pt-16 flex items-center flex-col relative" style="min-height: 100vh;">
   <Navbar></Navbar>
     <slot />
+  <Footer></Footer>
 </div>
