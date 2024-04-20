@@ -37,6 +37,13 @@ mod util;
 ///     in_stock: bool,
 ///     table: TableA
 /// }
+///
+/// #[derive(Table)]
+/// struct TableC {
+///     id: usize,
+///     name: String,
+///     related: Vec<TableB>
+/// }
 /// ```
 ///
 /// This macro will generate implementations the `Table` trait

@@ -34,7 +34,7 @@ pub struct Product {
     price: f64,
     stock_quantity: usize,
     category: Category,     // one-to-one relationship
-    // discount: Option<f64>,
+    discount: f64,
 }
 //
 // #[derive(Table)]
