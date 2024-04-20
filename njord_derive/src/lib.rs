@@ -26,7 +26,7 @@ mod util;
 ///     name: String,
 ///     price: f64,
 ///     in_stock: bool,
-///     discount: Option<f64>,
+///     discount: f64, // TODO: Option<f64> not working
 /// }
 ///
 /// #[derive(Table)]
@@ -59,7 +59,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 
     let mut display_impl = TokenStream2::default();
     let mut from_str_impl = TokenStream2::default();
-
     let mut default_impl = TokenStream2::default();
 
     if let syn::Data::Struct(s) = data {
@@ -72,13 +71,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
-                if is_option_type(&f.ty) {
-                    quote! {
-                        self.#field_name.as_ref().map_or("None".to_string(), |v| v.to_string())
-                    }
-                } else {
-                    quote! { self.#field_name.to_string() }
-                }
+                quote! { self.#field_name.to_string() }
             }); // field_values
 
             // Implement the std::fmt::Display trait
@@ -99,10 +92,10 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 impl std::str::FromStr for #ident {
                     type Err = std::string::ParseError;
 
+                    // Creating a new instance of a type from a string.
                     fn from_str(s: &str) -> Result<Self, Self::Err> {
-                        if stringify!(s).starts_with("Option<") {
-
-                        }
+                        // TODO: to be implemented
+                        Ok(#ident::default())
                     }
                 }
             }); // from_str_impl
