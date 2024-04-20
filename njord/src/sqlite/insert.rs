@@ -6,7 +6,7 @@ use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
 pub fn insert<T: Table>(mut conn: Connection, table_row: &T) -> Result<()> {
-    // create a transaction
+    // Create a transaction
     let tx = conn.transaction()?;
 
     let statement = generate_statement(table_row);
@@ -18,7 +18,7 @@ pub fn insert<T: Table>(mut conn: Connection, table_row: &T) -> Result<()> {
 
     tx.execute(generated_statement.as_str(), [])?;
 
-    // commit the transaction
+    // Commit the transaction
     tx.commit()?;
 
     info!("Inserted into table, done.");
@@ -27,16 +27,17 @@ pub fn insert<T: Table>(mut conn: Connection, table_row: &T) -> Result<()> {
 }
 
 fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
-    // generate string for columns
+    // Generate string for columns
     let mut columns_str = String::new();
     for column_name in table_row.get_column_fields() {
+        // TODO: filter out id field
         columns_str.push_str(&format!("{}, ", column_name));
     }
 
-    // surround single quotes of text
+    // Surround single quotes of text
     let converted_values = convert_insert_values(table_row.get_column_values());
 
-    // generate values string
+    // Generate values string
     let mut values_str = String::new();
     for value in converted_values {
         let data_type_str = value.to_string();
@@ -44,10 +45,10 @@ fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
         values_str.push_str(", ");
     }
 
-    // sanitize table name from unwanted quotations or backslashes
+    // Sanitize table name from unwanted quotations or backslashes
     let table_name = table_row.get_name().replace("\"", "").replace("\\", "");
 
-    // remove the trailing comma and space
+    // Remove the trailing comma and space
     columns_str.pop();
     columns_str.pop();
     values_str.pop();
