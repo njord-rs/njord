@@ -14,6 +14,7 @@
           <a target="_blank" href="https://x.com/njord_rs">News</a>
           <a target="_blank" href="https://docs.rs/njord/latest/njord/">Docs</a>
           <a target="_blank" href="https://discord.com/invite/2uppTzjUHE">Discord</a>
+          <a target="_blank" href="https://github.com/njord-rs/njord">Github</a>
         </div>
        
     </div>
@@ -67,6 +68,12 @@
           on:click={() => {
             openMenu = !openMenu;
           }}>Discord</a
+        >
+        <a
+          href="https://github.com/njord-rs/njord"
+          on:click={() => {
+            openMenu = !openMenu;
+          }}>Github</a
         >
       </div>
     {/if}
