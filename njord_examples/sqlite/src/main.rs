@@ -11,7 +11,7 @@ const API_URL: &str = "https://api.nasa.gov/neo/rest/v1";
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    // setting up a sqlite db and connection
+    // Setting up a SQLite DB and Connection
     let db_relative_path = "./njord_examples/sqlite/neo.db";
     let db_path = Path::new(&db_relative_path);
 
