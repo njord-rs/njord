@@ -26,7 +26,7 @@ mod util;
 ///     name: String,
 ///     price: f64,
 ///     in_stock: bool,
-///     discount: f64, // TODO: Option<f64> not working
+///     discount: Option<f64>, // TODO: Option<f64> not working
 /// }
 ///
 /// #[derive(Table)]
