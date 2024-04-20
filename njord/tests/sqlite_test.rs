@@ -36,15 +36,15 @@ pub struct Product {
     category: Category,     // one-to-one relationship
     discount: f64,
 }
-//
-// #[derive(Table)]
-// #[table_name = "orders"]
-// pub struct Order {
-//     id: usize,
-//     user: User,             // one-to-one relationship
-//     products: Vec<Product>, // one-to-many relationship - populates from based on junction table (gets from macro attribute "table_name" and combines them for example, orders_products)
-//     total_cost: f64,
-// }
+
+#[derive(Table)]
+#[table_name = "orders"]
+pub struct Order {
+    id: usize,
+    user: User,             // one-to-one relationship
+    products: Vec<Product>, // one-to-many relationship - populates from based on junction table (gets from macro attribute "table_name" and combines them for example, orders_products)
+    total_cost: f64,
+}
 
 #[test]
 fn open_db() {
