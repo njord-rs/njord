@@ -1,17 +1,11 @@
 <script>
   import GithubBar from "$lib/components/GithubBar.svelte";
-  import Copy from "$lib/components/icons/Copy.svelte";
   import Box from "$lib/components/Box.svelte";
   import Coffee from "$lib/components/icons/Coffee.svelte";
   import Code from "$lib/components/icons/Code.svelte";
   import Alert from "$lib/components/icons/Alert.svelte";
   import DatabaseBar from "$lib/components/DatabaseBar.svelte";
   export let data;
-
-  function copy(id) {
-        let text = document.getElementById(id);
-        navigator.clipboard.writeText(text.value)
-    }
 </script>
 
 <div class="flex flex-col w-full items-center">
@@ -24,7 +18,6 @@
             <GithubBar repo={data.repo}></GithubBar> 
             <DatabaseBar></DatabaseBar>
         </div>
-
     </div>
 
 <div class="container px-4 pb-16">
@@ -38,9 +31,8 @@
          <Box text="Njord is currently in alpha. While it's shaping up to be a powerful ORM and Query Builder, exercise caution in production environments. Your feedback is invaluable as we work towards stability. Stay tuned for updates and improvements!">
             <Alert></Alert>
          </Box>
-        </div>
     </div>
-        
+</div>    
 </div>
 
 <style>
@@ -49,7 +41,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100px; /* Adjust the height of the fade-out effect as needed */
+  height: 100px; 
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #18181b);
 }
 </style>
