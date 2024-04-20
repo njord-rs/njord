@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use njord_derive::Table;
 use njord::table::Table;
 
