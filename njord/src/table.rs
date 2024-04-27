@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[allow(unused_imports)]
 use njord_derive::Table;
 
 /// The Table trait.
