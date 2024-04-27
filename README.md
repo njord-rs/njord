@@ -185,7 +185,7 @@ fn main () {
         Ok(conn) => {
             println!("Database opened successfully!");
             
-            let result = sqlite::insert(conn, &user);
+            let result = sqlite::insert(conn, vec![user]);
             assert!(result.is_ok());
         }
         Err(err) => eprintln!("Error opening the database: {}", err),
