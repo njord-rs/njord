@@ -1,13 +1,13 @@
 // integrations tests for sqlite
 
-use std::collections::HashMap;
-use std::path::Path;
-use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
 use njord::condition::Condition;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
+use std::collections::HashMap;
+use std::path::Path;
 
 #[derive(Table)]
 #[table_name = "users"]
@@ -33,7 +33,7 @@ pub struct Product {
     description: String,
     price: f64,
     stock_quantity: usize,
-    category: Category,     // one-to-one relationship
+    category: Category, // one-to-one relationship
     discount: f64,
 }
 
@@ -75,7 +75,7 @@ fn insert_row() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::insert(c, &table_row);
+            let result = sqlite::insert(c, vec![table_row]);
             assert!(result.is_ok());
         }
         Err(e) => {
@@ -90,7 +90,12 @@ fn select() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     match conn {
@@ -115,7 +120,12 @@ fn select_distinct() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     match conn {
@@ -131,7 +141,7 @@ fn select_distinct() {
                     // TODO: this test does not work properly since it should return 1 but it seems
                     // like it returns all rows because id is different. Need to check up on that.
                     assert_eq!(r.len(), 2);
-                },
+                }
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
         }
@@ -145,7 +155,12 @@ fn select_group_by() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
 
@@ -172,7 +187,12 @@ fn select_order_by() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
 
@@ -203,7 +223,12 @@ fn select_limit_offset() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
 
@@ -236,7 +261,12 @@ fn select_having() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
 
@@ -260,6 +290,6 @@ fn select_having() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
         }
-        Err(e) => panic!("Failed to SELECT: {:?}", e)
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
 }
