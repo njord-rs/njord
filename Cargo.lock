@@ -956,7 +956,6 @@ name = "sqlite"
 version = "0.1.0"
 dependencies = [
  "njord",
- "njord_derive",
  "reqwest",
  "serde",
  "serde_json",
