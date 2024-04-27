@@ -59,7 +59,7 @@ Now, let’s add Njord to our dependencies. We’re also going to use a tool cal
 # using #[derive(Table)] to make njord work with structs
 # and enums defined in your crate.
 njord = { version = "<version>", features = ["sqlite"] }
-dotenvy = "0.15"
+njord_derive = { version = "<version>" }
 ```
 
 ### Add a schema file
