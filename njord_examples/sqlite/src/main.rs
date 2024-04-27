@@ -1,9 +1,9 @@
-use std::path::Path;
-use reqwest::Error;
-use reqwest::header::ACCEPT;
-use serde_json::Value;
-use njord::sqlite;
 use crate::schema::NearEarthObject;
+use njord::sqlite;
+use reqwest::header::ACCEPT;
+use reqwest::Error;
+use serde_json::Value;
+use std::path::Path;
 
 mod schema;
 
@@ -32,9 +32,12 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-async fn get_near_earth_objects(page: u32, size: u32) -> Result<Value, Error>{
+async fn get_near_earth_objects(page: u32, size: u32) -> Result<Value, Error> {
     let client = reqwest::Client::new();
-    let endpoint = format!("{}/neo/browse?page={}&size={}&api_key=DEMO_KEY", API_URL, page, size);
+    let endpoint = format!(
+        "{}/neo/browse?page={}&size={}&api_key=DEMO_KEY",
+        API_URL, page, size
+    );
 
     let response = client
         .get(endpoint)
