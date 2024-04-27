@@ -6,7 +6,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 
-use util::{extract_table_name, has_default_impl, is_option_type};
+use util::{extract_table_name, has_default_impl};
 
 mod util;
 
@@ -14,30 +14,6 @@ mod util;
 ///
 /// This procedural macro generates implementations of the `Table` trait for a struct.
 /// The `Table` trait provides methods for working with database tables.
-///
-/// # Example
-///
-/// ```rust
-/// use njord_derive::Table;
-/// use njord::table::Table;
-/// #[derive(Table)]
-/// struct TableA {
-///     id: usize,
-///     name: String,
-///     price: f64,
-///     in_stock: bool,
-///     discount: f64, // TODO: Option<f64> not working
-/// }
-///
-/// #[derive(Table)]
-/// struct TableB {
-///     id: usize,
-///     name: String,
-///     price: f64,
-///     in_stock: bool,
-///     table: TableA
-/// }
-/// ```
 ///
 /// This macro will generate implementations the `Table` trait
 /// based on the struct's field names and types.
