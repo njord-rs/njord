@@ -533,7 +533,6 @@ dependencies = [
 name = "njord_derive"
 version = "0.2.1"
 dependencies = [
- "njord",
  "proc-macro2",
  "quote",
  "rusqlite",
