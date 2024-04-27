@@ -59,7 +59,7 @@ pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
                         let table_value = expr_token_stream.to_string();
 
                         return table_value;
-                    },
+                    }
                     _ => panic!("Incorrect format for using the `table_name` attribute."),
                 };
             }
@@ -79,6 +79,7 @@ pub fn extract_table_name(attrs: &[syn::Attribute]) -> String {
 ///
 /// A boolean indicating whether the type is an Option<T> type.
 /// ```
+#[allow(dead_code)]
 pub fn is_option_type(ty: &syn::Type) -> bool {
     if let syn::Type::Path(type_path) = ty {
         let segments = &type_path.path.segments;
