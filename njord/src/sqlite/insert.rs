@@ -1,29 +1,37 @@
 use crate::table::Table;
 use crate::util::convert_insert_values;
 
+use rusqlite::Error as RusqliteError;
+
 use log::info;
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
-pub fn insert<T: Table>(mut conn: Connection, table_row: &T) -> Result<()> {
+pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<String, RusqliteError> {
     // Create a transaction
     let tx = conn.transaction()?;
 
-    let statement = generate_statement(table_row);
+    // Accumulate statements
+    let mut statements: Vec<String> = Vec::new();
+    for table_row in table_rows {
+        match generate_statement(&table_row) {
+            Ok(statement) => statements.push(statement),
+            Err(_) => return Err(RusqliteError::InvalidQuery),
+        }
+    }
 
-    let generated_statement = match statement {
-        Ok(statement) => statement,
-        Err(error) => panic!("Problem generating statement: {:?}.", error),
-    };
+    // Join statements into a single string
+    let joined_statements = statements.join("; ");
 
-    tx.execute(generated_statement.as_str(), [])?;
+    // Execute all statements at once
+    tx.execute_batch(&joined_statements)?;
 
     // Commit the transaction
     tx.commit()?;
 
     info!("Inserted into table, done.");
 
-    Ok(())
+    Ok(joined_statements)
 }
 
 fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
@@ -56,9 +64,7 @@ fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
 
     let sql = format!(
         "INSERT INTO {} ({}) VALUES ({}); ",
-        table_name,
-        columns_str,
-        values_str
+        table_name, columns_str, values_str
     );
 
     println!("{}", sql);
