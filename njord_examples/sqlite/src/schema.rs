@@ -1,6 +1,7 @@
+#[allow(unused_imports)]
 use njord::table::Table;
 use njord_derive::Table;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[derive(Table, Deserialize, Debug)]
 #[table_name = "neo"]
