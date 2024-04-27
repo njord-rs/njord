@@ -7,6 +7,9 @@ pub use insert::insert;
 pub mod select;
 pub use select::select;
 
+pub mod error;
+pub use error::SqliteError;
+
 pub mod query;
 
 /// Open a database connection.
