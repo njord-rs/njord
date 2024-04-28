@@ -107,6 +107,7 @@ fn update_row() {
                 .set(columns, table_row)
                 .where_clause(condition)
                 .build();
+            println!("{:?}", result);
             assert!(result.is_ok());
         }
         Err(e) => {
