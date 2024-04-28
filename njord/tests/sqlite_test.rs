@@ -2,7 +2,7 @@
 
 use njord::condition::Condition;
 use njord::sqlite::{self};
-use njord::table::{self, Table};
+use njord::table::Table;
 use njord_derive::Table;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
