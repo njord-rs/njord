@@ -2,7 +2,7 @@
 
 use njord::condition::Condition;
 use njord::sqlite::{self};
-use njord::table::Table;
+use njord::table::{self, Table};
 use njord_derive::Table;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
@@ -101,12 +101,13 @@ fn update_row() {
         id: random_number,
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
-        address: "Some Random Address 1".to_string(),
+        address: "Some Random Address 2".to_string(),
     };
 
     match conn {
         Ok(c) => {
             let result = sqlite::update(c, User::default())
+                .set(table_row)
                 .where_clause(condition)
                 .build();
             assert!(result.is_ok());
