@@ -222,8 +222,7 @@ fn main () {
             
             // Build the query
             // We need to pass the struct User with the Default trait in .from()
-            let result: Result<Vec<User>> = sqlite::update(conn, columns)
-                .update(User::default())
+            let result: Result<Vec<User>> = sqlite::update(conn, User::default())
                 .set(updated_user_data)
                 .where_clause(where_condition)
                 .build();
