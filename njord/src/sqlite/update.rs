@@ -1,10 +1,8 @@
 use crate::condition::Condition;
-use std::collections::HashMap;
 
 use rusqlite::{Connection, Result};
 
 use log::info;
-use rusqlite::types::Value;
 
 use crate::table::Table;
 
