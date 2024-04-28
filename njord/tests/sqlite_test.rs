@@ -85,6 +85,39 @@ fn insert_row() {
 }
 
 #[test]
+fn update_row() {
+    let db_relative_path = "./db/insert.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+
+    // generate random number
+    let mut rng = StdRng::from_entropy();
+    let max_usize = usize::MAX;
+    let random_number: usize = rng.gen_range(0..max_usize / 2);
+
+    let table_row: User = User {
+        id: random_number,
+        username: "mjovanc".to_string(),
+        email: "mjovanc@icloud.com".to_string(),
+        address: "Some Random Address 1".to_string(),
+    };
+
+    match conn {
+        Ok(c) => {
+            let result = sqlite::update(c, User::default())
+                .where_clause(condition)
+                .build();
+            assert!(result.is_ok());
+        }
+        Err(e) => {
+            panic!("Failed to INSERT: {:?}", e);
+        }
+    }
+}
+
+#[test]
 fn select() {
     let db_relative_path = "./db/select.db";
     let db_path = Path::new(&db_relative_path);
