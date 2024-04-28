@@ -40,14 +40,25 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
     pub fn build(self) -> Result<(), String> {
         let table_name = self
             .table
+            .as_ref()
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
         // sanitize table name from unwanted quotations or backslashes
         let table_name_str = table_name.replace("\"", "").replace("\\", "");
 
-        // generate = SET column1 = value1, column2 = value2, ...
-        let set = "";
+        // Generate SET clause
+        let set = if let Some(table) = self.table {
+            let mut set_fields = Vec::new();
+            let columns = table.get_column_fields();
+            let values = table.get_column_values();
+            for (column, value) in columns.iter().zip(values.iter()) {
+                set_fields.push(format!("{} = {}", column, value));
+            }
+            set_fields.join(", ")
+        } else {
+            String::new()
+        };
 
         let where_condition_str = if let Some(condition) = self.where_condition {
             format!("WHERE {}", condition.build())
