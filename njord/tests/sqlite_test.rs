@@ -90,7 +90,9 @@ fn update_row() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let columns: Vec<String> = vec!["address".to_string()];
+
+    let condition = Condition::Eq("address".to_string(), "Some Random Address 1".to_string());
 
     let table_row: User = User {
         id: 0,
@@ -102,13 +104,13 @@ fn update_row() {
     match conn {
         Ok(c) => {
             let result = sqlite::update(c, User::default())
-                .set(table_row)
+                .set(columns, table_row)
                 .where_clause(condition)
                 .build();
             assert!(result.is_ok());
         }
         Err(e) => {
-            panic!("Failed to INSERT: {:?}", e);
+            panic!("Failed to UPDATE: {:?}", e);
         }
     }
 }
