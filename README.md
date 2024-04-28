@@ -220,6 +220,9 @@ fn main () {
         address: String::from("1234 Main St"),
     };
 
+    let mut order = HashMap::new();
+    order.insert(vec!["id".to_string()], "DESC".to_string());
+
     match sqlite::open(db_path) {
         Ok(conn) => {
             println!("Database opened successfully!");
@@ -229,6 +232,9 @@ fn main () {
             let result = sqlite::update(c, user)
                 .set(columns) // Set which columns to change
                 .where_clause(where_condition)
+                .order_by(order)
+                .limit(4)
+                .offset(0)
                 .build();
 
             // Match the result
