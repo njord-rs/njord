@@ -13,6 +13,7 @@ pub fn update<T: Table + Default>(conn: Connection, table: T) -> UpdateQueryBuil
 pub struct UpdateQueryBuilder<T: Table + Default> {
     conn: Connection,
     table: Option<T>,
+    columns: Vec<String>,
     set: Option<T>,
     where_condition: Option<Condition>,
 }
@@ -22,12 +23,14 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         UpdateQueryBuilder {
             conn,
             table: Some(table),
+            columns: Vec::new(),
             set: None,
             where_condition: None,
         }
     }
 
-    pub fn set(mut self, table: T) -> Self {
+    pub fn set(mut self, columns: Vec<String>, table: T) -> Self {
+        self.columns = columns;
         self.set = Some(table);
         self
     }
@@ -44,17 +47,26 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
-        // sanitize table name from unwanted quotations or backslashes
+        // Sanitize table name from unwanted quotations or backslashes
         let table_name_str = table_name.replace("\"", "").replace("\\", "");
 
         // Generate SET clause
-        let set = if let Some(table) = self.table {
+        let set = if let Some(table) = &self.table {
             let mut set_fields = Vec::new();
-            let columns = table.get_column_fields();
             let values = table.get_column_values();
-            for (column, value) in columns.iter().zip(values.iter()) {
+
+            for column in &self.columns {
+                // Check if column exists in the table's fields
+                let value = match table.get_column_values().iter().position(|c| c == column) {
+                    Some(index) => values.get(index).cloned().unwrap_or_default(),
+                    None => {
+                        // Handle the case when the column doesn't exist in the table
+                        return Err(format!("Column '{}' does not exist in the table", column));
+                    }
+                };
                 set_fields.push(format!("{} = {}", column, value));
             }
+
             set_fields.join(", ")
         } else {
             String::new()
@@ -66,7 +78,7 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
             String::new()
         };
 
-        // construct the query based on defined variables above
+        // Construct the query based on defined variables above
         let query = format!(
             "UPDATE {} SET {} {}",
             table_name_str, set, where_condition_str
@@ -75,7 +87,7 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         info!("{}", query);
         println!("{}", query);
 
-        // prepare sql statement
+        // Prepare SQL statement
         match self.conn.prepare(query.as_str()) {
             Ok(_) => println!("Success!"),
             Err(_) => eprintln!("Could not execute..."),
