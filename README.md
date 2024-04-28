@@ -19,6 +19,7 @@ A lightweight and extensible ORM framework for Rust.
   - [SQlite](#sqlite)
     - [Establish a connection](#establish-a-connection)
     - [Insert data](#insert-data)
+    - [Update data](#update-data)
     - [Select data](#select-data)
 - [Getting Help](#getting-help)
 - [Reporting Issues](#reporting-issues)
@@ -187,6 +188,54 @@ fn main () {
             
             let result = sqlite::insert(conn, vec![user]);
             assert!(result.is_ok());
+        }
+        Err(err) => eprintln!("Error opening the database: {}", err),
+    }
+}
+```
+
+#### Update data
+
+```rust
+use njord::table::Table;
+use njord_derive::Table;
+
+mod schema;
+use schema::User;
+
+fn main () {
+    let db_name = "njord.db";
+    let db_path = Path::new(&db_name);
+
+    // SELECT
+    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+
+    // WHERE
+    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
+
+    // New data
+    // let updated_user_data = User {}
+
+    match sqlite::open(db_path) {
+        Ok(conn) => {
+            println!("Database opened successfully!");
+            
+            // Build the query
+            // We need to pass the struct User with the Default trait in .from()
+            let result: Result<Vec<User>> = sqlite::update(conn, columns)
+                .update(User::default())
+                .set(updated_user_data)
+                .where_clause(where_condition)
+                .build();
+
+            // Match the result
+            match result {
+                Ok(result) => {
+                    assert_eq!(result.len(), 1);
+                }
+                Err(error) => panic!("Failed to UPDATE: {:?}", error),
+            };
+            
         }
         Err(err) => eprintln!("Error opening the database: {}", err),
     }
