@@ -15,6 +15,7 @@ pub fn update<T: Table + Default>(conn: Connection, table: T) -> UpdateQueryBuil
 pub struct UpdateQueryBuilder<T: Table + Default> {
     conn: Connection,
     table: Option<T>,
+    // set: T,
     where_condition: Option<Condition>,
 }
 
@@ -23,12 +24,22 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         UpdateQueryBuilder {
             conn,
             table: Some(table),
+            // set: None,
             where_condition: None,
         }
     }
 
+    // pub fn set(mut self, table: T) -> Self {
+    //     self.set = table;
+    //     self
+    // }
+
     pub fn where_clause(mut self, condition: Condition) -> Self {
         self.where_condition = Some(condition);
         self
+    }
+
+    pub fn build(self) -> Result<(), String> {
+        Ok(())
     }
 }
