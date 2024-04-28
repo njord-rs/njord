@@ -29,10 +29,10 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         }
     }
 
-    // pub fn set(mut self, table: T) -> Self {
-    //     self.set = table;
-    //     self
-    // }
+    pub fn set(mut self, table: T) -> Self {
+        // self.set = table;
+        self
+    }
 
     pub fn where_clause(mut self, condition: Condition) -> Self {
         self.where_condition = Some(condition);
