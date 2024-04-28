@@ -14,7 +14,6 @@ pub struct UpdateQueryBuilder<T: Table + Default> {
     conn: Connection,
     table: Option<T>,
     columns: Vec<String>,
-    set: Option<T>,
     where_condition: Option<Condition>,
 }
 
@@ -24,14 +23,12 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
             conn,
             table: Some(table),
             columns: Vec::new(),
-            set: None,
             where_condition: None,
         }
     }
 
-    pub fn set(mut self, columns: Vec<String>, table: T) -> Self {
+    pub fn set(mut self, columns: Vec<String>) -> Self {
         self.columns = columns;
-        self.set = Some(table);
         self
     }
 
@@ -60,7 +57,14 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
                 // Check if column exists in the table's fields
                 if let Some(index) = fields.iter().position(|c| c == column) {
                     let value = values.get(index).cloned().unwrap_or_default();
-                    set_fields.push(format!("{} = {}", column, value));
+                    let formatted_value = if value.is_empty() {
+                        "NULL".to_string()
+                    } else if value.parse::<f64>().is_ok() {
+                        value
+                    } else {
+                        format!("'{}'", value)
+                    };
+                    set_fields.push(format!("{} = {}", column, formatted_value));
                 } else {
                     // Handle the case when the column doesn't exist in the table
                     eprintln!("Column '{}' does not exist in the table", column);
