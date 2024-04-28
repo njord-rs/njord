@@ -1,7 +1,6 @@
 use crate::schema::NearEarthObject;
 use njord::sqlite::{self, SqliteError};
 use reqwest::header::ACCEPT;
-use reqwest::Error;
 use serde_json::Value;
 use std::path::Path;
 
