@@ -61,7 +61,8 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
                     Some(index) => values.get(index).cloned().unwrap_or_default(),
                     None => {
                         // Handle the case when the column doesn't exist in the table
-                        return Err(format!("Column '{}' does not exist in the table", column));
+                        println!("Column '{}' does not exist in the table", column);
+                        continue;
                     }
                 };
                 set_fields.push(format!("{} = {}", column, value));
