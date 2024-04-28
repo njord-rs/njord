@@ -92,19 +92,19 @@ fn update() {
 
     let columns: Vec<String> = vec!["address".to_string()];
 
-    let condition = Condition::Eq("address".to_string(), "Some Random Address 1".to_string());
+    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     let table_row: User = User {
         id: 0,
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
-        address: "Some Random Address 2".to_string(),
+        address: "Some Random Address 1".to_string(),
     };
 
     match conn {
         Ok(c) => {
-            let result = sqlite::update(c, User::default())
-                .set(columns, table_row)
+            let result = sqlite::update(c, table_row)
+                .set(columns)
                 .where_clause(condition)
                 .build();
             println!("{:?}", result);
