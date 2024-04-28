@@ -19,6 +19,7 @@ A lightweight and extensible ORM framework for Rust.
   - [SQlite](#sqlite)
     - [Establish a connection](#establish-a-connection)
     - [Insert data](#insert-data)
+    - [Update data](#update-data)
     - [Select data](#select-data)
 - [Getting Help](#getting-help)
 - [Reporting Issues](#reporting-issues)
@@ -187,6 +188,63 @@ fn main () {
             
             let result = sqlite::insert(conn, vec![user]);
             assert!(result.is_ok());
+        }
+        Err(err) => eprintln!("Error opening the database: {}", err),
+    }
+}
+```
+
+#### Update data
+
+```rust
+use njord::table::Table;
+use njord_derive::Table;
+
+mod schema;
+use schema::User;
+
+fn main () {
+    let db_name = "njord.db";
+    let db_path = Path::new(&db_name);
+
+    // SELECT
+    let columns = vec!["username".to_string(), "address".to_string()];
+
+    // WHERE
+    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
+
+    // New data
+    let user = User {
+        username: String::from("john_doe_2"),
+        email: String::from("john@example.com"),
+        address: String::from("1234 Main St"),
+    };
+
+    let mut order = HashMap::new();
+    order.insert(vec!["id".to_string()], "DESC".to_string());
+
+    match sqlite::open(db_path) {
+        Ok(conn) => {
+            println!("Database opened successfully!");
+            
+            // Build the query
+            // We pass the user to the second argument
+            let result = sqlite::update(c, user)
+                .set(columns) // Set which columns to change
+                .where_clause(where_condition)
+                .order_by(order)
+                .limit(4)
+                .offset(0)
+                .build();
+
+            // Match the result
+            match result {
+                Ok(result) => {
+                    assert_eq!(result.len(), 1);
+                }
+                Err(error) => panic!("Failed to UPDATE: {:?}", error),
+            };
+            
         }
         Err(err) => eprintln!("Error opening the database: {}", err),
     }
