@@ -67,7 +67,10 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         println!("{}", query);
 
         // prepare sql statement
-        let mut stmt = self.conn.prepare(query.as_str())?;
+        match self.conn.prepare(query.as_str()) {
+            Ok(_) => println!("Success!"),
+            Err(_) => eprintln!("Could not execute..."),
+        };
 
         Ok(())
     }
