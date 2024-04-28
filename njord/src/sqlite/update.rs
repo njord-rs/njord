@@ -53,19 +53,18 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         // Generate SET clause
         let set = if let Some(table) = &self.table {
             let mut set_fields = Vec::new();
+            let fields = table.get_column_fields();
             let values = table.get_column_values();
 
             for column in &self.columns {
                 // Check if column exists in the table's fields
-                let value = match table.get_column_values().iter().position(|c| c == column) {
-                    Some(index) => values.get(index).cloned().unwrap_or_default(),
-                    None => {
-                        // Handle the case when the column doesn't exist in the table
-                        println!("Column '{}' does not exist in the table", column);
-                        continue;
-                    }
-                };
-                set_fields.push(format!("{} = {}", column, value));
+                if let Some(index) = fields.iter().position(|c| c == column) {
+                    let value = values.get(index).cloned().unwrap_or_default();
+                    set_fields.push(format!("{} = {}", column, value));
+                } else {
+                    // Handle the case when the column doesn't exist in the table
+                    eprintln!("Column '{}' does not exist in the table", column);
+                }
             }
 
             set_fields.join(", ")
