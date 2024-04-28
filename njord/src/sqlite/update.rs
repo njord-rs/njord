@@ -40,6 +40,35 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
     }
 
     pub fn build(self) -> Result<(), String> {
+        let table_name = self
+            .table
+            .map(|t| t.get_name().to_string())
+            .unwrap_or("".to_string());
+
+        // sanitize table name from unwanted quotations or backslashes
+        let table_name_str = table_name.replace("\"", "").replace("\\", "");
+
+        // generate = SET column1 = value1, column2 = value2, ...
+        let set = "";
+
+        let where_condition_str = if let Some(condition) = self.where_condition {
+            format!("WHERE {}", condition.build())
+        } else {
+            String::new()
+        };
+
+        // construct the query based on defined variables above
+        let query = format!(
+            "UPDATE {} SET {} {}",
+            table_name_str, set, where_condition_str
+        );
+
+        info!("{}", query);
+        println!("{}", query);
+
+        // prepare sql statement
+        let mut stmt = self.conn.prepare(query.as_str())?;
+
         Ok(())
     }
 }
