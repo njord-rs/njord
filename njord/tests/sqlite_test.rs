@@ -92,13 +92,8 @@ fn update_row() {
 
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
-    // generate random number
-    let mut rng = StdRng::from_entropy();
-    let max_usize = usize::MAX;
-    let random_number: usize = rng.gen_range(0..max_usize / 2);
-
     let table_row: User = User {
-        id: random_number,
+        id: 0,
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 2".to_string(),
