@@ -208,22 +208,26 @@ fn main () {
     let db_path = Path::new(&db_name);
 
     // SELECT
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+    let columns = vec!["username".to_string(), "address".to_string()];
 
     // WHERE
     let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
 
     // New data
-    // let updated_user_data = User {}
+    let user = User {
+        username: String::from("john_doe_2"),
+        email: String::from("john@example.com"),
+        address: String::from("1234 Main St"),
+    };
 
     match sqlite::open(db_path) {
         Ok(conn) => {
             println!("Database opened successfully!");
             
             // Build the query
-            // We need to pass the struct User with the Default trait in .from()
-            let result: Result<Vec<User>> = sqlite::update(conn, User::default())
-                .set(updated_user_data)
+            // We pass the user to the second argument
+            let result = sqlite::update(c, user)
+                .set(columns) // Set which columns to change
                 .where_clause(where_condition)
                 .build();
 
