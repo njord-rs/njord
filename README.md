@@ -8,7 +8,7 @@
 [![njord_derive: rustc 1.77+](https://img.shields.io/badge/njord_derive-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
-A lightweight and extensible ORM framework for Rust.
+A lightweight and extensible ORM library for Rust.
 
 ## Table of Contents <!-- omit in toc -->
 - [Supported Databases](#supported-databases)
