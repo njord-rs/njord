@@ -8,10 +8,8 @@ use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
 pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<String, RusqliteError> {
-    // Create a transaction
-    let tx = conn.transaction()?;
+    let tx: rusqlite::Transaction<'_> = conn.transaction()?;
 
-    // Accumulate statements
     let mut statements: Vec<String> = Vec::new();
     for table_row in table_rows {
         match generate_statement(&table_row) {
@@ -20,13 +18,10 @@ pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<Stri
         }
     }
 
-    // Join statements into a single string
     let joined_statements = statements.join("; ");
 
-    // Execute all statements at once
     tx.execute_batch(&joined_statements)?;
 
-    // Commit the transaction
     tx.commit()?;
 
     info!("Inserted into table, done.");
