@@ -101,11 +101,17 @@ fn update() {
         address: "Some Random Address 1".to_string(),
     };
 
+    let mut order = HashMap::new();
+    order.insert(vec!["id".to_string()], "DESC".to_string());
+
     match conn {
         Ok(c) => {
             let result = sqlite::update(c, table_row)
                 .set(columns)
                 .where_clause(condition)
+                .order_by(order)
+                .limit(4)
+                .offset(0)
                 .build();
             println!("{:?}", result);
             assert!(result.is_ok());
