@@ -97,7 +97,7 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
-        // sanitize table name from unwanted quotations or backslashes
+        // Sanitize table name from unwanted quotations or backslashes
         let table_name_str = table_name.replace("\"", "").replace("\\", "");
 
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
@@ -134,14 +134,14 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             .offset
             .map_or(String::new(), |offset| format!("OFFSET {}", offset));
 
-        // having should only be added if group_by is present
+        // Having should only be added if group_by is present
         let having_str = if self.group_by.is_some() && self.having_condition.is_some() {
             format!("HAVING {}", self.having_condition.unwrap().build())
         } else {
             String::new()
         };
 
-        // construct the query based on defined variables above
+        // Construct the query based on defined variables above
         let query = format!(
             "SELECT {}{} FROM {} {} {} {} {} {}",
             distinct_str,
@@ -157,16 +157,16 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
         info!("{}", query);
         println!("{}", query);
 
-        // prepare sql statement
+        // Prepare SQL statement
         let mut stmt = self.conn.prepare(query.as_str())?;
 
         let iter = stmt.query_map((), |row| {
-            // dynamically create an instance of the struct based on the Table trait
+            // Dynamically create an instance of the struct based on the Table trait
             let mut instance = T::default();
             let columns = instance.get_column_fields();
 
             for (index, column) in columns.iter().enumerate() {
-                // use the index to get the value from the row and set it in the struct
+                // Use the index to get the value from the row and set it in the struct
                 let value = row.get::<usize, Value>(index)?;
 
                 let string_value = match value {
