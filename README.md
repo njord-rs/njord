@@ -281,9 +281,9 @@ fn main () {
             // Match the result
             match result {
                 Ok(result) => {
-                    assert_eq!(result.len(), 1);
+                    assert!(result.is_ok());
                 }
-                Err(error) => panic!("Failed to UPDATE: {:?}", error),
+                Err(error) => panic!("Failed to DELETE: {:?}", error),
             };
             
         }
