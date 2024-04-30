@@ -128,27 +128,18 @@ fn delete() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns: Vec<String> = vec!["address".to_string()];
-
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
-
-    let table_row: User = User {
-        id: 0,
-        username: "mjovanc".to_string(),
-        email: "mjovanc@icloud.com".to_string(),
-        address: "Some Random Address 1".to_string(),
-    };
+    let condition = Condition::Eq("address".to_string(), "Some Random Address 1".to_string());
 
     let mut order = HashMap::new();
     order.insert(vec!["id".to_string()], "DESC".to_string());
 
     match conn {
         Ok(c) => {
-            let result = sqlite::update(c)
+            let result = sqlite::delete(c)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order)
-                .limit(4)
+                .limit(20)
                 .offset(0)
                 .build();
             println!("{:?}", result);
