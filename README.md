@@ -20,6 +20,7 @@ A lightweight and extensible ORM library for Rust.
     - [Establish a connection](#establish-a-connection)
     - [Insert data](#insert-data)
     - [Update data](#update-data)
+    - [Delete data](#delete-data)
     - [Select data](#select-data)
 - [Getting Help](#getting-help)
 - [Reporting Issues](#reporting-issues)
@@ -159,7 +160,7 @@ fn main () {
     let db_path = Path::new(&db_name);
 
     match sqlite::open(db_path) {
-        Ok(conn) => {
+        Ok(c) => {
             println!("Database opened successfully!");
             
             // additional logic when we are connected...
@@ -183,10 +184,10 @@ fn main () {
     };
 
     match sqlite::open(db_path) {
-        Ok(conn) => {
+        Ok(c) => {
             println!("Database opened successfully!");
             
-            let result = sqlite::insert(conn, vec![user]);
+            let result = sqlite::insert(c, vec![user]);
             assert!(result.is_ok());
         }
         Err(err) => eprintln!("Error opening the database: {}", err),
@@ -224,7 +225,7 @@ fn main () {
     order.insert(vec!["id".to_string()], "DESC".to_string());
 
     match sqlite::open(db_path) {
-        Ok(conn) => {
+        Ok(c) => {
             println!("Database opened successfully!");
             
             // Build the query
@@ -234,6 +235,46 @@ fn main () {
                 .where_clause(where_condition)
                 .order_by(order)
                 .limit(4)
+                .offset(0)
+                .build();
+
+            // Match the result
+            match result {
+                Ok(result) => {
+                    assert_eq!(result.len(), 1);
+                }
+                Err(error) => panic!("Failed to UPDATE: {:?}", error),
+            };
+            
+        }
+        Err(err) => eprintln!("Error opening the database: {}", err),
+    }
+}
+```
+
+#### Delete data
+
+```rust
+fn main () {
+    let db_name = "njord.db";
+    let db_path = Path::new(&db_name);
+
+    // WHERE
+    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
+
+    let mut order = HashMap::new();
+    order.insert(vec!["id".to_string()], "DESC".to_string());
+
+    match sqlite::open(db_path) {
+        Ok(c) => {
+            println!("Database opened successfully!");
+            
+            // Build the query
+            let result = sqlite::delete(c)
+                .from(User::default())
+                .where_clause(where_condition)
+                .order_by(order)
+                .limit(20)
                 .offset(0)
                 .build();
 
@@ -282,12 +323,12 @@ fn main () {
     let having_condition = Condition::Gt("id".to_string(), "1".to_string());
 
     match sqlite::open(db_path) {
-        Ok(conn) => {
+        Ok(c) => {
             println!("Database opened successfully!");
             
             // Build the query
             // We need to pass the struct User with the Default trait in .from()
-            let result: Result<Vec<User>> = sqlite::select(conn, columns)
+            let result: Result<Vec<User>> = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(where_condition)
                 .order_by(order_by)
