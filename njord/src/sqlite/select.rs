@@ -17,7 +17,6 @@ pub struct SelectQueryBuilder<T: Table + Default> {
     table: Option<T>,
     columns: Vec<String>,
     where_condition: Option<Condition>,
-    selected: bool,
     distinct: bool,
     group_by: Option<Vec<String>>,
     order_by: Option<HashMap<Vec<String>, String>>,
@@ -33,7 +32,6 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             table: None,
             columns,
             where_condition: None,
-            selected: false,
             distinct: false,
             group_by: None,
             order_by: None,
@@ -45,7 +43,6 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
 
     pub fn select(mut self, columns: Vec<String>) -> Self {
         self.columns = columns;
-        self.selected = true;
         self
     }
 
