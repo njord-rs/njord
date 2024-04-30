@@ -8,6 +8,8 @@ pub mod select;
 pub use select::select;
 pub mod update;
 pub use update::update;
+pub mod delete;
+pub use delete::delete;
 
 pub mod error;
 pub use error::SqliteError;
