@@ -182,6 +182,12 @@ let result = sqlite::insert(c, vec![user]);
 assert!(result.is_ok());
 ```
 
+**Generated SQL**
+
+```sql
+
+```
+
 #### Update data
 
 ```rust
@@ -208,6 +214,12 @@ let result = sqlite::update(c, user)
 assert!(result.is_ok());
 ```
 
+**Generated SQL**
+
+```sql
+
+```
+
 #### Delete data
 
 ```rust
@@ -225,6 +237,12 @@ let result = sqlite::delete(c)
     .build();
 
 assert!(result.is_ok());
+```
+
+**Generated SQL**
+
+```sql
+
 ```
 
 #### Select data
@@ -256,6 +274,12 @@ match result {
     }
     Err(error) => panic!("Failed to SELECT: {:?}", error),
 };
+```
+
+**Generated SQL**
+
+```sql
+
 ```
 
 ## Getting Help
