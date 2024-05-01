@@ -154,199 +154,108 @@ So how can we establish a connection and actually select or insert data to our d
 To establish a connection we first need to call the `sqlite::open()` function and use it with a match statement.
 
 ```rust
-fn main () {
-    let db_name = "njord.db";
-    let db_path = Path::new(&db_name);
+let db_name = "njord.db";
+let db_path = Path::new(&db_name);
 
-    match sqlite::open(db_path) {
-        Ok(c) => {
-            println!("Database opened successfully!");
-            
-            // additional logic when we are connected...
-        }
-        Err(err) => eprintln!("Error opening the database: {}", err),
+match sqlite::open(db_path) {
+    Ok(c) => {
+        println!("Database opened successfully!");
+        
+        // Additional logic when we are connected.
+        // We need to open a connection and pass it 
+        // to the corresponding sqlite function.
     }
+    Err(err) => eprintln!("Error opening the database: {}", err),
 }
 ```
 
 #### Insert data
 
 ```rust
-fn main () {
-    let db_name = "njord.db";
-    let db_path = Path::new(&db_name);
+let user = User {
+    username: String::from("john_doe"),
+    email: String::from("john@example.com"),
+    address: String::from("123 Main St"),
+};
 
-    let user = User {
-        username: String::from("john_doe"),
-        email: String::from("john@example.com"),
-        address: String::from("123 Main St"),
-    };
-
-    match sqlite::open(db_path) {
-        Ok(c) => {
-            println!("Database opened successfully!");
-            
-            let result = sqlite::insert(c, vec![user]);
-            assert!(result.is_ok());
-        }
-        Err(err) => eprintln!("Error opening the database: {}", err),
-    }
-}
+let result = sqlite::insert(c, vec![user]);
+assert!(result.is_ok());
 ```
 
 #### Update data
 
 ```rust
-use njord::table::Table;
-use njord_derive::Table;
+let columns = vec!["username".to_string(), "address".to_string()];
+let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
 
-mod schema;
-use schema::User;
+let user = User {
+    username: String::from("john_doe_2"),
+    email: String::from("john@example.com"),
+    address: String::from("1234 Main St"),
+};
 
-fn main () {
-    let db_name = "njord.db";
-    let db_path = Path::new(&db_name);
+let mut order = HashMap::new();
+order.insert(vec!["id".to_string()], "DESC".to_string());
+        
+let result = sqlite::update(c, user)
+    .set(columns)
+    .where_clause(where_condition)
+    .order_by(order)
+    .limit(4)
+    .offset(0)
+    .build();
 
-    // SELECT
-    let columns = vec!["username".to_string(), "address".to_string()];
-
-    // WHERE
-    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
-
-    // New data
-    let user = User {
-        username: String::from("john_doe_2"),
-        email: String::from("john@example.com"),
-        address: String::from("1234 Main St"),
-    };
-
-    let mut order = HashMap::new();
-    order.insert(vec!["id".to_string()], "DESC".to_string());
-
-    match sqlite::open(db_path) {
-        Ok(c) => {
-            println!("Database opened successfully!");
-            
-            // Build the query
-            // We pass the user to the second argument
-            let result = sqlite::update(c, user)
-                .set(columns) // Set which columns to change
-                .where_clause(where_condition)
-                .order_by(order)
-                .limit(4)
-                .offset(0)
-                .build();
-
-            // Match the result
-            match result {
-                Ok(result) => {
-                    assert_eq!(result.len(), 1);
-                }
-                Err(error) => panic!("Failed to UPDATE: {:?}", error),
-            };
-            
-        }
-        Err(err) => eprintln!("Error opening the database: {}", err),
-    }
-}
+assert!(result.is_ok());
 ```
 
 #### Delete data
 
 ```rust
-fn main () {
-    let db_name = "njord.db";
-    let db_path = Path::new(&db_name);
+let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
 
-    // WHERE
-    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
+let mut order = HashMap::new();
+order.insert(vec!["id".to_string()], "DESC".to_string());
 
-    let mut order = HashMap::new();
-    order.insert(vec!["id".to_string()], "DESC".to_string());
+let result = sqlite::delete(c)
+    .from(User::default())
+    .where_clause(where_condition)
+    .order_by(order)
+    .limit(20)
+    .offset(0)
+    .build();
 
-    match sqlite::open(db_path) {
-        Ok(c) => {
-            println!("Database opened successfully!");
-            
-            // Build the query
-            let result = sqlite::delete(c)
-                .from(User::default())
-                .where_clause(where_condition)
-                .order_by(order)
-                .limit(20)
-                .offset(0)
-                .build();
-
-            // Match the result
-            match result {
-                Ok(result) => {
-                    assert!(result.is_ok());
-                }
-                Err(error) => panic!("Failed to DELETE: {:?}", error),
-            };
-            
-        }
-        Err(err) => eprintln!("Error opening the database: {}", err),
-    }
-}
+assert!(result.is_ok());
 ```
 
 #### Select data
 
 ```rust
-use njord::table::Table;
-use njord_derive::Table;
+let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
+let group_by = vec!["username".to_string(), "address".to_string()];
 
-mod schema;
-use schema::User;
+let mut order_by = HashMap::new();
+order_by.insert(vec!["id".to_string()], "ASC".to_string());
+order_by.insert(vec!["email".to_string()], "DESC".to_string());
 
-fn main () {
-    let db_name = "njord.db";
-    let db_path = Path::new(&db_name);
+let having_condition = Condition::Gt("id".to_string(), "1".to_string());
 
-    // SELECT
-    let columns = vec!["id".to_string(), "username".to_string(), "email".to_string(), "address".to_string()];
+// Build the query
+// We need to pass the struct User with the Default trait in .from()
+let result: Result<Vec<User>> = sqlite::select(c, columns)
+    .from(User::default())
+    .where_clause(where_condition)
+    .order_by(order_by)
+    .group_by(group_by)
+    .having(having_condition)
+    .build();
 
-    // WHERE
-    let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
-
-    // GROUP BY
-    let group_by = vec!["username".to_string(), "address".to_string()];
-
-    // ORDER BY
-    let mut order_by = HashMap::new();
-    order_by.insert(vec!["id".to_string()], "ASC".to_string());
-    order_by.insert(vec!["email".to_string()], "DESC".to_string());
-    
-    // HAVING
-    let having_condition = Condition::Gt("id".to_string(), "1".to_string());
-
-    match sqlite::open(db_path) {
-        Ok(c) => {
-            println!("Database opened successfully!");
-            
-            // Build the query
-            // We need to pass the struct User with the Default trait in .from()
-            let result: Result<Vec<User>> = sqlite::select(c, columns)
-                .from(User::default())
-                .where_clause(where_condition)
-                .order_by(order_by)
-                .group_by(group_by)
-                .having(having_condition)
-                .build();
-
-            // Match the result
-            match result {
-                Ok(result) => {
-                    assert_eq!(result.len(), 1);
-                }
-                Err(error) => panic!("Failed to SELECT: {:?}", error),
-            };
-            
-        }
-        Err(err) => eprintln!("Error opening the database: {}", err),
+match result {
+    Ok(result) => {
+        assert_eq!(result.len(), 1);
     }
-}
+    Err(error) => panic!("Failed to SELECT: {:?}", error),
+};
 ```
 
 ## Getting Help
