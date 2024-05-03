@@ -6,6 +6,7 @@
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
 [![njord: rustc 1.77.1+](https://img.shields.io/badge/njord-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
 [![njord_derive: rustc 1.77+](https://img.shields.io/badge/njord_derive-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
+![discussions](https://img.shields.io/github/discussions/njord-rs/njord)
 
 A lightweight and extensible ORM library for Rust.
 
