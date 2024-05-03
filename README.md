@@ -3,7 +3,7 @@
 # Docs
 
 ![build](https://img.shields.io/github/actions/workflow/status/njord-rs/docs/docs.yml?branch=master)
-[![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
+![discussions](https://img.shields.io/github/discussions/njord-rs/njord)
 
 The docs for Njord using mdBook. Not being used yet, will update this later. We refer to the API docs for now and [examples](https://github.com/njord-rs/examples).
 
