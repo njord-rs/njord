@@ -185,7 +185,10 @@ assert!(result.is_ok());
 **Generated SQL**
 
 ```sql
-
+INSERT INTO 
+    users (username, email, address) 
+VALUES 
+    ('john_doe', 'john@example.com', '123 Main St')
 ```
 
 #### Update data
@@ -217,7 +220,14 @@ assert!(result.is_ok());
 **Generated SQL**
 
 ```sql
-
+UPDATE 
+    users 
+SET WHERE 
+    username = 'john_doe' 
+ORDER BY 
+    id DESC 
+LIMIT 4 
+OFFSET 0
 ```
 
 #### Delete data
@@ -242,7 +252,14 @@ assert!(result.is_ok());
 **Generated SQL**
 
 ```sql
-
+DELETE FROM 
+    users 
+WHERE 
+    username = 'john_doe' 
+ORDER BY 
+    id DESC 
+LIMIT 20 
+OFFSET 0
 ```
 
 #### Select data
@@ -254,7 +271,6 @@ let group_by = vec!["username".to_string(), "address".to_string()];
 
 let mut order_by = HashMap::new();
 order_by.insert(vec!["id".to_string()], "ASC".to_string());
-order_by.insert(vec!["email".to_string()], "DESC".to_string());
 
 let having_condition = Condition::Gt("id".to_string(), "1".to_string());
 
@@ -279,7 +295,19 @@ match result {
 **Generated SQL**
 
 ```sql
-
+SELECT 
+    id, username, email, address 
+FROM 
+    users 
+WHERE 
+    username = 'mjovanc' 
+GROUP BY 
+    username, email 
+HAVING 
+    id > 1 
+ORDER BY 
+    email
+DESC 
 ```
 
 ## Getting Help
