@@ -233,7 +233,7 @@ WHERE
 ORDER BY
     id DESC
 LIMIT 4
-OFFSET 0;
+OFFSET 0
 
 ```
 
