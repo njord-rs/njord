@@ -97,7 +97,7 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
 
         // Construct the query based on defined variables above
         let query = format!(
-            "UPDATE {} SET {} {} {}",
+            "DELETE FROM {} {} {} {}",
             table_name_str,
             where_condition_str,
             order_by_str,
