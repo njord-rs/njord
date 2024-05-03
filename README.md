@@ -185,10 +185,15 @@ assert!(result.is_ok());
 **Generated SQL**
 
 ```sql
-INSERT INTO 
-    users (username, email, address) 
-VALUES 
-    ('john_doe', 'john@example.com', '123 Main St')
+INSERT INTO users (
+    username,
+    email,
+    address
+) VALUES (
+    'john_doe',
+    'john@example.com',
+    '123 Main St'
+)
 ```
 
 #### Update data
@@ -220,14 +225,16 @@ assert!(result.is_ok());
 **Generated SQL**
 
 ```sql
-UPDATE 
-    users 
-SET WHERE 
-    username = 'john_doe' 
-ORDER BY 
-    id DESC 
-LIMIT 4 
-OFFSET 0
+UPDATE users
+SET
+    username
+WHERE
+    username = 'john_doe'
+ORDER BY
+    id DESC
+LIMIT 4
+OFFSET 0;
+
 ```
 
 #### Delete data
@@ -252,13 +259,12 @@ assert!(result.is_ok());
 **Generated SQL**
 
 ```sql
-DELETE FROM 
-    users 
-WHERE 
-    username = 'john_doe' 
-ORDER BY 
-    id DESC 
-LIMIT 20 
+DELETE FROM users
+WHERE
+    username = 'john_doe'
+ORDER BY
+    id DESC
+LIMIT 20
 OFFSET 0
 ```
 
@@ -295,19 +301,22 @@ match result {
 **Generated SQL**
 
 ```sql
-SELECT 
-    id, username, email, address 
-FROM 
-    users 
-WHERE 
-    username = 'mjovanc' 
-GROUP BY 
-    username, email 
-HAVING 
-    id > 1 
-ORDER BY 
+SELECT
+    id,
+    username,
+    email,
+    address
+FROM
+    users
+WHERE
+    username = 'mjovanc'
+GROUP BY
+    username,
     email
-DESC 
+HAVING
+    id > 1
+ORDER BY
+    email DESC
 ```
 
 ## Getting Help
