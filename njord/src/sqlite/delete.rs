@@ -58,7 +58,7 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
         self
     }
 
-    pub fn build(self) -> Result<(), String> {
+    pub fn build(mut self) -> Result<(), String> {
         let table_name = self
             .table
             .as_ref()
@@ -107,10 +107,10 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
         info!("{}", query);
         println!("{}", query);
 
-        // Prepare SQL statement
-        match self.conn.prepare(query.as_str()) {
-            Ok(_) => println!("Success!"),
-            Err(_) => eprintln!("Could not execute..."),
+        // Execute SQL
+        let _ = match self.conn.transaction() {
+            Ok(tx) => tx.execute(&query.to_string(), []),
+            Err(_) => todo!(),
         };
 
         Ok(())
