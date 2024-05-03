@@ -3,7 +3,7 @@
 # Website
 
 ![build](https://img.shields.io/github/actions/workflow/status/njord-rs/website/ci.yml?branch=main)
-[![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
+![discussions](https://img.shields.io/github/discussions/njord-rs/njord)
 
 The website for Njord in Svelte/SvelteKit.
 
