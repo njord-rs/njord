@@ -67,7 +67,7 @@ fn insert_row() {
     let random_number: usize = rng.gen_range(0..max_usize / 2);
 
     let table_row: User = User {
-        id: None,
+        id: random_number,
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
@@ -95,7 +95,7 @@ fn update() {
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     let table_row: User = User {
-        id: None,
+        id: 0,
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
