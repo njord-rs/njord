@@ -367,4 +367,4 @@ being awesome contributors to this project. **We'd like to take a moment to reco
 
 ## License
 
-The GPLv3 License.
+The BSD 3-Clause License.
