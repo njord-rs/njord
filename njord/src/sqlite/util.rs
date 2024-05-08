@@ -62,6 +62,37 @@ pub fn generate_where_condition_str(condition: Option<Condition>) -> String {
     }
 }
 
+/// Generates an SQL GROUP BY clause string based on the provided columns.
+///
+/// If `columns` is Some, it constructs an SQL GROUP BY clause string with the specified columns.
+/// If `columns` is None, an empty string is returned.
+///
+/// # Arguments
+///
+/// * `columns` - An Option containing a reference to a vector of column names.
+///
+/// # Returns
+///
+/// A String representing the generated SQL GROUP BY clause.
+///
+/// # Example
+///
+/// ```
+/// use crate::generate_group_by_str;
+///
+/// let group_by_str_1 = generate_group_by_str(&Some(vec!["name".to_string(), "age".to_string()]));
+/// let group_by_str_2 = generate_group_by_str(&None);
+///
+/// assert_eq!(group_by_str_1, "GROUP BY name, age");
+/// assert_eq!(group_by_str_2, "");
+/// ```
+pub fn generate_group_by_str(columns: &Option<Vec<String>>) -> String {
+    match columns {
+        Some(columns) => format!("GROUP BY {}", columns.join(", ")),
+        None => String::new(),
+    }
+}
+
 /// Generates an SQL ORDER BY clause string based on the provided `order_by` option.
 ///
 /// If `order_by` is Some, it should contain a HashMap where the keys are vectors of column names
