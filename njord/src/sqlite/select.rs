@@ -27,7 +27,7 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use crate::condition::Condition;
+use crate::{condition::Condition, sqlite::util::order_by_str};
 use std::collections::HashMap;
 
 use rusqlite::{Connection, Result};
@@ -139,19 +139,7 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             None => String::new(),
         };
 
-        let order_by_str = if let Some(order_by) = &self.order_by {
-            let order_by_str: Vec<String> = order_by
-                .iter()
-                .map(|(columns, order)| format!("{} {}", columns.join(", "), order))
-                .collect();
-            if !order_by_str.is_empty() {
-                format!("ORDER BY {}", order_by_str.join(", "))
-            } else {
-                String::new()
-            }
-        } else {
-            String::new()
-        };
+        let order_by_str = order_by_str(&self.order_by);
 
         let limit_str = self
             .limit
