@@ -56,7 +56,7 @@ use crate::condition::Condition;
 /// ```
 pub fn generate_where_condition_str(condition: Option<Condition>) -> String {
     if let Some(condition) = condition {
-        condition.build()
+        format!("WHERE {}", condition.build())
     } else {
         String::new()
     }
