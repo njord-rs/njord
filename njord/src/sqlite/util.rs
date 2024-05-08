@@ -26,3 +26,23 @@
 //! CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+use std::collections::HashMap;
+
+pub fn order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) -> String {
+    let order_by_str = if let Some(order_by) = order_by.as_ref() {
+        let order_by_str: Vec<String> = order_by
+            .iter()
+            .map(|(columns, order)| format!("{} {}", columns.join(", "), order))
+            .collect();
+        if !order_by_str.is_empty() {
+            format!("ORDER BY {}", order_by_str.join(", "))
+        } else {
+            String::new()
+        }
+    } else {
+        String::new()
+    };
+
+    return order_by_str;
+}
