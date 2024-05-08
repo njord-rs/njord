@@ -30,8 +30,8 @@
 use crate::{
     condition::Condition,
     sqlite::util::{
-        generate_group_by_str, generate_limit_str, generate_offset_str, generate_order_by_str,
-        generate_where_condition_str,
+        generate_group_by_str, generate_having_str, generate_limit_str, generate_offset_str,
+        generate_order_by_str, generate_where_condition_str, remove_quotes_and_backslashes,
     },
 };
 use std::collections::HashMap;
@@ -130,20 +130,15 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             .unwrap_or("".to_string());
 
         // Sanitize table name from unwanted quotations or backslashes
-        let table_name_str = table_name.replace("\"", "").replace("\\", "");
+        let table_name_str = remove_quotes_and_backslashes(&table_name);
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
         let where_condition_str = generate_where_condition_str(self.where_condition);
         let group_by_str = generate_group_by_str(&self.group_by);
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
         let offset_str = generate_offset_str(self.offset);
-
-        // Having should only be added if group_by is present
-        let having_str = if self.group_by.is_some() && self.having_condition.is_some() {
-            format!("HAVING {}", self.having_condition.unwrap().build())
-        } else {
-            String::new()
-        };
+        let having_str =
+            generate_having_str(self.group_by.is_some(), self.having_condition.as_ref()); // Having should only be added if group_by is present
 
         // Construct the query based on defined variables above
         let query = format!(
