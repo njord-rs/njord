@@ -50,11 +50,11 @@ use crate::condition::Condition;
 /// use crate::{Condition, generate_where_condition_str};
 ///
 /// let condition = Condition::Eq("age".to_string(), "30".to_string());
-/// let condition_str = generate_where_condition_str(Some(&condition));
+/// let condition_str = generate_where_condition_str(Some(condition));
 ///
 /// assert_eq!(condition_str, "WHERE age = '30'");
 /// ```
-pub fn generate_where_condition_str(condition: Option<&Condition>) -> String {
+pub fn generate_where_condition_str(condition: Option<Condition>) -> String {
     if let Some(condition) = condition {
         condition.build()
     } else {
