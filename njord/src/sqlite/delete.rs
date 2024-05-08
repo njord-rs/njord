@@ -31,7 +31,10 @@ use std::collections::HashMap;
 
 use crate::{
     condition::Condition,
-    sqlite::util::{generate_limit_str, generate_offset_str, generate_order_by_str},
+    sqlite::util::{
+        generate_limit_str, generate_offset_str, generate_order_by_str,
+        generate_where_condition_str,
+    },
 };
 
 use rusqlite::{Connection, Result};
@@ -100,11 +103,7 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
         // Sanitize table name from unwanted quotations or backslashes
         let table_name_str = table_name.replace("\"", "").replace("\\", "");
 
-        let where_condition_str = if let Some(condition) = self.where_condition {
-            format!("WHERE {}", condition.build())
-        } else {
-            String::new()
-        };
+        let where_condition_str = generate_where_condition_str(self.where_condition);
 
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
