@@ -29,7 +29,10 @@
 
 use crate::{
     condition::Condition,
-    sqlite::util::{generate_limit_str, generate_offset_str, generate_order_by_str},
+    sqlite::util::{
+        generate_limit_str, generate_offset_str, generate_order_by_str,
+        generate_where_condition_str,
+    },
 };
 use std::collections::HashMap;
 
@@ -131,11 +134,7 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
 
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
 
-        let where_condition_str = if let Some(condition) = self.where_condition {
-            format!("WHERE {}", condition.build())
-        } else {
-            String::new()
-        };
+        let where_condition_str = generate_where_condition_str(self.where_condition);
 
         let group_by_str = match &self.group_by {
             Some(columns) => format!("GROUP BY {}", columns.join(", ")),
