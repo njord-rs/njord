@@ -27,7 +27,10 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use crate::{condition::Condition, sqlite::util::order_by_str};
+use crate::{
+    condition::Condition,
+    sqlite::util::{generate_limit_str, generate_offset_str, generate_order_by_str},
+};
 use std::collections::HashMap;
 
 use rusqlite::{Connection, Result};
@@ -139,14 +142,9 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             None => String::new(),
         };
 
-        let order_by_str = order_by_str(&self.order_by);
-
-        let limit_str = self
-            .limit
-            .map_or(String::new(), |count| format!("LIMIT {}", count));
-        let offset_str = self
-            .offset
-            .map_or(String::new(), |offset| format!("OFFSET {}", offset));
+        let order_by_str = generate_order_by_str(&self.order_by);
+        let limit_str = generate_limit_str(self.limit);
+        let offset_str = generate_offset_str(self.offset);
 
         // Having should only be added if group_by is present
         let having_str = if self.group_by.is_some() && self.having_condition.is_some() {
