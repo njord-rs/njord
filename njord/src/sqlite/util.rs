@@ -29,6 +29,35 @@
 
 use std::collections::HashMap;
 
+/// Generates an SQL ORDER BY clause string based on the provided `order_by` option.
+///
+/// If `order_by` is Some, it should contain a HashMap where the keys are vectors of column names
+/// and the values are corresponding sort orders (ASC or DESC). This function constructs an SQL
+/// ORDER BY clause string based on the content of the HashMap. If the HashMap is empty, an empty
+/// string is returned.
+///
+/// # Arguments
+///
+/// * `order_by` - An Option containing a HashMap where the keys are vectors of column names and
+///   the values are corresponding sort orders (ASC or DESC).
+///
+/// # Returns
+///
+/// A String representing the generated SQL ORDER BY clause.
+///
+/// # Example
+///
+/// ```
+/// use std::collections::HashMap;
+/// use crate::order_by_str;
+///
+/// let mut map = HashMap::new();
+/// map.insert(vec!["name".to_string()], "ASC".to_string());
+/// map.insert(vec!["age".to_string()], "DESC".to_string());
+///
+/// assert_eq!(order_by_str(&Some(map)), "ORDER BY name ASC, age DESC");
+/// assert_eq!(order_by_str(&None), "");
+/// ```
 pub fn order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) -> String {
     let order_by_str = if let Some(order_by) = order_by.as_ref() {
         let order_by_str: Vec<String> = order_by
