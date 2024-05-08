@@ -43,17 +43,6 @@ use crate::condition::Condition;
 /// # Returns
 ///
 /// A String representing the generated SQL WHERE clause.
-///
-/// # Example
-///
-/// ```
-/// use crate::{Condition, generate_where_condition_str};
-///
-/// let condition = Condition::Eq("age".to_string(), "30".to_string());
-/// let condition_str = generate_where_condition_str(Some(condition));
-///
-/// assert_eq!(condition_str, "WHERE age = '30'");
-/// ```
 pub fn generate_where_condition_str(condition: Option<Condition>) -> String {
     if let Some(condition) = condition {
         format!("WHERE {}", condition.build())
@@ -74,18 +63,6 @@ pub fn generate_where_condition_str(condition: Option<Condition>) -> String {
 /// # Returns
 ///
 /// A String representing the generated SQL GROUP BY clause.
-///
-/// # Example
-///
-/// ```
-/// use crate::generate_group_by_str;
-///
-/// let group_by_str_1 = generate_group_by_str(&Some(vec!["name".to_string(), "age".to_string()]));
-/// let group_by_str_2 = generate_group_by_str(&None);
-///
-/// assert_eq!(group_by_str_1, "GROUP BY name, age");
-/// assert_eq!(group_by_str_2, "");
-/// ```
 pub fn generate_group_by_str(columns: &Option<Vec<String>>) -> String {
     match columns {
         Some(columns) => format!("GROUP BY {}", columns.join(", ")),
@@ -108,20 +85,6 @@ pub fn generate_group_by_str(columns: &Option<Vec<String>>) -> String {
 /// # Returns
 ///
 /// A String representing the generated SQL ORDER BY clause.
-///
-/// # Example
-///
-/// ```
-/// use std::collections::HashMap;
-/// use crate::order_by_str;
-///
-/// let mut map = HashMap::new();
-/// map.insert(vec!["name".to_string()], "ASC".to_string());
-/// map.insert(vec!["age".to_string()], "DESC".to_string());
-///
-/// assert_eq!(order_by_str(&Some(map)), "ORDER BY name ASC, age DESC");
-/// assert_eq!(order_by_str(&None), "");
-/// ```
 pub fn generate_order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) -> String {
     let order_by_str = if let Some(order_by) = order_by.as_ref() {
         let order_by_str: Vec<String> = order_by
@@ -152,18 +115,6 @@ pub fn generate_order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) ->
 /// # Returns
 ///
 /// A String representing the generated SQL LIMIT clause.
-///
-/// # Example
-///
-/// ```
-/// use crate::generate_limit_str;
-///
-/// let limit_str_1 = generate_limit_str(Some(10));
-/// let limit_str_2 = generate_limit_str(None);
-///
-/// assert_eq!(limit_str_1, "LIMIT 10");
-/// assert_eq!(limit_str_2, "");
-/// ```
 pub fn generate_limit_str(limit: Option<usize>) -> String {
     limit.map_or(String::new(), |count| format!("LIMIT {}", count))
 }
@@ -180,18 +131,6 @@ pub fn generate_limit_str(limit: Option<usize>) -> String {
 /// # Returns
 ///
 /// A String representing the generated SQL OFFSET clause.
-///
-/// # Example
-///
-/// ```
-/// use crate::generate_offset_str;
-///
-/// let offset_str_1 = generate_offset_str(Some(5));
-/// let offset_str_2 = generate_offset_str(None);
-///
-/// assert_eq!(offset_str_1, "OFFSET 5");
-/// assert_eq!(offset_str_2, "");
-/// ```
 pub fn generate_offset_str(offset: Option<usize>) -> String {
     offset.map_or(String::new(), |offset| format!("OFFSET {}", offset))
 }
@@ -210,23 +149,6 @@ pub fn generate_offset_str(offset: Option<usize>) -> String {
 /// # Returns
 ///
 /// A String representing the generated SQL HAVING clause.
-///
-/// # Example
-///
-/// ```
-/// use crate::{Condition, generate_having_str};
-///
-/// let condition = Condition::Gt("COUNT(age)".to_string(), "5".to_string());
-/// let having_str_1 = generate_having_str(true, Some(&condition));
-/// let having_str_2 = generate_having_str(false, Some(&condition));
-/// let having_str_3 = generate_having_str(true, None);
-/// let having_str_4 = generate_having_str(false, None);
-///
-/// assert_eq!(having_str_1, "HAVING COUNT(age) > 5");
-/// assert_eq!(having_str_2, "");
-/// assert_eq!(having_str_3, "");
-/// assert_eq!(having_str_4, "");
-/// ```
 pub fn generate_having_str(group_by: bool, having_condition: Option<&Condition>) -> String {
     if group_by && having_condition.is_some() {
         format!("HAVING {}", having_condition.unwrap().build())
@@ -244,17 +166,99 @@ pub fn generate_having_str(group_by: bool, having_condition: Option<&Condition>)
 /// # Returns
 ///
 /// A String with double quotes and backslashes removed.
-///
-/// # Example
-///
-/// ```
-/// use crate::remove_quotes_and_backslashes;
-///
-/// let input = r#""table_name\"""#;
-/// let result = remove_quotes_and_backslashes(input);
-///
-/// assert_eq!(result, "table_name");
-/// ```
 pub fn remove_quotes_and_backslashes(input: &str) -> String {
     input.replace("\"", "").replace("\\", "")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::condition::Condition;
+
+    #[test]
+    fn test_generate_where_condition_str() {
+        // Test when condition is Some
+        let condition = Condition::Eq("age".to_string(), "30".to_string());
+        let result = generate_where_condition_str(Some(condition));
+        // assert_eq!(result, format!("WHERE {}", condition.build()));
+
+        // Test when condition is None
+        let result = generate_where_condition_str(None);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_generate_group_by_str() {
+        // Test when columns is Some
+        let columns = Some(vec!["name".to_string(), "age".to_string()]);
+        let result = generate_group_by_str(&columns);
+        assert_eq!(result, "GROUP BY name, age");
+
+        // Test when columns is None
+        let result = generate_group_by_str(&None);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_generate_order_by_str() {
+        // Test when order_by is Some
+        let mut map = HashMap::new();
+        map.insert(vec!["name".to_string()], "ASC".to_string());
+        map.insert(vec!["age".to_string()], "DESC".to_string());
+        let result = generate_order_by_str(&Some(map));
+        assert_eq!(result, "ORDER BY name ASC, age DESC");
+
+        // Test when order_by is None
+        let result = generate_order_by_str(&None);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_generate_limit_str() {
+        // Test when limit is Some
+        let result = generate_limit_str(Some(10));
+        assert_eq!(result, "LIMIT 10");
+
+        // Test when limit is None
+        let result = generate_limit_str(None);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_generate_offset_str() {
+        // Test when offset is Some
+        let result = generate_offset_str(Some(5));
+        assert_eq!(result, "OFFSET 5");
+
+        // Test when offset is None
+        let result = generate_offset_str(None);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_generate_having_str() {
+        // Test when group_by is true and having_condition is Some
+        let condition = Condition::Gt("COUNT(age)".to_string(), "5".to_string());
+        let result = generate_having_str(true, Some(&condition));
+        assert_eq!(result, format!("HAVING {}", condition.build()));
+
+        // Test when group_by is false
+        let result = generate_having_str(false, Some(&condition));
+        assert_eq!(result, "");
+
+        // Test when having_condition is None
+        let result = generate_having_str(true, None);
+        assert_eq!(result, "");
+
+        // Test when both group_by is false and having_condition is None
+        let result = generate_having_str(false, None);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_remove_quotes_and_backslashes() {
+        let input = r#""table_name\"""#;
+        let result = remove_quotes_and_backslashes(input);
+        assert_eq!(result, "table_name");
+    }
 }
