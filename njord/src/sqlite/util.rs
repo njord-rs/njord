@@ -195,3 +195,66 @@ pub fn generate_limit_str(limit: Option<usize>) -> String {
 pub fn generate_offset_str(offset: Option<usize>) -> String {
     offset.map_or(String::new(), |offset| format!("OFFSET {}", offset))
 }
+
+/// Generates an SQL HAVING clause string based on the provided group by flag and condition.
+///
+/// If `group_by` is true and `having_condition` is Some, it constructs an SQL HAVING clause string
+/// with the specified condition.
+/// If either `group_by` is false or `having_condition` is None, an empty string is returned.
+///
+/// # Arguments
+///
+/// * `group_by` - An Option indicating whether GROUP BY is present.
+/// * `having_condition` - An Option containing the condition for the HAVING clause.
+///
+/// # Returns
+///
+/// A String representing the generated SQL HAVING clause.
+///
+/// # Example
+///
+/// ```
+/// use crate::{Condition, generate_having_str};
+///
+/// let condition = Condition::Gt("COUNT(age)".to_string(), "5".to_string());
+/// let having_str_1 = generate_having_str(true, Some(&condition));
+/// let having_str_2 = generate_having_str(false, Some(&condition));
+/// let having_str_3 = generate_having_str(true, None);
+/// let having_str_4 = generate_having_str(false, None);
+///
+/// assert_eq!(having_str_1, "HAVING COUNT(age) > 5");
+/// assert_eq!(having_str_2, "");
+/// assert_eq!(having_str_3, "");
+/// assert_eq!(having_str_4, "");
+/// ```
+pub fn generate_having_str(group_by: bool, having_condition: Option<&Condition>) -> String {
+    if group_by && having_condition.is_some() {
+        format!("HAVING {}", having_condition.unwrap().build())
+    } else {
+        String::new()
+    }
+}
+
+/// Removes double quotes and backslashes from a given string.
+///
+/// # Arguments
+///
+/// * `input` - The input string from which double quotes and backslashes will be removed.
+///
+/// # Returns
+///
+/// A String with double quotes and backslashes removed.
+///
+/// # Example
+///
+/// ```
+/// use crate::remove_quotes_and_backslashes;
+///
+/// let input = r#""table_name\"""#;
+/// let result = remove_quotes_and_backslashes(input);
+///
+/// assert_eq!(result, "table_name");
+/// ```
+pub fn remove_quotes_and_backslashes(input: &str) -> String {
+    input.replace("\"", "").replace("\\", "")
+}
