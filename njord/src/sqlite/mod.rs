@@ -31,17 +31,18 @@ use std::path::Path;
 
 use rusqlite::{Connection, Error};
 
-pub mod insert;
-pub use insert::insert;
-pub mod select;
-pub use select::select;
-pub mod update;
-pub use update::update;
 pub mod delete;
-pub use delete::delete;
-
 pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
+
+pub use delete::delete;
 pub use error::SqliteError;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
 
 /// Open a database connection.
 ///
