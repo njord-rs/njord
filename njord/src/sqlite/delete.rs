@@ -29,7 +29,10 @@
 
 use std::collections::HashMap;
 
-use crate::{condition::Condition, sqlite::util::order_by_str};
+use crate::{
+    condition::Condition,
+    sqlite::util::{generate_limit_str, generate_offset_str, generate_order_by_str},
+};
 
 use rusqlite::{Connection, Result};
 
@@ -103,14 +106,9 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
             String::new()
         };
 
-        let order_by_str = order_by_str(&self.order_by);
-
-        let limit_str = self
-            .limit
-            .map_or(String::new(), |count| format!("LIMIT {}", count));
-        let offset_str = self
-            .offset
-            .map_or(String::new(), |offset| format!("OFFSET {}", offset));
+        let order_by_str = generate_order_by_str(&self.order_by);
+        let limit_str = generate_limit_str(self.limit);
+        let offset_str = generate_offset_str(self.offset);
 
         // Construct the query based on defined variables above
         let query = format!(
