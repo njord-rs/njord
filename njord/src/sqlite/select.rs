@@ -30,7 +30,7 @@
 use crate::{
     condition::Condition,
     sqlite::util::{
-        generate_limit_str, generate_offset_str, generate_order_by_str,
+        generate_group_by_str, generate_limit_str, generate_offset_str, generate_order_by_str,
         generate_where_condition_str,
     },
 };
@@ -131,16 +131,9 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
 
         // Sanitize table name from unwanted quotations or backslashes
         let table_name_str = table_name.replace("\"", "").replace("\\", "");
-
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
-
         let where_condition_str = generate_where_condition_str(self.where_condition);
-
-        let group_by_str = match &self.group_by {
-            Some(columns) => format!("GROUP BY {}", columns.join(", ")),
-            None => String::new(),
-        };
-
+        let group_by_str = generate_group_by_str(&self.group_by);
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
         let offset_str = generate_offset_str(self.offset);
