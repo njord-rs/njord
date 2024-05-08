@@ -58,7 +58,7 @@ use std::collections::HashMap;
 /// assert_eq!(order_by_str(&Some(map)), "ORDER BY name ASC, age DESC");
 /// assert_eq!(order_by_str(&None), "");
 /// ```
-pub fn order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) -> String {
+pub fn generate_order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) -> String {
     let order_by_str = if let Some(order_by) = order_by.as_ref() {
         let order_by_str: Vec<String> = order_by
             .iter()
@@ -74,4 +74,60 @@ pub fn order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) -> String {
     };
 
     return order_by_str;
+}
+
+/// Generates an SQL LIMIT clause string based on the provided limit count.
+///
+/// If `limit` is Some, it constructs an SQL LIMIT clause string with the specified count.
+/// If `limit` is None, an empty string is returned.
+///
+/// # Arguments
+///
+/// * `limit` - An Option containing the limit count.
+///
+/// # Returns
+///
+/// A String representing the generated SQL LIMIT clause.
+///
+/// # Example
+///
+/// ```
+/// use crate::generate_limit_str;
+///
+/// let limit_str_1 = generate_limit_str(Some(10));
+/// let limit_str_2 = generate_limit_str(None);
+///
+/// assert_eq!(limit_str_1, "LIMIT 10");
+/// assert_eq!(limit_str_2, "");
+/// ```
+pub fn generate_limit_str(limit: Option<usize>) -> String {
+    limit.map_or(String::new(), |count| format!("LIMIT {}", count))
+}
+
+/// Generates an SQL OFFSET clause string based on the provided offset count.
+///
+/// If `offset` is Some, it constructs an SQL OFFSET clause string with the specified count.
+/// If `offset` is None, an empty string is returned.
+///
+/// # Arguments
+///
+/// * `offset` - An Option containing the offset count.
+///
+/// # Returns
+///
+/// A String representing the generated SQL OFFSET clause.
+///
+/// # Example
+///
+/// ```
+/// use crate::generate_offset_str;
+///
+/// let offset_str_1 = generate_offset_str(Some(5));
+/// let offset_str_2 = generate_offset_str(None);
+///
+/// assert_eq!(offset_str_1, "OFFSET 5");
+/// assert_eq!(offset_str_2, "");
+/// ```
+pub fn generate_offset_str(offset: Option<usize>) -> String {
+    offset.map_or(String::new(), |offset| format!("OFFSET {}", offset))
 }
