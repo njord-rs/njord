@@ -33,7 +33,7 @@ use crate::{
     condition::Condition,
     sqlite::util::{
         generate_limit_str, generate_offset_str, generate_order_by_str,
-        generate_where_condition_str,
+        generate_where_condition_str, remove_quotes_and_backslashes,
     },
 };
 
@@ -103,7 +103,7 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
             .unwrap_or("".to_string());
 
         // Sanitize table name from unwanted quotations or backslashes
-        let table_name_str = table_name.replace("\"", "").replace("\\", "");
+        let table_name_str = remove_quotes_and_backslashes(&table_name);
 
         // Generate SET clause
         let set = if let Some(table) = &self.table {
