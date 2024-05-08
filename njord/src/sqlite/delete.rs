@@ -43,10 +43,20 @@ use log::info;
 
 use crate::table::Table;
 
+/// Constructs a new DELETE query builder.
+///
+/// # Arguments
+///
+/// * `conn` - A `rusqlite::Connection` to the SQLite database.
+///
+/// # Returns
+///
+/// A `DeleteQueryBuilder` instance.
 pub fn delete<T: Table + Default>(conn: Connection) -> DeleteQueryBuilder<T> {
     DeleteQueryBuilder::new(conn)
 }
 
+/// A builder for constructing DELETE queries.
 pub struct DeleteQueryBuilder<T: Table + Default> {
     conn: Connection,
     table: Option<T>,
@@ -57,6 +67,11 @@ pub struct DeleteQueryBuilder<T: Table + Default> {
 }
 
 impl<T: Table + Default> DeleteQueryBuilder<T> {
+    /// Creates a new `DeleteQueryBuilder` instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     pub fn new(conn: Connection) -> Self {
         DeleteQueryBuilder {
             conn,
@@ -68,31 +83,61 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
         }
     }
 
+    /// Sets the table from which to delete data.
+    ///
+    /// # Arguments
+    ///
+    /// * `table` - An instance of the table from which to delete data.
     pub fn from(mut self, table: T) -> Self {
         self.table = Some(table);
         self
     }
 
+    /// Sets the WHERE clause condition.
+    ///
+    /// # Arguments
+    ///
+    /// * `condition` - The condition to be applied in the WHERE clause.
     pub fn where_clause(mut self, condition: Condition) -> Self {
         self.where_condition = Some(condition);
         self
     }
 
+    /// Sets the ORDER BY clause columns and order direction.
+    ///
+    /// # Arguments
+    ///
+    /// * `col_and_order` - A hashmap representing the columns and their order directions.
     pub fn order_by(mut self, col_and_order: HashMap<Vec<String>, String>) -> Self {
         self.order_by = Some(col_and_order);
         self
     }
 
+    /// Sets the LIMIT clause for the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `count` - The maximum number of rows to be deleted.
     pub fn limit(mut self, count: usize) -> Self {
         self.limit = Some(count);
         self
     }
 
+    /// Sets the OFFSET clause for the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `offset` - The offset from which to start deleting rows.
     pub fn offset(mut self, offset: usize) -> Self {
         self.offset = Some(offset);
         self
     }
 
+    /// Builds and executes the DELETE query.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` indicating success or failure of the deletion operation.
     pub fn build(mut self) -> Result<(), String> {
         let table_name = self
             .table
