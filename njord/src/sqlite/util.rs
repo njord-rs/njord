@@ -179,8 +179,8 @@ mod tests {
     fn test_generate_where_condition_str() {
         // Test when condition is Some
         let condition = Condition::Eq("age".to_string(), "30".to_string());
-        let result = generate_where_condition_str(Some(condition));
-        // assert_eq!(result, format!("WHERE {}", condition.build()));
+        let result = generate_where_condition_str(Some(condition)); // TODO: need to fix this later
+                                                                    // assert_eq!(result, format!("WHERE {}", condition.build()));
 
         // Test when condition is None
         let result = generate_where_condition_str(None);

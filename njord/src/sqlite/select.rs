@@ -43,10 +43,21 @@ use rusqlite::types::Value;
 
 use crate::table::Table;
 
+/// Constructs a new SELECT query builder.
+///
+/// # Arguments
+///
+/// * `conn` - A `rusqlite::Connection` to the SQLite database.
+/// * `columns` - A vector of strings representing the columns to be selected.
+///
+/// # Returns
+///
+/// A `SelectQueryBuilder` instance.
 pub fn select<T: Table + Default>(conn: Connection, columns: Vec<String>) -> SelectQueryBuilder<T> {
     SelectQueryBuilder::new(conn, columns)
 }
 
+/// A builder for constructing SELECT queries.
 pub struct SelectQueryBuilder<T: Table + Default> {
     conn: Connection,
     table: Option<T>,
@@ -61,6 +72,12 @@ pub struct SelectQueryBuilder<T: Table + Default> {
 }
 
 impl<T: Table + Default> SelectQueryBuilder<T> {
+    /// Creates a new `SelectQueryBuilder` instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - A `rusqlite::Connection` to the SQLite database.
+    /// * `columns` - A vector of strings representing the columns to be selected.
     pub fn new(conn: Connection, columns: Vec<String>) -> Self {
         SelectQueryBuilder {
             conn,
@@ -76,51 +93,98 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
         }
     }
 
+    /// Sets the columns to be selected.
+    ///
+    /// # Arguments
+    ///
+    /// * `columns` - A vector of strings representing the columns to be selected.
     pub fn select(mut self, columns: Vec<String>) -> Self {
         self.columns = columns;
         self
     }
 
+    /// Sets the DISTINCT keyword for the query.
     pub fn distinct(mut self) -> Self {
         self.distinct = true;
         self
     }
 
+    /// Sets the table from which to select data.
+    ///
+    /// # Arguments
+    ///
+    /// * `table` - The table from which to select data.
     pub fn from(mut self, table: T) -> Self {
         self.table = Some(table);
         self
     }
 
+    /// Sets the WHERE clause condition.
+    ///
+    /// # Arguments
+    ///
+    /// * `condition` - The condition to be applied in the WHERE clause.
     pub fn where_clause(mut self, condition: Condition) -> Self {
         self.where_condition = Some(condition);
         self
     }
 
+    /// Sets the GROUP BY clause columns.
+    ///
+    /// # Arguments
+    ///
+    /// * `columns` - A vector of strings representing the columns to be grouped by.
     pub fn group_by(mut self, columns: Vec<String>) -> Self {
         self.group_by = Some(columns);
         self
     }
 
+    /// Sets the ORDER BY clause columns and order direction.
+    ///
+    /// # Arguments
+    ///
+    /// * `col_and_order` - A HashMap containing column names as keys and order direction as values.
     pub fn order_by(mut self, col_and_order: HashMap<Vec<String>, String>) -> Self {
         self.order_by = Some(col_and_order);
         self
     }
 
+    /// Sets the LIMIT clause for the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `count` - The number of rows to limit the result to.
     pub fn limit(mut self, count: usize) -> Self {
         self.limit = Some(count);
         self
     }
 
+    /// Sets the OFFSET clause for the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `offset` - The number of rows to skip.
     pub fn offset(mut self, offset: usize) -> Self {
         self.offset = Some(offset);
         self
     }
 
+    /// Sets the HAVING clause condition.
+    ///
+    /// # Arguments
+    ///
+    /// * `condition` - The condition to be applied in the HAVING clause.
     pub fn having(mut self, condition: Condition) -> Self {
         self.having_condition = Some(condition);
         self
     }
 
+    /// Builds and executes the SELECT query.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a vector of selected table rows if successful,
+    /// or a `rusqlite::Error` if an error occurs during the execution.
     pub fn build(self) -> Result<Vec<T>> {
         let columns_str = self.columns.join(", ");
 

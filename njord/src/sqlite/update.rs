@@ -43,10 +43,21 @@ use log::info;
 
 use crate::table::Table;
 
+/// Constructs a new UPDATE query builder.
+///
+/// # Arguments
+///
+/// * `conn` - A `rusqlite::Connection` to the SQLite database.
+/// * `table` - An instance of the table to be updated.
+///
+/// # Returns
+///
+/// An `UpdateQueryBuilder` instance.
 pub fn update<T: Table + Default>(conn: Connection, table: T) -> UpdateQueryBuilder<T> {
     UpdateQueryBuilder::new(conn, table)
 }
 
+/// A builder for constructing UPDATE queries.
 pub struct UpdateQueryBuilder<T: Table + Default> {
     conn: Connection,
     table: Option<T>,
@@ -58,6 +69,12 @@ pub struct UpdateQueryBuilder<T: Table + Default> {
 }
 
 impl<T: Table + Default> UpdateQueryBuilder<T> {
+    /// Creates a new `UpdateQueryBuilder` instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `conn` - A `rusqlite::Connection` to the SQLite database.
+    /// * `table` - An instance of the table to be updated.
     pub fn new(conn: Connection, table: T) -> Self {
         UpdateQueryBuilder {
             conn,
@@ -70,31 +87,61 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
         }
     }
 
+    /// Sets the columns and values to be updated.
+    ///
+    /// # Arguments
+    ///
+    /// * `columns` - A vector of strings representing the columns to be updated.
     pub fn set(mut self, columns: Vec<String>) -> Self {
         self.columns = columns;
         self
     }
 
+    /// Sets the WHERE clause condition.
+    ///
+    /// # Arguments
+    ///
+    /// * `condition` - The condition to be applied in the WHERE clause.
     pub fn where_clause(mut self, condition: Condition) -> Self {
         self.where_condition = Some(condition);
         self
     }
 
+    /// Sets the ORDER BY clause columns and order direction.
+    ///
+    /// # Arguments
+    ///
+    /// * `col_and_order` - A hashmap representing the columns and their order directions.
     pub fn order_by(mut self, col_and_order: HashMap<Vec<String>, String>) -> Self {
         self.order_by = Some(col_and_order);
         self
     }
 
+    /// Sets the LIMIT clause for the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `count` - The maximum number of rows to be updated.
     pub fn limit(mut self, count: usize) -> Self {
         self.limit = Some(count);
         self
     }
 
+    /// Sets the OFFSET clause for the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `offset` - The offset from which to start updating rows.
     pub fn offset(mut self, offset: usize) -> Self {
         self.offset = Some(offset);
         self
     }
 
+    /// Builds and executes the UPDATE query.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` indicating success or failure of the update operation.
     pub fn build(self) -> Result<(), String> {
         let table_name = self
             .table

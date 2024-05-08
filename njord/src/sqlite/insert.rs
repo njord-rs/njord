@@ -36,6 +36,23 @@ use log::info;
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
+/// Inserts rows into a SQLite table.
+///
+/// This function takes a `Connection` and a vector of objects implementing
+/// the `Table` trait, which represents rows to be inserted into the table.
+/// It generates SQL INSERT statements for each row and executes them within
+/// a transaction.
+///
+/// # Arguments
+///
+/// * `conn` - A `Connection` to the SQLite database.
+/// * `table_rows` - A vector of objects implementing the `Table` trait representing
+///                  the rows to be inserted into the database.
+///
+/// # Returns
+///
+/// A `Result` containing a `String` representing the joined SQL statements
+/// if the insertion is successful, or a `RusqliteError` if an error occurs.
 pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<String, RusqliteError> {
     let tx: rusqlite::Transaction<'_> = conn.transaction()?;
 
@@ -58,11 +75,25 @@ pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<Stri
     Ok(joined_statements)
 }
 
+/// Generates an SQL INSERT statement for a given table row.
+///
+/// This function takes an object implementing the `Table` trait, representing
+/// a single row of data to be inserted into the database. It generates an SQL
+/// INSERT statement based on the column names and values of the table row.
+///
+/// # Arguments
+///
+/// * `table_row` - An object implementing the `Table` trait representing
+///                 a single row of data to be inserted.
+///
+/// # Returns
+///
+/// A `Result` containing a `String` representing the generated SQL statement
+/// if successful, or a `Error` if an error occurs during the generation process.
 fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
     // Generate string for columns
     let mut columns_str = String::new();
     for column_name in table_row.get_column_fields() {
-        // TODO: filter out id field
         columns_str.push_str(&format!("{}, ", column_name));
     }
 
