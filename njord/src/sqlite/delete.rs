@@ -33,7 +33,7 @@ use crate::{
     condition::Condition,
     sqlite::util::{
         generate_limit_str, generate_offset_str, generate_order_by_str,
-        generate_where_condition_str,
+        generate_where_condition_str, remove_quotes_and_backslashes,
     },
 };
 
@@ -101,10 +101,8 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
             .unwrap_or("".to_string());
 
         // Sanitize table name from unwanted quotations or backslashes
-        let table_name_str = table_name.replace("\"", "").replace("\\", "");
-
+        let table_name_str = remove_quotes_and_backslashes(&table_name);
         let where_condition_str = generate_where_condition_str(self.where_condition);
-
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
         let offset_str = generate_offset_str(self.offset);
