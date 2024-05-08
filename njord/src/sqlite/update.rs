@@ -29,7 +29,7 @@
 
 use std::collections::HashMap;
 
-use crate::condition::Condition;
+use crate::{condition::Condition, sqlite::util::order_by_str};
 
 use rusqlite::{Connection, Result};
 
@@ -134,19 +134,7 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
             String::new()
         };
 
-        let order_by_str = if let Some(order_by) = &self.order_by {
-            let order_by_str: Vec<String> = order_by
-                .iter()
-                .map(|(columns, order)| format!("{} {}", columns.join(", "), order))
-                .collect();
-            if !order_by_str.is_empty() {
-                format!("ORDER BY {}", order_by_str.join(", "))
-            } else {
-                String::new()
-            }
-        } else {
-            String::new()
-        };
+        let order_by_str = order_by_str(&self.order_by);
 
         let limit_str = self
             .limit
