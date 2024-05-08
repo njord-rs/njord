@@ -29,6 +29,39 @@
 
 use std::collections::HashMap;
 
+use crate::condition::Condition;
+
+/// Generates an SQL WHERE clause string based on the provided condition.
+///
+/// If `condition` is Some, it constructs an SQL WHERE clause string with the specified condition.
+/// If `condition` is None, an empty string is returned.
+///
+/// # Arguments
+///
+/// * `condition` - An Option containing the condition.
+///
+/// # Returns
+///
+/// A String representing the generated SQL WHERE clause.
+///
+/// # Example
+///
+/// ```
+/// use crate::{Condition, generate_where_condition_str};
+///
+/// let condition = Condition::Eq("age".to_string(), "30".to_string());
+/// let condition_str = generate_where_condition_str(Some(&condition));
+///
+/// assert_eq!(condition_str, "WHERE age = '30'");
+/// ```
+pub fn generate_where_condition_str(condition: Option<&Condition>) -> String {
+    if let Some(condition) = condition {
+        condition.build()
+    } else {
+        String::new()
+    }
+}
+
 /// Generates an SQL ORDER BY clause string based on the provided `order_by` option.
 ///
 /// If `order_by` is Some, it should contain a HashMap where the keys are vectors of column names
