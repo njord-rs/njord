@@ -1,81 +1,49 @@
 <script>
-    import { slide } from "svelte/transition";
-    import Close from "$lib/components/icons/Close.svelte";
-    import Hamburger from "$lib/components/icons/Hamburger.svelte";
-    let openMenu = false;
-  </script>
-  
-  <nav
-    class="fixed top-0 px-4 h-16 w-full hidden justify-center md:flex z-10 border-b border-zinc-100 bg-zinc-900 font-secondary"
-  >
-    <div class="container flex-row items-center justify-between flex">
-        <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"> <img src="logo.png" alt="Logo" class="w-12" /> Njord</a>
-        <div class="flex gap-6">
-          <a target="_blank" href="https://x.com/njord_rs">News</a>
-          <a target="_blank" href="https://docs.rs/njord/latest/njord/">Docs</a>
-          <a target="_blank" href="https://discord.com/invite/2uppTzjUHE">Discord</a>
-          <a target="_blank" href="https://github.com/njord-rs/njord">Github</a>
-        </div>
-       
-    </div>
-  </nav>
-  
-  <nav
-    class="fixed flex flex-col items-end md:hidden p-4 bg-zinc-900 top-0 w-full z-10 border-b border-zinc-100 font-secondary"
-  >
-  <div class="flex flex-row justify-between w-full">
-    <a class="flex justify-center items-center gap-2" href="/" aria-label="Home"><img src="logo.png" alt="Logo" class="w-12" /> Njord</a>
-    <button
-      aria-label="Toggle menu"
-      on:click={() => {
-        openMenu = !openMenu;
-      }}
-    >
-      {#if openMenu}
-        <Close />
-      {:else}
-        <Hamburger />
-      {/if}
-    </button>
+  import Link from '$lib/components/Link.svelte';
+  import SocialLink from '$lib/components/SocialLink.svelte';
+  import Github from '$lib/components/icons/Github.svelte';
+  import XTwitter from '$lib/components/icons/XTwitter.svelte';
+  import Discord from '$lib/components/icons/Discord.svelte';
+</script>
+
+<header class="sticky top-0 inset-x-0 z-10 bg-zinc-900 font-secondary w-full">
+  <div class="container items-center justify-between flex h-16">
+    <!-- Logo -->
+    <Link class="flex items-center gap-2" href="/" ariaLabel="Home">
+      <img src="logo.png" alt="Logo" class="w-12" />
+      <span class="text-xl font-semibold">Njord</span>
+    </Link>
+
+    <nav class="flex gap-8 items-center">
+      <!-- Main menu -->
+      <ul>
+        <li><Link href="https://docs.rs/njord/latest/njord/">Docs</Link></li>
+      </ul>
+
+      <!-- Social links -->
+      <ul class="flex items-center gap-3">
+        <li>
+          <SocialLink href="https://x.com/njord_rs" ariaLabel="X">
+            <XTwitter />
+          </SocialLink>
+        </li>
+        <li>
+          <SocialLink
+            href="https://discord.com/invite/2uppTzjUHE"
+            ariaLabel="Discord"
+          >
+            <Discord />
+          </SocialLink>
+        </li>
+        <li>
+          <SocialLink
+            href="https://github.com/njord-rs/njord"
+            ariaLabel="GitHub"
+          >
+            <Github />
+          </SocialLink>
+        </li>
+      </ul>
+    </nav>
   </div>
-  
-    {#if openMenu}
-      <div
-        in:slide
-        out:slide
-        class="w-full flex flex-col gap-6 items-center "
-      >
-        <a
-          href="/"
-          on:click={() => {
-            openMenu = !openMenu;
-          }}>Home</a
-        >
-        <a
-          href="https://x.com/njord_rs"
-          on:click={() => {
-            openMenu = !openMenu;
-          }}>News</a
-        >
-        <a
-          href="https://docs.rs/njord/latest/njord/"
-          on:click={() => {
-            openMenu = !openMenu;
-          }}>Docs</a
-        >
-        <a
-          href="https://discord.com/invite/2uppTzjUHE"
-          on:click={() => {
-            openMenu = !openMenu;
-          }}>Discord</a
-        >
-        <a
-          href="https://github.com/njord-rs/njord"
-          on:click={() => {
-            openMenu = !openMenu;
-          }}>Github</a
-        >
-      </div>
-    {/if}
-  </nav>
-  
+</header>
