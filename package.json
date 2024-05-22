@@ -1,33 +1,33 @@
 {
-	"name": "njord",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig jsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig jsconfig.json --watch",
-		"test": "vitest",
-		"lint": "eslint njord"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^2.0.0",
-		"@sveltejs/kit": "^1.27.4",
-		"autoprefixer": "^10.4.16",
-		"dotenv": "^16.3.1",
-		"eslint": "^8.28.0",
-		"eslint-plugin-svelte": "^2.30.0",
-		"postcss": "^8.4.31",
-		"svelte": "^4.2.7",
-		"svelte-check": "^3.6.0",
-		"tailwindcss": "^3.3.5",
-		"typescript": "^5.0.0",
-		"vite": "^4.5.1",
-		"vitest": "^0.34.0"
-	},
-	"type": "module",
-	"dependencies": {
-		"@octokit/rest": "^20.0.2"
-	}
+  "name": "njord",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig jsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig jsconfig.json --watch",
+    "test": "vitest",
+    "lint": "eslint njord"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/kit": "^1.27.4",
+    "autoprefixer": "^10.4.16",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.28.0",
+    "eslint-plugin-svelte": "^2.30.0",
+    "postcss": "^8.4.31",
+    "svelte": "^4.2.7",
+    "svelte-check": "^3.6.0",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.0.0",
+    "vite": "^4.5.1",
+    "vitest": "^0.34.0"
+  }
 }
