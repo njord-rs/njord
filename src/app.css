@@ -3,24 +3,22 @@
 @tailwind utilities;
 
 @layer base {
-    h1 {
-      font-weight: 700;
-      font-size: 1.875em;
-  
-    }
-    h2 {
-      font-weight: 700;
-      font-size: 1.4em;
-  
-    }
-    h3 {
-      font-weight: 700;
-      font-size: 1.25em;
-    }
+  h1 {
+    font-weight: 700;
+    font-size: 1.875em;
   }
+  h2 {
+    font-weight: 700;
+    font-size: 1.4em;
+  }
+  h3 {
+    font-weight: 700;
+    font-size: 1.25em;
+  }
+}
 
-  body {
-    min-height: 100vh;
-    --tw-bg-opacity: 1;
-    background-color: rgb(24 24 27 / var(--tw-bg-opacity));
-  }
+body {
+  min-height: 100vh;
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 24 27 / var(--tw-bg-opacity));
+}
