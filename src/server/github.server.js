@@ -25,7 +25,7 @@ export async function getRepoStats() {
     let commits = await getCommits();
     let contributors = await getContributors();
     let stargazers = { stars, path: repoPath + "/stargazers " };
-    let latestVersion = { version: "0.2.1", path: repoPath + "/releases" };
+    let latestVersion = { version: "0.3.0-alpha", path: repoPath + "/releases" };
     let latestCommit = {
       path: repoPath + "/commit/" + commits[0].sha,
       date: getShortdate(new Date(commits[0].commit.author.date)),
