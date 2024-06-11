@@ -1,5 +1,6 @@
 {
   "name": "njord",
+  "description": "The official website for Njord",
   "version": "0.0.1",
   "private": true,
   "type": "module",
