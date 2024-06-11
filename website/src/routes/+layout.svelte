@@ -21,6 +21,15 @@
     content="A lightweight and extensible ORM library and Query Builder for Rust."
   />
   <meta property="twitter:image" content="/meta.png" />
+
+  <!-- Prevent page flash -->
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark')
+    } else {
+        document.documentElement.classList.remove('dark')
+    }
+  </script>
 </svelte:head>
 
 <div

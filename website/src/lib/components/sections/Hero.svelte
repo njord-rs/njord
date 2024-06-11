@@ -11,7 +11,7 @@
     alt="Viking city"
   />
 
-  <div class="fade-out pointer-events-none"></div>
+  <div class="fade-out pointer-events-none bg-gradient-to-b from-transparent to-zinc-200 dark:to-zinc-900"></div>
 
   <div class="container">
     <div>
@@ -27,13 +27,13 @@
   </div>
 </section>
 
-<style>
+<style lang="postcss">
   .fade-out {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     height: 100px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #18181b);
+    /* background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #18181b); */
   }
 </style>
