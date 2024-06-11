@@ -364,6 +364,7 @@ being awesome contributors to this project. **We'd like to take a moment to reco
 [<img src="https://github.com/appelskrutt34.png?size=72" alt="appelskrutt34" width="72">](https://github.com/appelskrutt34)
 [<img src="https://avatars.githubusercontent.com/u/23294573?v=4&size=72">](https://github.com/ahsentekd)
 [<img src="https://avatars.githubusercontent.com/u/167654108?v=4&size=72">](https://github.com/chinmer)
+[<img src="https://github.com/SvMak.png?size=72" alt="SvMak" width="72">](https://github.com/SvMak) 
 
 ## License
 
