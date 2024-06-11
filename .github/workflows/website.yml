@@ -1,0 +1,38 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**/website/**"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "**/website/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build SvelteKit application
+        run: npm run build
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: build
