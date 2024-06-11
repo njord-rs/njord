@@ -1,8 +1,8 @@
-<img align="right" width="128" height="128" alt="njord" src="https://github.com/njord-rs/resources/raw/master/logo.png">
+<img align="right" width="128" height="128" alt="njord" src="https://github.com/mjovanc/resources/raw/master/logo.png">
 
 # Njord <!-- omit in toc -->
 
-![build](https://img.shields.io/github/actions/workflow/status/njord-rs/njord/ci.yml?branch=master)
+![build](https://img.shields.io/github/actions/workflow/status/mjovanc/njord/core.yml?branch=master)
 ![crates.io](https://img.shields.io/crates/v/njord.svg)
 [![njord: rustc 1.77.1+](https://img.shields.io/badge/njord-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
 [![njord_derive: rustc 1.77+](https://img.shields.io/badge/njord_derive-rustc_1.77.1+-lightgray.svg)](https://blog.rust-lang.org/2024/03/28/Rust-1.77.1.html)
@@ -348,7 +348,7 @@ Njord uses GitHub’s integrated issue tracking system to record bugs and featur
 
 ## Contributing
 
-Before contributing, please read the [contribution](https://github.com/njord-rs/njord/blob/master/CONTRIBUTING.md) guide for useful information how to get started with Njord as well as what should be included when submitting a contribution to the project.
+Before contributing, please read the [contribution](https://github.com/mjovanc/njord/blob/master/CONTRIBUTING.md) guide for useful information how to get started with Njord as well as what should be included when submitting a contribution to the project.
 
 ## Code of Conduct
 
