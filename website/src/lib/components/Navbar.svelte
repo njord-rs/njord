@@ -37,7 +37,7 @@
         </li>
         <li>
           <SocialLink
-            href="https://github.com/njord-rs/njord"
+            href="https://github.com/mjovanc/njord"
             ariaLabel="GitHub"
           >
             <Github />
