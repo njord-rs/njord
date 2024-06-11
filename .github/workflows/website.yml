@@ -5,12 +5,12 @@ on:
     branches:
       - master
     paths:
-      - "**/website/**"
+      - "website/**"
   pull_request:
     branches:
       - master
     paths:
-      - "**/website/**"
+      - "website/**"
 
 jobs:
   build:
@@ -27,12 +27,14 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: website
 
       - name: Build SvelteKit application
         run: npm run build
+        working-directory: website
 
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
-          path: build
+          path: website/build
