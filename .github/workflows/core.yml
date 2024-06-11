@@ -14,6 +14,7 @@ on:
       - "**/.gitignore"
       - "**/resources/**"
       - "**/.github/ISSUE_TEMPLATE/**"
+      - "**/website/**"
 
 jobs:
   build:
@@ -44,3 +45,4 @@ jobs:
 
       - name: Run Tests
         run: cargo test
+
