@@ -1,8 +1,7 @@
-import colors from 'tailwindcss/colors';
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
+  darkMode: 'class',
   theme: {
     container: {
       center: true,
@@ -17,16 +16,16 @@ export default {
     extend: {
       colors: {
         background: {
-          DEFAULT: colors.zinc['900'],
+          DEFAULT: 'var(--color-background)',
         },
         foreground: {
-          DEFAULT: colors.zinc['100'],
+          DEFAULT: 'var(--color-foreground)',
         },
         primary: {
-          DEFAULT: '#78350f',
+          DEFAULT: 'var(--color-primary)',
         },
         secondary: {
-          DEFAULT: colors.zinc['800'],
+          DEFAULT: 'var(--color-secondary)',
         },
       },
     },

@@ -8,6 +8,6 @@
 </script>
 
 <div class={`flex flex-col items-center gap-1 ${readyStyles}`}>
-  <Database />
+  <Database class="text-primary" />
   <p class="text-sm font-semibold">{label}</p>
 </div>
