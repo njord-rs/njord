@@ -3,6 +3,20 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-background: rgb(244 244 245);
+    --color-foreground: rgb(24 24 27);
+    --color-primary: rgb(180 83 9);
+    --color-secondary: rgb(228 228 231);
+  }
+
+  :root[class~="dark"] {
+    --color-background: rgb(24 24 27);
+    --color-foreground: rgb(244 244 245);
+    --color-primary: rgb(180 83 9);
+    --color-secondary: rgb(39 39 42);
+  }
+
   h1 {
     font-weight: 700;
     font-size: 1.875em;
