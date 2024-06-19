@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - master
-    #paths:
-    #  - "docs/**"
+    # Uncomment paths to only trigger on changes to docs
+    # paths:
+    #   - "docs/**"
 
 jobs:
   build:
@@ -28,20 +29,16 @@ jobs:
           toolchain: stable
           components: clippy
 
-      - name: Install mdbook
-        run: |
-          cargo install mdbook
-        working-directory: docs
+      - name: Install mdBook
+        run: cargo install mdbook
 
       - name: Build mdBook
-        run: |
-          mdbook build
+        run: mdbook build
         working-directory: docs
 
       - name: Copy CNAME file
-        run: |
-          cp CNAME ./book/
-        working-directory: docs
+        run: cp docs/CNAME docs/book/
+        # Note: Ensure 'CNAME' file is at the root of the 'docs' directory
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -49,7 +46,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs'
+          path: 'docs/book'
 
       - name: Deploy to GitHub Pages
         id: deployment
