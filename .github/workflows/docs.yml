@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "docs/**"
+    #paths:
+    #  - "docs/**"
 
 jobs:
   build:
@@ -18,25 +18,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Setup Rust
-        uses: ATiltedTree/setup-rust@v1
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
         with:
-          rust-version: stable
+          profile: minimal
+          toolchain: stable
           components: clippy
 
       - name: Install mdbook
         run: |
           cargo install mdbook
+        working-directory: docs
 
       - name: Build mdBook
-        working-directory: docs
         run: |
           mdbook build
+        working-directory: docs
 
       - name: Copy CNAME file
-        working-directory: docs
         run: |
           cp CNAME ./book/
+        working-directory: docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -44,7 +46,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: './docs'
 
       - name: Deploy to GitHub Pages
         id: deployment
