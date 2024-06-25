@@ -5,7 +5,7 @@ To insert data, we need to initialize our Posts struct that we created with valu
 ```rust
 let table_row: Posts = Posts {
     title: "A post title".to_string(),
-    description: "Some description for for a post".to_string(),
+    description: "Some description for a post".to_string(),
 };
 ```
 
