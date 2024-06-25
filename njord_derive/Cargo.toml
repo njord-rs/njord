@@ -17,7 +17,7 @@ name = "njord_derive"
 proc-macro = true
 
 [dependencies]
-proc-macro2 = "1.0.85"
+proc-macro2 = "1.0.86"
 quote = "1.0"
 syn = "2.0.68"
 rusqlite = { version = "0.31.0", features = ["bundled"] }
