@@ -3,7 +3,7 @@ name = "sqlite"
 publish = false
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.71.1"
+rust-version = "1.81.0"
 
 [dependencies]
 njord = { version = "0.3.0", path = "../../njord", features = ["sqlite"] }
