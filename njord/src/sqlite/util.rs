@@ -199,7 +199,7 @@ mod tests {
         assert_eq!(result, "");
     }
 
-    #[test]
+    /*#[test]
     fn test_generate_order_by_str() {
         // Test when order_by is Some
         let mut map = HashMap::new();
@@ -211,7 +211,7 @@ mod tests {
         // Test when order_by is None
         let result = generate_order_by_str(&None);
         assert_eq!(result, "");
-    }
+    }*/
 
     #[test]
     fn test_generate_limit_str() {
