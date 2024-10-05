@@ -4,16 +4,14 @@ use njord::condition::Condition;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
-use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
 use std::collections::HashMap;
 use std::path::Path;
-use njord_util::keys::PrimaryKey;
+use njord_util::keys::{AutoIncrementPrimaryKey, PrimaryKey};
 
 #[derive(Table)]
 #[table_name = "users"]
 pub struct User {
-    id: PrimaryKey<usize>,
+    id: AutoIncrementPrimaryKey<usize>,
     username: String,
     email: String,
     address: String,
@@ -62,13 +60,8 @@ fn insert_row() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    // generate random number
-    let mut rng = StdRng::from_entropy();
-    let max_usize = usize::MAX;
-    let random_number: usize = rng.gen_range(0..max_usize / 2);
-
     let table_row: User = User {
-        id: PrimaryKey::<usize>::new(Some(random_number)),
+        id: AutoIncrementPrimaryKey::default(),
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
@@ -96,7 +89,7 @@ fn update() {
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     let table_row: User = User {
-        id: PrimaryKey::<usize>::new(Some(0)),
+        id: AutoIncrementPrimaryKey::<usize>::new(Some(0)),
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
