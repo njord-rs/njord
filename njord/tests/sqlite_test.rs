@@ -1,6 +1,7 @@
 // integrations tests for sqlite
 
 use njord::condition::Condition;
+use njord::keys::PrimaryKey;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
@@ -12,7 +13,7 @@ use std::path::Path;
 #[derive(Table)]
 #[table_name = "users"]
 pub struct User {
-    id: usize, // TODO: should we create some sort of PrimaryKey<usize> ?
+    id: PrimaryKey<usize>,
     username: String,
     email: String,
     address: String,
@@ -21,14 +22,14 @@ pub struct User {
 #[derive(Table)]
 #[table_name = "categories"]
 pub struct Category {
-    id: usize,
+    id: PrimaryKey<usize>,
     name: String,
 }
 
 #[derive(Table)]
 #[table_name = "products"]
 pub struct Product {
-    id: usize,
+    id: PrimaryKey<usize>,
     name: String,
     description: String,
     price: f64,
@@ -67,7 +68,7 @@ fn insert_row() {
     let random_number: usize = rng.gen_range(0..max_usize / 2);
 
     let table_row: User = User {
-        id: random_number,
+        id: PrimaryKey::<usize>::new(Some(random_number)),
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
@@ -95,7 +96,7 @@ fn update() {
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
     let table_row: User = User {
-        id: 0,
+        id: PrimaryKey::<usize>::new(Some(0)),
         username: "mjovanc".to_string(),
         email: "mjovanc@icloud.com".to_string(),
         address: "Some Random Address 1".to_string(),
