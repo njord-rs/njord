@@ -70,6 +70,7 @@ pub struct SelectQueryBuilder<'a, T: Table + Default> {
     offset: Option<usize>,
     having_condition: Option<Condition>,
     except_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
+    union_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
 }
 
 impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
@@ -92,6 +93,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             offset: None,
             having_condition: None,
             except_clauses: None,
+            union_clauses: None,
         }
     }
 
@@ -204,6 +206,29 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         self
     }
 
+    /// Adds a UNION clause to the query, allowing you to combine results from another query.
+    ///
+    /// This method modifies the current query builder to include the results of the specified
+    /// `other_query`. If there are already existing UNION clauses, the new clause will be added
+    /// to the list. If no UNION clauses exist, a new list will be created with the provided
+    /// query.
+    ///
+    /// # Arguments
+    ///
+    /// * `other_query` - A `SelectQueryBuilder` instance that represents the query whose results
+    ///   should be combined with the current query.
+    ///
+    /// # Returns
+    ///
+    /// Returns the modified `SelectQueryBuilder` instance with the new UNION clause added.
+    pub fn union(mut self, other_query: SelectQueryBuilder<'a, T>) -> Self {
+        match self.union_clauses {
+            Some(ref mut clauses) => clauses.push(other_query),
+            None => self.union_clauses = Some(vec![other_query]),
+        }
+        self
+    }
+
     /// Builds the query string, this function should be used internally.
     fn build_query(&self) -> String {
         let columns_str = self.columns.join(", ");
@@ -238,6 +263,14 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             for except_query in except_clauses {
                 let except_sql = except_query.build_query();
                 query = format!("{} EXCEPT {}", query, except_sql);
+            }
+        }
+
+        // Handle UNION clauses
+        if let Some(union_clauses) = &self.union_clauses {
+            for union_query in union_clauses {
+                let union_sql = union_query.build_query();
+                query = format!("{} UNION {}", query, union_sql);
             }
         }
 
