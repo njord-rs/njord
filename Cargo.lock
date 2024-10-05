@@ -543,27 +543,19 @@ version = "0.3.0"
 dependencies = [
  "log",
  "njord_derive",
- "njord_util",
  "rand",
  "rusqlite",
+ "serde",
 ]
 
 [[package]]
 name = "njord_derive"
 version = "0.3.0"
 dependencies = [
- "njord_util",
  "proc-macro2",
  "quote",
  "rusqlite",
  "syn",
-]
-
-[[package]]
-name = "njord_util"
-version = "0.3.0"
-dependencies = [
- "serde",
 ]
 
 [[package]]
