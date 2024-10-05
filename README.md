@@ -72,7 +72,7 @@ Now we are going to define our schema file that we will create under `src/schema
 #[derive(Table)]
 #[table_name = "users"]
 pub struct User {
-    id: usize,
+    id: AutoIncrementPrimaryKey<usize>,
     username: String,
     email: String,
     address: String,
@@ -81,14 +81,14 @@ pub struct User {
 #[derive(Table)]
 #[table_name = "categories"]
 pub struct Category {
-    id: usize,
+    id: AutoIncrementPrimaryKey<usize>,
     name: String,
 }
 
 #[derive(Table)]
 #[table_name = "products"]
 pub struct Product {
-    id: usize,
+    id: AutoIncrementPrimaryKey<usize>,
     name: String,
     description: String,
     price: f64,
@@ -100,7 +100,7 @@ pub struct Product {
 #[derive(Table)]
 #[table_name = "orders"]
 pub struct Order {
-    id: usize,
+    id: AutoIncrementPrimaryKey<usize>,
     user: User,             // one-to-one relationship
     products: Vec<Product>, // one-to-many relationship - populates from based on junction table (gets from macro attribute "table_name" and combines them for example, orders_products)
     total_cost: f64,
@@ -112,7 +112,7 @@ Now that we have that in place, we need to create the SQL for setting this up in
 ```sql
 -- users table
 CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
     email TEXT NOT NULL,
     address TEXT NOT NULL
@@ -120,7 +120,7 @@ CREATE TABLE users (
 
 -- products table
 CREATE TABLE products (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     price REAL NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE products (
 
 -- orders table
 CREATE TABLE orders (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES users(id),
     total_cost REAL NOT NULL
 );
@@ -174,6 +174,7 @@ match sqlite::open(db_path) {
 
 ```rust
 let user = User {
+    id: AutoIncrementPrimaryKey::default(),
     username: String::from("john_doe"),
     email: String::from("john@example.com"),
     address: String::from("123 Main St"),
