@@ -28,6 +28,7 @@
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// Represents a condition used in building SQL queries.
+#[derive(Clone)]
 pub enum Condition {
     /// Equality condition: column = value.
     Eq(String, String),
