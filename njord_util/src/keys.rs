@@ -54,16 +54,12 @@ impl<T> Default for PrimaryKey<T> {
     }
 }
 
-/// Implement the std::fmt::Display trait
-/// Used specifically for translating the primary key to the string representation
 impl<T: Debug> Display for PrimaryKey<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self.get().unwrap())
     }
 }
 
-/// Implement the std::str::FromStr trait
-/// Used specifically for translating the primary key from the string representation
 impl<T: Debug + FromStr> FromStr for PrimaryKey<T> {
     type Err = Infallible;
 
