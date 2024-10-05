@@ -161,7 +161,7 @@ fn select() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .build();
@@ -191,7 +191,7 @@ fn select_distinct() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .distinct()
@@ -227,7 +227,7 @@ fn select_group_by() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .group_by(group_by)
@@ -262,7 +262,7 @@ fn select_order_by() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
@@ -298,7 +298,7 @@ fn select_limit_offset() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
@@ -338,7 +338,7 @@ fn select_having() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
@@ -353,4 +353,94 @@ fn select_having() {
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
+
+    #[test]
+    fn select_except() {
+        let db_relative_path = "./db/select.db";
+        let db_path = Path::new(&db_relative_path);
+        let conn = sqlite::open(db_path);
+
+        let columns1 = vec![
+            "id".to_string(),
+            "username".to_string(),
+            "email".to_string(),
+        ];
+        let columns2 = vec![
+            "id".to_string(),
+            "username".to_string(),
+            "email".to_string(),
+        ];
+
+        let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
+        let condition2 = Condition::Eq("username".to_string(), "otheruser".to_string());
+
+        match conn {
+            Ok(c) => {
+                let query1 = sqlite::select(&c, columns1)
+                    .from(User::default())
+                    .where_clause(condition1);
+
+                let query2 = sqlite::select(&c, columns2)
+                    .from(User::default())
+                    .where_clause(condition2);
+
+                let result = query1.except(query2).build();
+
+                match result {
+                    Ok(r) => assert_eq!(r.len(), 1),
+                    Err(e) => panic!("Failed to SELECT with EXCEPT: {:?}", e),
+                };
+            }
+            Err(e) => panic!("Failed to SELECT: {:?}", e),
+        };
+    }
+}
+
+#[test]
+fn select_except() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string()
+    ];
+
+    let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition2 = Condition::Eq("username".to_string(), "otheruser".to_string());
+    let condition3 = Condition::Eq("username".to_string(), "anotheruser".to_string());
+
+    match conn {
+        Ok(c) => {
+            // Create a new connection for each query builder
+            let query1 = sqlite::select(&c, columns.clone())
+                .from(User::default())
+                .where_clause(condition1);
+
+            let query2 = sqlite::select(&c, columns.clone())
+                .from(User::default())
+                .where_clause(condition2);
+
+            let query3 = sqlite::select(&c, columns.clone())
+                .from(User::default())
+                .where_clause(condition3);
+
+            // Test a chain of EXCEPT queries (query1 EXCEPT query2 EXCEPT query3)
+            let result = query1
+                .except(query2)
+                .except(query3)
+                .build();
+
+            match result {
+                Ok(r) => {
+                    assert_eq!(r.len(), 2, "Expected 2 results after EXCEPT clauses.");
+                }
+                Err(e) => panic!("Failed to SELECT with EXCEPT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
 }
