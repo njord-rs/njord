@@ -91,38 +91,43 @@ pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<Stri
 /// A `Result` containing a `String` representing the generated SQL statement
 /// if successful, or a `Error` if an error occurs during the generation process.
 fn generate_statement<T: Table>(table_row: &T) -> Result<String, Error> {
-    // Generate string for columns
+    // Generate strings for columns and values
     let mut columns_str = String::new();
-    for column_name in table_row.get_column_fields() {
-        columns_str.push_str(&format!("{}, ", column_name));
-    }
-
-    // Surround single quotes of text
-    let converted_values = convert_insert_values(table_row.get_column_values());
-
-    // Generate values string
     let mut values_str = String::new();
-    for value in converted_values {
-        let data_type_str = value.to_string();
-        values_str.push_str(&data_type_str);
-        values_str.push_str(", ");
+
+    // Iterate over the fields to generate columns and values
+    let column_fields = table_row.get_column_fields();
+    let column_values = table_row.get_column_values();
+
+    for (column_name, value) in column_fields.iter().zip(column_values.iter()) {
+        // Check if the field is an AutoIncrementPrimaryKey
+        if table_row.is_auto_increment_primary_key(value) {
+            println!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
+            continue;
+        }
+        columns_str.push_str(&format!("{}, ", column_name));
+        values_str.push_str(&format!("'{}', ", value)); // Surround values with single quotes
     }
 
     // Sanitize table name from unwanted quotations or backslashes
     let table_name = table_row.get_name().replace("\"", "").replace("\\", "");
 
     // Remove the trailing comma and space
-    columns_str.pop();
-    columns_str.pop();
-    values_str.pop();
-    values_str.pop();
+    if !columns_str.is_empty() {
+        columns_str.pop();
+        columns_str.pop();
+    }
+    if !values_str.is_empty() {
+        values_str.pop();
+        values_str.pop();
+    }
 
     let sql = format!(
         "INSERT INTO {} ({}) VALUES ({}); ",
         table_name, columns_str, values_str
     );
 
-    println!("{}", sql);
+    println!("{}", sql); // For debugging purposes
 
     Ok(sql)
 }
