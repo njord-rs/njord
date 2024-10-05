@@ -17,6 +17,7 @@ name = "njord_derive"
 proc-macro = true
 
 [dependencies]
+njord_util = { version = "0.3.0", path = "../njord_util" }
 proc-macro2 = "1.0.86"
 quote = "1.0"
 syn = "2.0.79"

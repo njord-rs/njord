@@ -1,7 +1,6 @@
 // integrations tests for sqlite
 
 use njord::condition::Condition;
-use njord::keys::PrimaryKey;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
@@ -9,6 +8,7 @@ use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 use std::collections::HashMap;
 use std::path::Path;
+use njord_util::keys::PrimaryKey;
 
 #[derive(Table)]
 #[table_name = "users"]
