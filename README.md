@@ -205,6 +205,7 @@ let columns = vec!["username".to_string(), "address".to_string()];
 let where_condition = Condition::Eq("username".to_string(), "john_doe".to_string());
 
 let user = User {
+    id: AutoIncrementPrimaryKey::<usize>::new(Some(0)),
     username: String::from("john_doe_2"),
     email: String::from("john@example.com"),
     address: String::from("1234 Main St"),
