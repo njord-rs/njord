@@ -4,7 +4,7 @@ use reqwest::header::ACCEPT;
 use serde_json::Value;
 use std::path::Path;
 use serde::Deserialize;
-use njord::AutoIncrementPrimaryKey;
+use njord::keys::AutoIncrementPrimaryKey;
 
 mod schema;
 

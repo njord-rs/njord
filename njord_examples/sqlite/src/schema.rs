@@ -2,7 +2,7 @@
 use njord::table::Table;
 use njord_derive::Table;
 use serde::Deserialize;
-use njord::AutoIncrementPrimaryKey;
+use njord::keys::AutoIncrementPrimaryKey;
 
 #[derive(Table, Deserialize, Debug)]
 #[table_name = "neo"]
