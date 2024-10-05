@@ -73,14 +73,12 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             let field_names_clone2 = field_names.clone();
             let field_names_clone3 = field_names.clone();
             let field_names_clone4 = field_names.clone();
-            let field_names_clone5 = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
             let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
                 quote! { self.#field_name.to_string() }
             }); // field_values
-            let field_values_clone2 = field_values.clone();
 
             // Implement the std::fmt::Display trait
             display_impl.extend(quote! {
