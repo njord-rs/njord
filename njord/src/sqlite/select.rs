@@ -53,13 +53,13 @@ use crate::table::Table;
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<T: Table + Default>(conn: Connection, columns: Vec<String>) -> SelectQueryBuilder<T> {
+pub fn select<T: Table + Default>(conn: &Connection, columns: Vec<String>) -> SelectQueryBuilder<T> {
     SelectQueryBuilder::new(conn, columns)
 }
 
 /// A builder for constructing SELECT queries.
-pub struct SelectQueryBuilder<T: Table + Default> {
-    conn: Connection,
+pub struct SelectQueryBuilder<'a, T: Table + Default> {
+    conn: &'a Connection,
     table: Option<T>,
     columns: Vec<String>,
     where_condition: Option<Condition>,
@@ -69,16 +69,17 @@ pub struct SelectQueryBuilder<T: Table + Default> {
     limit: Option<usize>,
     offset: Option<usize>,
     having_condition: Option<Condition>,
+    except_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
 }
 
-impl<T: Table + Default> SelectQueryBuilder<T> {
+impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// Creates a new `SelectQueryBuilder` instance.
     ///
     /// # Arguments
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: Connection, columns: Vec<String>) -> Self {
+    pub fn new(conn: &'a Connection, columns: Vec<String>) -> Self {
         SelectQueryBuilder {
             conn,
             table: None,
@@ -90,6 +91,7 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             limit: None,
             offset: None,
             having_condition: None,
+            except_clauses: None,
         }
     }
 
@@ -179,37 +181,51 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
         self
     }
 
-    /// Builds and executes the SELECT query.
+    /// Adds an EXCEPT clause to the query, allowing you to exclude results from another query.
+    ///
+    /// This method modifies the current query builder to exclude the results of the specified
+    /// `other_query`. If there are already existing EXCEPT clauses, the new clause will be added
+    /// to the list. If no EXCEPT clauses exist, a new list will be created with the provided
+    /// query.
+    ///
+    /// # Arguments
+    ///
+    /// * `other_query` - A `SelectQueryBuilder` instance that represents the query whose results
+    ///   should be excluded from the current query.
     ///
     /// # Returns
     ///
-    /// A `Result` containing a vector of selected table rows if successful,
-    /// or a `rusqlite::Error` if an error occurs during the execution.
-    pub fn build(self) -> Result<Vec<T>> {
-        let columns_str = self.columns.join(", ");
+    /// Returns the modified `SelectQueryBuilder` instance with the new EXCEPT clause added.
+    pub fn except(mut self, other_query: SelectQueryBuilder<'a, T>) -> Self {
+        match self.except_clauses {
+            Some(ref mut clauses) => clauses.push(other_query),
+            None => self.except_clauses = Some(vec![other_query]),
+        }
+        self
+    }
 
+    /// Builds the query string, this function should be used internally.
+    fn build_query(&self) -> String {
+        let columns_str = self.columns.join(", ");
         let table_name = self
             .table
+            .as_ref()
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
-        // Sanitize table name from unwanted quotations or backslashes
-        let table_name_str = remove_quotes_and_backslashes(&table_name);
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
-        let where_condition_str = generate_where_condition_str(self.where_condition);
+        let where_condition_str = generate_where_condition_str(self.where_condition.clone());
         let group_by_str = generate_group_by_str(&self.group_by);
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
         let offset_str = generate_offset_str(self.offset);
-        let having_str =
-            generate_having_str(self.group_by.is_some(), self.having_condition.as_ref()); // Having should only be added if group_by is present
+        let having_str = generate_having_str(self.group_by.is_some(), self.having_condition.as_ref());
 
-        // Construct the query based on defined variables above
-        let query = format!(
+        let mut query = format!(
             "SELECT {}{} FROM {} {} {} {} {} {}",
             distinct_str,
             columns_str,
-            table_name_str,
+            table_name,
             where_condition_str,
             group_by_str,
             having_str,
@@ -217,19 +233,38 @@ impl<T: Table + Default> SelectQueryBuilder<T> {
             format!("{} {}", limit_str, offset_str),
         );
 
-        info!("{}", query);
-        println!("{}", query);
+        // Handle EXCEPT clauses
+        if let Some(except_clauses) = &self.except_clauses {
+            for except_query in except_clauses {
+                let except_sql = except_query.build_query();
+                query = format!("{} EXCEPT {}", query, except_sql);
+            }
+        }
+
+        query
+    }
+
+    /// Builds and executes the SELECT query.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a vector of selected table rows if successful,
+    /// or a `rusqlite::Error` if an error occurs during the execution.
+    pub fn build(self) -> Result<Vec<T>> {
+        let final_query = self.build_query();
+
+        info!("{}", final_query);
+        println!("{}", final_query);
 
         // Prepare SQL statement
-        let mut stmt = self.conn.prepare(query.as_str())?;
+        let mut stmt = self.conn.prepare(final_query.as_str())?;
 
+        // Rest of the query execution remains unchanged
         let iter = stmt.query_map((), |row| {
-            // Dynamically create an instance of the struct based on the Table trait
             let mut instance = T::default();
             let columns = instance.get_column_fields();
 
             for (index, column) in columns.iter().enumerate() {
-                // Use the index to get the value from the row and set it in the struct
                 let value = row.get::<usize, Value>(index)?;
 
                 let string_value = match value {
