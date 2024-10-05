@@ -61,6 +61,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     let mut column_fields_stream = TokenStream2::default();
     let mut column_values_stream = TokenStream2::default();
     let mut set_column_values_stream = TokenStream2::default();
+    let mut is_auto_increment_primary_key_stream = TokenStream2::default();
 
     let mut display_impl = TokenStream2::default();
     let mut from_str_impl = TokenStream2::default();
@@ -72,12 +73,14 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             let field_names_clone2 = field_names.clone();
             let field_names_clone3 = field_names.clone();
             let field_names_clone4 = field_names.clone();
+            let field_names_clone5 = field_names.clone();
             let field_types = named.iter().map(|f| &f.ty);
             let field_types_clone = named.iter().map(|f| &f.ty);
             let field_values = named.iter().map(|f| {
                 let field_name = &f.ident;
                 quote! { self.#field_name.to_string() }
             }); // field_values
+            let field_values_clone2 = field_values.clone();
 
             // Implement the std::fmt::Display trait
             display_impl.extend(quote! {
@@ -128,7 +131,6 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                             "Option<f64>" | "Option<f32>" => "REAL NULL",
                             "Option<Vec<u8>>" => "BLOB NULL",
                             "bool" => "TEXT",
-
                             _ => {
                                 eprintln!("Warning: Unknown data type for column '{}'", stringify!(#field_names));
                                 "UNKNOWN_TYPE"
@@ -175,6 +177,13 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                 }
             }); // set_column_values_stream
 
+            // Implement the is_auto_increment_primary_key function
+            is_auto_increment_primary_key_stream.extend(quote! {
+                fn is_auto_increment_primary_key(&self, value: &str) -> bool {
+                    value == "NULL"
+                }
+            });
+
             // If Default trait is not implemented, generate an implementation
             default_impl = if !has_default_impl(&derive_input) {
                 quote! {
@@ -201,6 +210,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
             #column_fields_stream
             #column_values_stream
             #set_column_values_stream
+            #is_auto_increment_primary_key_stream
         }
 
         #default_impl
