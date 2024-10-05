@@ -83,8 +83,8 @@ where
     where
         D: Deserializer<'de>,
     {
-        let value = T::from_str(&String::deserialize(deserializer)?)
-            .map_err(serde::de::Error::custom)?;
+        let value =
+            T::from_str(&String::deserialize(deserializer)?).map_err(serde::de::Error::custom)?;
         Ok(PrimaryKey(value))
     }
 }
@@ -136,5 +136,11 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for AutoIncrementPrimaryKey<T> {
     {
         let value: Option<T> = Option::deserialize(deserializer)?;
         Ok(AutoIncrementPrimaryKey(value))
+    }
+}
+
+impl<T: PartialEq> PartialEq for AutoIncrementPrimaryKey<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
     }
 }

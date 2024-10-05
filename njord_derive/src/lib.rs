@@ -86,7 +86,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
                     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                         write!(f, "{}", self.get_name())?;
                         for (name, value) in self.get_column_fields().iter().zip(self.get_column_values()) {
-                            write!(f, ", {}: {}", name, value);
+                            write!(f, ", {}: {}", name, value)?;
                         }
                         Ok(())
                     }

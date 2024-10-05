@@ -31,7 +31,7 @@ use crate::{
     condition::Condition,
     sqlite::util::{
         generate_group_by_str, generate_having_str, generate_limit_str, generate_offset_str,
-        generate_order_by_str, generate_where_condition_str, remove_quotes_and_backslashes,
+        generate_order_by_str, generate_where_condition_str,
     },
 };
 use std::collections::HashMap;
@@ -53,7 +53,10 @@ use crate::table::Table;
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<T: Table + Default>(conn: &Connection, columns: Vec<String>) -> SelectQueryBuilder<T> {
+pub fn select<T: Table + Default>(
+    conn: &Connection,
+    columns: Vec<String>,
+) -> SelectQueryBuilder<T> {
     SelectQueryBuilder::new(conn, columns)
 }
 
@@ -244,7 +247,8 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
         let offset_str = generate_offset_str(self.offset);
-        let having_str = generate_having_str(self.group_by.is_some(), self.having_condition.as_ref());
+        let having_str =
+            generate_having_str(self.group_by.is_some(), self.having_condition.as_ref());
 
         let mut query = format!(
             "SELECT {}{} FROM {} {} {} {} {} {}",
