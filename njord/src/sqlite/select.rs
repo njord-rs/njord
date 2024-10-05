@@ -31,7 +31,7 @@ use crate::{
     condition::Condition,
     sqlite::util::{
         generate_group_by_str, generate_having_str, generate_limit_str, generate_offset_str,
-        generate_order_by_str, generate_where_condition_str, remove_quotes_and_backslashes,
+        generate_order_by_str, generate_where_condition_str,
     },
 };
 use std::collections::HashMap;
@@ -43,6 +43,23 @@ use rusqlite::types::Value;
 
 use crate::table::Table;
 
+// Define the enum to represent a column as either a String or SelectQueryBuilder
+pub enum Column<'a, T: Table + Default> {
+    Text(String),
+    SubQuery(SelectQueryBuilder<'a, T>),
+}
+
+// Implement the build method to convert the enum to a string
+impl<'a, T: Table + Default> Column<'a, T> {
+    /// Helper function to convert the columns to a string
+    pub fn build(&self) -> String {
+        match self {
+            Column::Text(text) => text.clone(),
+            Column::SubQuery(sub_query) => "(".to_string() + &sub_query.build_query() + ")",
+        }
+    }
+}
+
 /// Constructs a new SELECT query builder.
 ///
 /// # Arguments
@@ -53,7 +70,10 @@ use crate::table::Table;
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<T: Table + Default>(conn: &Connection, columns: Vec<String>) -> SelectQueryBuilder<T> {
+pub fn select<'a, T: Table + Default>(
+    conn: &'a Connection,
+    columns: Vec<Column<'a, T>>,
+) -> SelectQueryBuilder<'a, T> {
     SelectQueryBuilder::new(conn, columns)
 }
 
@@ -61,7 +81,7 @@ pub fn select<T: Table + Default>(conn: &Connection, columns: Vec<String>) -> Se
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
     conn: &'a Connection,
     table: Option<T>,
-    columns: Vec<String>,
+    columns: Vec<Column<'a, T>>,
     where_condition: Option<Condition>,
     distinct: bool,
     group_by: Option<Vec<String>>,
@@ -70,6 +90,7 @@ pub struct SelectQueryBuilder<'a, T: Table + Default> {
     offset: Option<usize>,
     having_condition: Option<Condition>,
     except_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
+    sub_queries: Option<Vec<SelectQueryBuilder<'a, T>>>,
 }
 
 impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
@@ -79,7 +100,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: &'a Connection, columns: Vec<String>) -> Self {
+    pub fn new(conn: &'a Connection, columns: Vec<Column<'a, T>>) -> Self {
         SelectQueryBuilder {
             conn,
             table: None,
@@ -92,6 +113,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             offset: None,
             having_condition: None,
             except_clauses: None,
+            sub_queries: None,
         }
     }
 
@@ -100,7 +122,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn select(mut self, columns: Vec<String>) -> Self {
+    pub fn select(mut self, columns: Vec<Column<'a, T>>) -> Self {
         self.columns = columns;
         self
     }
@@ -204,9 +226,32 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         self
     }
 
+    /// Adds a sub queries to the query.
+    ///
+    /// # Arguments
+    ///
+    /// * `sub_query` - A `SelectQueryBuilder` instance that represents the sub query.
+    ///
+    /// # Returns
+    ///
+    /// Returns the modified `SelectQueryBuilder` instance with the new sub query added.
+    pub fn sub_query(mut self, sub_query: SelectQueryBuilder<'a, T>) -> Self {
+        match self.sub_queries {
+            Some(ref mut clauses) => clauses.push(sub_query),
+            None => self.sub_queries = Some(vec![sub_query]),
+        }
+        self
+    }
+
     /// Builds the query string, this function should be used internally.
-    fn build_query(&self) -> String {
-        let columns_str = self.columns.join(", ");
+    pub fn build_query(&self) -> String {
+        let columns_str = self
+            .columns
+            .iter()
+            .map(|c| c.build())
+            .collect::<Vec<String>>()
+            .join(", ");
+
         let table_name = self
             .table
             .as_ref()
@@ -219,7 +264,8 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         let order_by_str = generate_order_by_str(&self.order_by);
         let limit_str = generate_limit_str(self.limit);
         let offset_str = generate_offset_str(self.offset);
-        let having_str = generate_having_str(self.group_by.is_some(), self.having_condition.as_ref());
+        let having_str =
+            generate_having_str(self.group_by.is_some(), self.having_condition.as_ref());
 
         let mut query = format!(
             "SELECT {}{} FROM {} {} {} {} {} {}",
