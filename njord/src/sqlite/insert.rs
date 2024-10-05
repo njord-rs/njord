@@ -28,7 +28,6 @@
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use crate::table::Table;
-use crate::util::convert_insert_values;
 
 use rusqlite::Error as RusqliteError;
 
