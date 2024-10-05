@@ -35,3 +35,4 @@ pub mod util;
 
 #[cfg(feature = "util")]
 pub use njord_util::keys::AutoIncrementPrimaryKey;
+pub use njord_util::keys::PrimaryKey;
