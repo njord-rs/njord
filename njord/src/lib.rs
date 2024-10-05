@@ -32,3 +32,6 @@ pub mod condition;
 pub mod sqlite;
 pub mod table;
 pub mod util;
+
+#[cfg(feature = "util")]
+pub use njord_util::keys::AutoIncrementPrimaryKey;
