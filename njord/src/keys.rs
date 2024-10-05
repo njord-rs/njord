@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,9 +29,48 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod condition;
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
-pub mod table;
-pub mod util;
-pub mod keys;
+use std::{
+    convert::Infallible,
+    fmt::{Debug, Display},
+    str::FromStr,
+};
+
+#[derive(Debug)]
+pub struct PrimaryKey<T>(Option<T>);
+
+impl<T> PrimaryKey<T> {
+    pub fn new(value: Option<T>) -> Self {
+        PrimaryKey(value)
+    }
+
+    pub fn get(&self) -> Option<&T> {
+        self.0.as_ref()
+    }
+}
+
+impl<T> Default for PrimaryKey<T> {
+    fn default() -> Self {
+        PrimaryKey(None)
+    }
+}
+
+/// Implement the std::fmt::Display trait
+/// Used specifically for translating the primary key to the string representation
+impl<T: Debug> Display for PrimaryKey<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.get().unwrap())
+    }
+}
+
+/// Implement the std::str::FromStr trait
+/// Used specifically for translating the primary key from the string representation
+impl<T: Debug + FromStr> FromStr for PrimaryKey<T> {
+    type Err = Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.parse::<T>() {
+            Ok(value) => Ok(PrimaryKey(Some(value))),
+            Err(_) => Ok(PrimaryKey(None)),
+        }
+    }
+}
