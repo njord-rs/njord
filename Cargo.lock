@@ -562,6 +562,9 @@ dependencies = [
 [[package]]
 name = "njord_util"
 version = "0.3.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "object"
