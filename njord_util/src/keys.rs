@@ -33,6 +33,8 @@ use std::{
     str::FromStr,
 };
 
+use serde::{Deserialize, Deserializer};
+
 #[derive(Debug)]
 pub struct PrimaryKey<T>(T);
 
@@ -69,6 +71,21 @@ impl<T: Debug + FromStr> FromStr for PrimaryKey<T> {
             Ok(value) => Ok(PrimaryKey(value)),
             Err(err) => Err(err),
         }
+    }
+}
+
+impl<'de, T> Deserialize<'de> for PrimaryKey<T>
+where
+    T: FromStr + Debug,
+    <T as FromStr>::Err: Debug + Display,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = T::from_str(&String::deserialize(deserializer)?)
+            .map_err(serde::de::Error::custom)?;
+        Ok(PrimaryKey(value))
     }
 }
 
@@ -109,5 +126,15 @@ impl<T: Debug + FromStr> FromStr for AutoIncrementPrimaryKey<T> {
             Ok(value) => Ok(AutoIncrementPrimaryKey(Some(value))),
             Err(_) => Ok(AutoIncrementPrimaryKey(None)),
         }
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for AutoIncrementPrimaryKey<T> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value: Option<T> = Option::deserialize(deserializer)?;
+        Ok(AutoIncrementPrimaryKey(value))
     }
 }
