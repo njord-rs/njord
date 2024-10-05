@@ -2,7 +2,6 @@
 members = [
     "njord",
     "njord_derive",
-    "njord_util",
     "njord_examples/sqlite",
 ]
 
