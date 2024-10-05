@@ -61,6 +61,9 @@ pub trait Table {
 
     /// Set the values of the columns.
     fn set_column_value(&mut self, column: &str, value: &str);
+
+    // Check if a given field is of AutoincrementPrimaryKey
+    fn is_auto_increment_primary_key(&self, value: &str) -> bool;
 }
 
 #[cfg(test)]
