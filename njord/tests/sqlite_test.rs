@@ -6,7 +6,7 @@ use njord::table::Table;
 use njord_derive::Table;
 use std::collections::HashMap;
 use std::path::Path;
-use njord_util::keys::{AutoIncrementPrimaryKey, PrimaryKey};
+use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
 
 #[derive(Table)]
 #[table_name = "users"]
