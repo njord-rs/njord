@@ -13,3 +13,4 @@ homepage = "https://njord.rs"
 keywords = ["orm", "database", "sql"]
 
 [dependencies]
+serde = { version = "1.0.210", features = ["derive"] }
