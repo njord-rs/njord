@@ -2,11 +2,14 @@
 use njord::table::Table;
 use njord_derive::Table;
 use serde::Deserialize;
+use njord::AutoIncrementPrimaryKey;
 
 #[derive(Table, Deserialize, Debug)]
 #[table_name = "neo"]
 pub struct NearEarthObject {
-    pub id: String,
+    pub id: AutoIncrementPrimaryKey<usize>,
+    #[serde(rename = "id")]
+    pub neo_id: String,
     pub neo_reference_id: String,
     pub name: String,
     pub name_limited: String,

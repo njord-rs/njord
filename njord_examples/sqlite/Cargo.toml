@@ -6,7 +6,7 @@ edition = "2021"
 rust-version = "1.81.0"
 
 [dependencies]
-njord = { version = "0.3.0", path = "../../njord", features = ["sqlite"] }
+njord = { version = "0.3.0", path = "../../njord", features = ["sqlite", "util"] }
 njord_derive = { version = "0.3.0", path = "../../njord_derive" }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0.210", features = ["derive"] }
