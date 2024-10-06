@@ -1,12 +1,12 @@
 // integrations tests for sqlite
 
 use njord::condition::Condition;
+use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
 use std::collections::HashMap;
 use std::path::Path;
-use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
 
 #[derive(Table)]
 #[table_name = "users"]
@@ -406,7 +406,7 @@ fn select_except() {
         "id".to_string(),
         "username".to_string(),
         "email".to_string(),
-        "address".to_string()
+        "address".to_string(),
     ];
 
     let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
@@ -429,10 +429,7 @@ fn select_except() {
                 .where_clause(condition3);
 
             // Test a chain of EXCEPT queries (query1 EXCEPT query2 EXCEPT query3)
-            let result = query1
-                .except(query2)
-                .except(query3)
-                .build();
+            let result = query1.except(query2).except(query3).build();
 
             match result {
                 Ok(r) => {
@@ -443,4 +440,56 @@ fn select_except() {
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
+}
+
+#[test]
+fn select_union() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    let columns = vec![
+        "id".to_string(),
+        "username".to_string(),
+        "email".to_string(),
+        "address".to_string(),
+    ];
+
+    let condition1 = Condition::Eq("id".to_string(), 42.to_string());
+    let condition2 = Condition::Eq("id".to_string(), 43.to_string());
+
+    match conn {
+        Ok(c) => {
+            // Create a new connection for each query builder
+            let query1 = sqlite::select(&c, columns.clone())
+                .from(User::default())
+                .where_clause(condition1);
+
+            let query2 = sqlite::select(&c, columns.clone())
+                .from(User::default())
+                .where_clause(condition2);
+
+            // Test a chain of UNION queries (query1 UNION query2)
+            let result = query1.union(query2).build();
+
+            match result {
+                Ok(r) => {
+                    // We expect two results: mjovanc and otheruser
+                    assert_eq!(r.len(), 2, "Expected 2 results from the UNION query.");
+                    assert_eq!(
+                        r[0].id,
+                        AutoIncrementPrimaryKey::new(Some(42)),
+                        "First user should be mjovanc."
+                    );
+                    assert_eq!(
+                        r[1].id,
+                        AutoIncrementPrimaryKey::new(Some(43)),
+                        "Second user should be otheruser."
+                    );
+                }
+                Err(e) => panic!("Failed to SELECT with UNION: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    }
 }
