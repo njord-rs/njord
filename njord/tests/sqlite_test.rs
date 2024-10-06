@@ -2,6 +2,7 @@
 
 use njord::condition::Condition;
 use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
+use njord::sqlite::select::Column;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
@@ -15,6 +16,16 @@ pub struct User {
     username: String,
     email: String,
     address: String,
+}
+
+#[derive(Table)]
+#[table_name = "users"]
+pub struct UserWithSubQuery {
+    id: AutoIncrementPrimaryKey<usize>,
+    username: String,
+    email: String,
+    address: String,
+    additional_address: String,
 }
 
 #[derive(Table)]
@@ -152,10 +163,10 @@ fn select() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
@@ -182,10 +193,10 @@ fn select_distinct() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
@@ -217,10 +228,10 @@ fn select_group_by() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
@@ -249,10 +260,10 @@ fn select_order_by() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
@@ -285,10 +296,10 @@ fn select_limit_offset() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
@@ -323,10 +334,10 @@ fn select_having() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let group_by = vec!["username".to_string(), "email".to_string()];
@@ -362,10 +373,24 @@ fn select_except() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
+    ];
+
+    let columns2 = vec![
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
+    ];
+
+    let columns3 = vec![
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
 
     let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
@@ -375,15 +400,15 @@ fn select_except() {
     match conn {
         Ok(c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(&c, columns.clone())
+            let query1 = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(&c, columns.clone())
+            let query2 = sqlite::select(&c, columns2)
                 .from(User::default())
                 .where_clause(condition2);
 
-            let query3 = sqlite::select(&c, columns.clone())
+            let query3 = sqlite::select(&c, columns3)
                 .from(User::default())
                 .where_clause(condition3);
 
@@ -408,10 +433,16 @@ fn select_union() {
     let conn = sqlite::open(db_path);
 
     let columns = vec![
-        "id".to_string(),
-        "username".to_string(),
-        "email".to_string(),
-        "address".to_string(),
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
+    ];
+    let columns2 = vec![
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
     ];
 
     let condition1 = Condition::Eq("id".to_string(), 42.to_string());
@@ -420,18 +451,16 @@ fn select_union() {
     match conn {
         Ok(c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(&c, columns.clone())
+            let query1 = sqlite::select(&c, columns)
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(&c, columns.clone())
+            let query2 = sqlite::select(&c, columns2)
                 .from(User::default())
                 .where_clause(condition2);
 
             // Test a chain of UNION queries (query1 UNION query2)
-            let result = query1
-                .union(query2)
-                .build();
+            let result = query1.union(query2).build();
 
             match result {
                 Ok(r) => {
@@ -453,4 +482,39 @@ fn select_union() {
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
+}
+
+#[test]
+fn select_sub_queries() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    match conn {
+        Ok(c) => {
+            let sub_query = sqlite::select(&c, vec![Column::Text("username".to_string())])
+                .from(UserWithSubQuery::default());
+
+            let columns = vec![
+                Column::Text("id".to_string()),
+                Column::Text("username".to_string()),
+                Column::Text("email".to_string()),
+                Column::Text("address".to_string()),
+                Column::SubQuery(sub_query),
+            ];
+
+            let result = sqlite::select(&c, columns)
+                .from(UserWithSubQuery::default())
+                .build();
+
+            match result {
+                Ok(r) => {
+                    assert_eq!(r.len(), 2);
+                    assert_eq!(r[0].additional_address, "mjovanc");
+                }
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
 }
