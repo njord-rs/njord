@@ -353,47 +353,6 @@ fn select_having() {
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    #[test]
-    fn select_except() {
-        let db_relative_path = "./db/select.db";
-        let db_path = Path::new(&db_relative_path);
-        let conn = sqlite::open(db_path);
-
-        let columns1 = vec![
-            "id".to_string(),
-            "username".to_string(),
-            "email".to_string(),
-        ];
-        let columns2 = vec![
-            "id".to_string(),
-            "username".to_string(),
-            "email".to_string(),
-        ];
-
-        let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
-        let condition2 = Condition::Eq("username".to_string(), "otheruser".to_string());
-
-        match conn {
-            Ok(c) => {
-                let query1 = sqlite::select(&c, columns1)
-                    .from(User::default())
-                    .where_clause(condition1);
-
-                let query2 = sqlite::select(&c, columns2)
-                    .from(User::default())
-                    .where_clause(condition2);
-
-                let result = query1.except(query2).build();
-
-                match result {
-                    Ok(r) => assert_eq!(r.len(), 1),
-                    Err(e) => panic!("Failed to SELECT with EXCEPT: {:?}", e),
-                };
-            }
-            Err(e) => panic!("Failed to SELECT: {:?}", e),
-        };
-    }
 }
 
 #[test]
@@ -470,7 +429,9 @@ fn select_union() {
                 .where_clause(condition2);
 
             // Test a chain of UNION queries (query1 UNION query2)
-            let result = query1.union(query2).build();
+            let result = query1
+                .union(query2)
+                .build();
 
             match result {
                 Ok(r) => {
