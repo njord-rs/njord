@@ -43,6 +43,24 @@ use rusqlite::types::Value;
 
 use crate::table::Table;
 
+/// Define the enum to represent a column as either a String or SelectQueryBuilder
+/// TODO: Implement clone
+pub enum Column<'a, T: Table + Default> {
+    Text(String),
+    SubQuery(SelectQueryBuilder<'a, T>),
+}
+
+// Implement the build method to convert the enum to a string
+impl<'a, T: Table + Default> Column<'a, T> {
+    /// Helper function to convert the columns to a string
+    pub fn build(&self) -> String {
+        match self {
+            Column::Text(text) => text.clone(),
+            Column::SubQuery(sub_query) => "(".to_string() + &sub_query.build_query() + ")",
+        }
+    }
+}
+
 /// Constructs a new SELECT query builder.
 ///
 /// # Arguments
@@ -53,10 +71,10 @@ use crate::table::Table;
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<T: Table + Default>(
-    conn: &Connection,
-    columns: Vec<String>,
-) -> SelectQueryBuilder<T> {
+pub fn select<'a, T: Table + Default>(
+    conn: &'a Connection,
+    columns: Vec<Column<'a, T>>,
+) -> SelectQueryBuilder<'a, T> {
     SelectQueryBuilder::new(conn, columns)
 }
 
@@ -64,7 +82,7 @@ pub fn select<T: Table + Default>(
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
     conn: &'a Connection,
     table: Option<T>,
-    columns: Vec<String>,
+    columns: Vec<Column<'a, T>>,
     where_condition: Option<Condition>,
     distinct: bool,
     group_by: Option<Vec<String>>,
@@ -83,7 +101,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: &'a Connection, columns: Vec<String>) -> Self {
+    pub fn new(conn: &'a Connection, columns: Vec<Column<'a, T>>) -> Self {
         SelectQueryBuilder {
             conn,
             table: None,
@@ -105,7 +123,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn select(mut self, columns: Vec<String>) -> Self {
+    pub fn select(mut self, columns: Vec<Column<'a, T>>) -> Self {
         self.columns = columns;
         self
     }
@@ -234,7 +252,13 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
 
     /// Builds the query string, this function should be used internally.
     fn build_query(&self) -> String {
-        let columns_str = self.columns.join(", ");
+        let columns_str = self
+            .columns
+            .iter()
+            .map(|c| c.build())
+            .collect::<Vec<String>>()
+            .join(", ");
+
         let table_name = self
             .table
             .as_ref()
