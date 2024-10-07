@@ -33,3 +33,27 @@ njord_derive = { version = "0.3.0", path = "../njord_derive" }
 [features]
 default = ["sqlite"]
 sqlite = []
+
+[[test]]
+name = "open_test"
+path = "tests/sqlite/open_test.rs"
+
+[[test]]
+name = "insert_test"
+path = "tests/sqlite/insert_test.rs"
+
+[[test]]
+name = "update_test"
+path = "tests/sqlite/update_test.rs"
+
+[[test]]
+name = "delete_test"
+path = "tests/sqlite/delete_test.rs"
+
+[[test]]
+name = "select_test"
+path = "tests/sqlite/select_test.rs"
+
+[[test]]
+name = "all_sqlite_tests"
+path = "tests/sqlite/mod.rs"
