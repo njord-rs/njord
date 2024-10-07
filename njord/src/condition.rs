@@ -46,6 +46,10 @@ pub enum Condition {
     And(Box<Condition>, Box<Condition>),
     /// Logical OR condition.
     Or(Box<Condition>, Box<Condition>),
+    /// In condition: column IN (value1, value2, ...).
+    In(String, Vec<String>),
+    /// Not in condition: column NOT IN (value1, value2, ...).
+    NotIn(String, Vec<String>),
 }
 
 impl Condition {
@@ -113,6 +117,22 @@ impl Condition {
             }
             Condition::And(left, right) => format!("({}) AND ({})", left.build(), right.build()),
             Condition::Or(left, right) => format!("({}) OR ({})", left.build(), right.build()),
+            Condition::In(column, values) => {
+                let values = values
+                    .iter()
+                    .map(|v| format!("'{}'", v))
+                    .collect::<Vec<String>>()
+                    .join(", ");
+                format!("{} IN ({})", column, values)
+            }
+            Condition::NotIn(column, values) => {
+                let values = values
+                    .iter()
+                    .map(|v| format!("'{}'", v))
+                    .collect::<Vec<String>>()
+                    .join(", ");
+                format!("{} NOT IN ({})", column, values)
+            }
         }
     }
 }
