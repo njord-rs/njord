@@ -1,10 +1,10 @@
+use super::{User, UserWithSubQuery};
 use njord::column::Column;
 use njord::condition::Condition;
-use njord::sqlite;
 use njord::keys::AutoIncrementPrimaryKey;
+use njord::sqlite;
 use std::collections::HashMap;
 use std::path::Path;
-use super::{User, UserWithSubQuery};
 
 #[test]
 fn select() {
