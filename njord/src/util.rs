@@ -27,6 +27,8 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+use std::sync::Arc;
+
 use crate::condition::Condition;
 use crate::table::Table;
 
@@ -39,14 +41,14 @@ pub enum JoinType {
 }
 
 #[derive(Clone)]
-pub struct Join<T: Table + Default> {
+pub struct Join {
     pub join_type: JoinType,
-    pub table: T,
+    pub table: Arc<dyn Table>,
     pub on_condition: Condition,
 }
 
-impl<T: Table + Default> Join<T> {
-    pub fn new(join_type: JoinType, table: T, on_condition: Condition) -> Self {
+impl Join {
+    pub fn new(join_type: JoinType, table: Arc<dyn Table>, on_condition: Condition) -> Self {
         Join {
             join_type,
             table,

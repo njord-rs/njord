@@ -74,7 +74,10 @@ impl Condition {
     pub fn build(&self) -> String {
         match self {
             Condition::Eq(column, value) => {
-                if Condition::is_numeric(value) {
+                // If contains a dot, assume it's a table.column
+                if column.contains('.') {
+                    format!("{} = {}", column, value)
+                } else if Condition::is_numeric(value) {
                     format!("{} = {}", column, value)
                 } else {
                     format!("{} = '{}'", column, value)

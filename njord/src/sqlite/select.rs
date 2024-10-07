@@ -35,8 +35,8 @@ use crate::{
         generate_order_by_str, generate_where_condition_str,
     },
 };
-use std::collections::HashMap;
 use rusqlite::{Connection, Result};
+use std::{collections::HashMap, sync::Arc};
 
 use log::info;
 use rusqlite::types::Value;
@@ -76,7 +76,7 @@ pub struct SelectQueryBuilder<'a, T: Table + Default> {
     having_condition: Option<Condition>,
     except_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
     union_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
-    joins: Option<Vec<Join<T>>>,
+    joins: Option<Vec<Join>>,
 }
 
 impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
@@ -252,7 +252,12 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Returns
     ///
     /// Returns the modified `SelectQueryBuilder` instance with the new JOIN clause added.
-    pub fn join(mut self, join_type: JoinType, table: T, on_condition: Condition) -> Self {
+    pub fn join(
+        mut self,
+        join_type: JoinType,
+        table: Arc<dyn Table>,
+        on_condition: Condition,
+    ) -> Self {
         match self.joins {
             Some(ref mut joins) => joins.push(Join::new(join_type, table, on_condition)),
             None => self.joins = Some(vec![Join::new(join_type, table, on_condition)]),
@@ -277,15 +282,24 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
 
         // Generate JOIN clauses, if any
         let join_clauses: Vec<String> = match &self.joins {
-            Some(joins) => joins.iter().map(|join| {
-                let join_type_str = match join.join_type {
-                    JoinType::Inner => "INNER JOIN",
-                    JoinType::Left => "LEFT JOIN",
-                    JoinType::Right => "RIGHT JOIN",
-                    JoinType::Full => "FULL OUTER JOIN",
-                };
-                format!("{} {} ON {}", join_type_str, join.table.get_name(), generate_where_condition_str(Some(join.on_condition.clone())))
-            }).collect(),
+            Some(joins) => joins
+                .iter()
+                .map(|join| {
+                    let join_type_str = match join.join_type {
+                        JoinType::Inner => "INNER JOIN",
+                        JoinType::Left => "LEFT JOIN",
+                        JoinType::Right => "RIGHT JOIN",
+                        JoinType::Full => "FULL OUTER JOIN",
+                    };
+                    format!(
+                        "{} {} ON {}",
+                        join_type_str,
+                        join.table.get_name(),
+                        generate_where_condition_str(Some(join.on_condition.clone()))
+                            .replace("WHERE", "")
+                    )
+                })
+                .collect(),
             None => Vec::new(),
         };
 
