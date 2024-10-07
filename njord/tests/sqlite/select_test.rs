@@ -1,68 +1,11 @@
 use njord::column::Column;
 use njord::condition::Condition;
-use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
+use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite;
-use njord::table::Table;
-use njord::util::JoinType;
-use njord_derive::Table;
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::Arc;
 
-#[derive(Table, Clone)]
-#[table_name = "users"]
-pub struct User {
-    id: AutoIncrementPrimaryKey<usize>,
-    username: String,
-    email: String,
-    address: String,
-}
-
-#[derive(Table)]
-#[table_name = "users"]
-pub struct UserWithSubQuery {
-    id: AutoIncrementPrimaryKey<usize>,
-    username: String,
-    email: String,
-    address: String,
-    additional_address: String,
-}
-
-#[derive(Table)]
-#[table_name = "users"]
-pub struct UsersWithJoin {
-    username: String,
-    price: f64,
-    name: String,
-}
-
-#[derive(Table)]
-#[table_name = "categories"]
-pub struct Category {
-    id: PrimaryKey<usize>,
-    name: String,
-}
-
-#[derive(Table)]
-#[table_name = "products"]
-pub struct Product {
-    id: PrimaryKey<usize>,
-    name: String,
-    description: String,
-    price: f64,
-    stock_quantity: usize,
-    category: Category, // one-to-one relationship
-    discount: f64,
-}
-
-// #[derive(Table)]
-// #[table_name = "orders"]
-// pub struct Order {
-//     id: usize,
-//     user: User,             // one-to-one relationship
-//     products: Vec<Product>, // one-to-many relationship - populates from based on junction table (gets from macro attribute "table_name" and combines them for example, orders_products)
-//     total_cost: f64,
-// }
+use crate::{User, UserWithSubQuery};
 
 #[test]
 fn open_db() {
@@ -545,42 +488,4 @@ fn select_in() {
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-}
-
-#[test]
-fn select_join() {
-    let db_relative_path = "./db/select_join.db";
-    let db_path = Path::new(&db_relative_path);
-    let conn = sqlite::open(db_path);
-
-    // Assume we have pre-inserted some data into the users and products tables
-    let columns = vec![
-        Column::Text("users.username".to_string()),
-        Column::Text("products.name".to_string()),
-        Column::Text("products.price".to_string()),
-    ];
-
-    // Assuming a hypothetical join condition: users.id = products.user_id
-    let join_condition = Condition::Eq("users.id".to_string(), "products.user_id".to_string());
-    match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
-                .from(UsersWithJoin::default())
-                .join(
-                    JoinType::Inner,
-                    Arc::new(Product::default()),
-                    join_condition,
-                )
-                .build();
-            match result {
-                Ok(r) => {
-                    // Check the number of results and assert against expected values
-                    assert!(!r.is_empty(), "Expected results, but got none.");
-                    // Further assertions on expected data can be made here based on inserted data
-                }
-                Err(e) => panic!("Failed to SELECT with JOIN: {:?}", e),
-            };
-        }
-        Err(e) => panic!("Failed to SELECT: {:?}", e),
-    }
 }
