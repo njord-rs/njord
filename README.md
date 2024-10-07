@@ -322,6 +322,36 @@ ORDER BY
     email DESC
 ```
 
+## Testing
+
+### Running tests
+
+**Run all tests**
+
+```bash
+cargo test
+```
+
+**Run specific test folders**
+
+```bash
+cargo test --test sqlite_tests
+```
+
+**Run specific test files**
+
+```bash
+cargo test --test sqlite_tests -- update_test
+```
+
+### Adding tests
+
+Once your new test folder and tests have been created:
+
+1. Create a `mod.rs` file in your test folder.
+2. Add your tests to the `mod.rs` file.
+3. Update `Cargo.toml` with a new `[[test]]` section containing your desired name and the test path.
+
 ## Getting Help
 
 Are you having trouble with Njord? We want to help!
