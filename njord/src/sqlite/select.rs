@@ -28,6 +28,7 @@
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use crate::{
+    column::Column,
     condition::Condition,
     sqlite::util::{
         generate_group_by_str, generate_having_str, generate_limit_str, generate_offset_str,
@@ -42,24 +43,6 @@ use log::info;
 use rusqlite::types::Value;
 
 use crate::table::Table;
-
-/// Define the enum to represent a column as either a String or SelectQueryBuilder
-/// TODO: Implement clone
-pub enum Column<'a, T: Table + Default> {
-    Text(String),
-    SubQuery(SelectQueryBuilder<'a, T>),
-}
-
-// Implement the build method to convert the enum to a string
-impl<'a, T: Table + Default> Column<'a, T> {
-    /// Helper function to convert the columns to a string
-    pub fn build(&self) -> String {
-        match self {
-            Column::Text(text) => text.clone(),
-            Column::SubQuery(sub_query) => "(".to_string() + &sub_query.build_query() + ")",
-        }
-    }
-}
 
 /// Constructs a new SELECT query builder.
 ///
@@ -79,6 +62,7 @@ pub fn select<'a, T: Table + Default>(
 }
 
 /// A builder for constructing SELECT queries.
+#[derive(Clone)]
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
     conn: &'a Connection,
     table: Option<T>,
@@ -251,7 +235,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     }
 
     /// Builds the query string, this function should be used internally.
-    fn build_query(&self) -> String {
+    pub fn build_query(&self) -> String {
         let columns_str = self
             .columns
             .iter()
