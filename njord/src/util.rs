@@ -27,6 +27,34 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+use crate::condition::Condition;
+use crate::table::Table;
+
+#[derive(Clone)]
+pub enum JoinType {
+    Inner,
+    Left,
+    Right,
+    Full,
+}
+
+#[derive(Clone)]
+pub struct Join<T: Table + Default> {
+    pub join_type: JoinType,
+    pub table: T,
+    pub on_condition: Condition,
+}
+
+impl<T: Table + Default> Join<T> {
+    pub fn new(join_type: JoinType, table: T, on_condition: Condition) -> Self {
+        Join {
+            join_type,
+            table,
+            on_condition,
+        }
+    }
+}
+
 /// Converts values for SQL INSERT
 ///
 /// # Arguments
