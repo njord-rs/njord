@@ -1,8 +1,9 @@
-mod open_test;
-mod insert_test;
-mod update_test;
 mod delete_test;
+mod insert_test;
+mod open_test;
+mod select_joins_test;
 mod select_test;
+mod update_test;
 
 use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
 use njord::table::Table;
@@ -44,4 +45,12 @@ pub struct Product {
     pub stock_quantity: usize,
     pub category: Category, // one-to-one relationship
     pub discount: f64,
+}
+
+#[derive(Table)]
+#[table_name = "users"]
+pub struct UsersWithJoin {
+    username: String,
+    price: f64,
+    name: String,
 }
