@@ -399,6 +399,7 @@ being awesome contributors to this project. **We'd like to take a moment to reco
 [<img src="https://github.com/SvMak.png?size=72" alt="SvMak" width="72">](https://github.com/SvMak) 
 [<img src="https://github.com/TomasWild.png?size=72" alt="TomasWild" width="72">](https://github.com/TomasWild) 
 [<img src="https://github.com/chaseWillden.png?size=72" alt="chaseWillden" width="72">](https://github.com/chaseWillden) 
+[<img src="https://github.com/Hiccup-za.png?size=72" alt="Hiccup-za" width="72">](https://github.com/Hiccup-za)
 
 ## License
 
