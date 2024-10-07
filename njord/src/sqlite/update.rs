@@ -43,6 +43,8 @@ use log::info;
 
 use crate::table::Table;
 
+use super::select::SelectQueryBuilder;
+
 /// Constructs a new UPDATE query builder.
 ///
 /// # Arguments
@@ -53,33 +55,35 @@ use crate::table::Table;
 /// # Returns
 ///
 /// An `UpdateQueryBuilder` instance.
-pub fn update<T: Table + Default>(conn: Connection, table: T) -> UpdateQueryBuilder<T> {
+pub fn update<'a, T: Table + Default>(conn: &'a Connection, table: T) -> UpdateQueryBuilder<'a, T> {
     UpdateQueryBuilder::new(conn, table)
 }
 
 /// A builder for constructing UPDATE queries.
-pub struct UpdateQueryBuilder<T: Table + Default> {
-    conn: Connection,
+pub struct UpdateQueryBuilder<'a, T: Table + Default> {
+    conn: &'a Connection,
     table: Option<T>,
     columns: Vec<String>,
+    sub_queries: HashMap<String, SelectQueryBuilder<'a, T>>,
     where_condition: Option<Condition>,
     order_by: Option<HashMap<Vec<String>, String>>,
     limit: Option<usize>,
     offset: Option<usize>,
 }
 
-impl<T: Table + Default> UpdateQueryBuilder<T> {
+impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
     /// Creates a new `UpdateQueryBuilder` instance.
     ///
     /// # Arguments
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     /// * `table` - An instance of the table to be updated.
-    pub fn new(conn: Connection, table: T) -> Self {
+    pub fn new(conn: &'a Connection, table: T) -> Self {
         UpdateQueryBuilder {
             conn,
             table: Some(table),
             columns: Vec::new(),
+            sub_queries: HashMap::new(),
             where_condition: None,
             order_by: None,
             limit: None,
@@ -94,6 +98,16 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
     /// * `columns` - A vector of strings representing the columns to be updated.
     pub fn set(mut self, columns: Vec<String>) -> Self {
         self.columns = columns;
+        self
+    }
+
+    /// Sets the columns and values (as subquery) to be updated.
+    ///
+    /// # Arguments
+    ///     
+    /// * `columns` - A hashmap representing the columns and their subqueries.
+    pub fn set_subqueries(mut self, columns: HashMap<String, SelectQueryBuilder<'a, T>>) -> Self {
+        self.sub_queries = columns;
         self
     }
 
@@ -160,7 +174,7 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
 
             for column in &self.columns {
                 // Check if column exists in the table's fields
-                if let Some(index) = fields.iter().position(|c| c == column) {
+                if let Some(index) = fields.iter().position(|c| column == c) {
                     let value = values.get(index).cloned().unwrap_or_default();
                     let formatted_value = if value.is_empty() {
                         "NULL".to_string()
@@ -174,6 +188,12 @@ impl<T: Table + Default> UpdateQueryBuilder<T> {
                     // Handle the case when the column doesn't exist in the table
                     eprintln!("Column '{}' does not exist in the table", column);
                 }
+            }
+
+            // Generate subqueries
+            for (column_name, sub_query) in &self.sub_queries {
+                let formatted_value = format!("({})", sub_query.build_query());
+                set_fields.push(format!("{} = {}", column_name, formatted_value));
             }
 
             set_fields.join(", ")
