@@ -1,15 +1,16 @@
 // integrations tests for sqlite
 
+use njord::column::Column;
 use njord::condition::Condition;
 use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
-use njord::sqlite::select::Column;
+use njord::sqlite::select::SelectQueryBuilder;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
 use std::collections::HashMap;
 use std::path::Path;
 
-#[derive(Table)]
+#[derive(Table, Clone)]
 #[table_name = "users"]
 pub struct User {
     id: AutoIncrementPrimaryKey<usize>,
@@ -95,7 +96,7 @@ fn update() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let columns: Vec<String> = vec!["address".to_string()];
+    let columns = vec!["username".to_string()];
 
     let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
 
@@ -111,7 +112,7 @@ fn update() {
 
     match conn {
         Ok(c) => {
-            let result = sqlite::update(c, table_row)
+            let result = sqlite::update(&c, table_row)
                 .set(columns)
                 .where_clause(condition)
                 .order_by(order)
@@ -379,20 +380,6 @@ fn select_except() {
         Column::Text("address".to_string()),
     ];
 
-    let columns2 = vec![
-        Column::Text("id".to_string()),
-        Column::Text("username".to_string()),
-        Column::Text("email".to_string()),
-        Column::Text("address".to_string()),
-    ];
-
-    let columns3 = vec![
-        Column::Text("id".to_string()),
-        Column::Text("username".to_string()),
-        Column::Text("email".to_string()),
-        Column::Text("address".to_string()),
-    ];
-
     let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
     let condition2 = Condition::Eq("username".to_string(), "otheruser".to_string());
     let condition3 = Condition::Eq("username".to_string(), "anotheruser".to_string());
@@ -400,15 +387,15 @@ fn select_except() {
     match conn {
         Ok(c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(&c, columns)
+            let query1 = sqlite::select(&c, columns.clone())
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(&c, columns2)
+            let query2 = sqlite::select(&c, columns.clone())
                 .from(User::default())
                 .where_clause(condition2);
 
-            let query3 = sqlite::select(&c, columns3)
+            let query3 = sqlite::select(&c, columns.clone())
                 .from(User::default())
                 .where_clause(condition3);
 
@@ -438,12 +425,6 @@ fn select_union() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let columns2 = vec![
-        Column::Text("id".to_string()),
-        Column::Text("username".to_string()),
-        Column::Text("email".to_string()),
-        Column::Text("address".to_string()),
-    ];
 
     let condition1 = Condition::Eq("id".to_string(), 42.to_string());
     let condition2 = Condition::Eq("id".to_string(), 43.to_string());
@@ -451,11 +432,11 @@ fn select_union() {
     match conn {
         Ok(c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(&c, columns)
+            let query1 = sqlite::select(&c, columns.clone())
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(&c, columns2)
+            let query2 = sqlite::select(&c, columns.clone())
                 .from(User::default())
                 .where_clause(condition2);
 
@@ -516,5 +497,45 @@ fn select_sub_queries() {
             };
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
+
+#[test]
+fn update_with_sub_queries() {
+    let db_relative_path = "./db/update.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    let table_row: User = User {
+        id: AutoIncrementPrimaryKey::<usize>::new(Some(0)),
+        username: "mjovanc".to_string(),
+        email: "mjovanc@icloud.com".to_string(),
+        address: "Some Random Address 1".to_string(),
+    };
+
+    let columns = vec!["username".to_string()];
+
+    match conn {
+        Ok(c) => {
+            let sub_query = SelectQueryBuilder::new(&c, vec![Column::Text("email".to_string())])
+                .from(User::default())
+                .where_clause(Condition::Eq(
+                    "email".to_string(),
+                    "mjovanc@icloud.com".to_string(),
+                ))
+                .limit(1);
+
+            let set_subqueries = HashMap::from([("email".to_string(), sub_query)]);
+
+            let result = sqlite::update(&c, table_row)
+                .set(columns)
+                .set_subqueries(set_subqueries)
+                .where_clause(Condition::Eq("username".to_owned(), "otheruser".to_owned()))
+                .build();
+
+            println!("{:?}", result);
+            assert!(result.is_ok());
+        }
+        Err(e) => panic!("Failed to UPDATE: {:?}", e),
     };
 }

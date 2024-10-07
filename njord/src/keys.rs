@@ -38,7 +38,7 @@ use serde::{Deserialize, Deserializer};
 #[derive(Debug)]
 pub struct PrimaryKey<T>(T);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AutoIncrementPrimaryKey<T>(Option<T>);
 
 impl<T> PrimaryKey<T> {
