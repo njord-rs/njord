@@ -539,3 +539,42 @@ fn update_with_sub_queries() {
         Err(e) => panic!("Failed to UPDATE: {:?}", e),
     };
 }
+
+fn select_in() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    let columns = vec![
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
+    ];
+
+    let condition = Condition::And(
+        Box::new(Condition::In(
+            "username".to_string(),
+            vec!["mjovanc".to_string(), "otheruser".to_string()],
+        )),
+        Box::new(Condition::NotIn(
+            "username".to_string(),
+            vec!["chasewillden".to_string()],
+        )),
+    );
+
+    match conn {
+        Ok(c) => {
+            let result = sqlite::select(&c, columns)
+                .from(User::default())
+                .where_clause(condition)
+                .build();
+
+            match result {
+                Ok(r) => assert_eq!(r.len(), 2),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
