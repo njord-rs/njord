@@ -1,9 +1,6 @@
-// integrations tests for sqlite
-
 use njord::column::Column;
 use njord::condition::Condition;
 use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
-use njord::sqlite::select::SelectQueryBuilder;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
@@ -391,6 +388,7 @@ fn select_sub_queries() {
     };
 }
 
+#[test]
 fn select_in() {
     let db_relative_path = "./db/select.db";
     let db_path = Path::new(&db_relative_path);

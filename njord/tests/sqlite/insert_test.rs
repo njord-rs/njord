@@ -1,13 +1,7 @@
-// integrations tests for sqlite
-
-use njord::column::Column;
-use njord::condition::Condition;
 use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
-use njord::sqlite::select::SelectQueryBuilder;
 use njord::sqlite::{self};
 use njord::table::Table;
 use njord_derive::Table;
-use std::collections::HashMap;
 use std::path::Path;
 
 #[derive(Table, Clone)]
