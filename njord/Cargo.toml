@@ -33,3 +33,7 @@ njord_derive = { version = "0.3.0", path = "../njord_derive" }
 [features]
 default = ["sqlite"]
 sqlite = []
+
+[[test]]
+name = "sqlite_tests"
+path = "tests/sqlite/mod.rs"
