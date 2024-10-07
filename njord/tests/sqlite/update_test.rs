@@ -1,3 +1,4 @@
+use super::User;
 use njord::column::Column;
 use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
@@ -5,7 +6,6 @@ use njord::sqlite::select::SelectQueryBuilder;
 use njord::sqlite::{self};
 use std::collections::HashMap;
 use std::path::Path;
-use super::{User};
 
 #[test]
 fn update() {
