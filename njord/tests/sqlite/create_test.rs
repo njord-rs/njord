@@ -12,7 +12,6 @@ fn create_table() {
         Ok(c) => {
             let result = sqlite::create::create_table(c, User::default()).build();
             assert!(result.is_ok());
-            assert_eq!(false, true);
         }
         Err(e) => {
             panic!("Failed to INSERT: {:?}", e);
