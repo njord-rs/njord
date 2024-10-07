@@ -1,5 +1,3 @@
-// integrations tests for sqlite
-
 use njord::column::Column;
 use njord::condition::Condition;
 use njord::keys::{AutoIncrementPrimaryKey, PrimaryKey};
