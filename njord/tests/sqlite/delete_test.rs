@@ -1,8 +1,8 @@
+use super::User;
 use njord::condition::Condition;
 use njord::sqlite;
 use std::collections::HashMap;
 use std::path::Path;
-use super::User;
 
 #[test]
 fn delete() {
