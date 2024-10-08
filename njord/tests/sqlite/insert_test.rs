@@ -1,7 +1,7 @@
+use super::User;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite;
 use std::path::Path;
-use super::User;
 
 #[test]
 fn insert_row() {

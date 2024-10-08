@@ -35,14 +35,14 @@ use crate::{
         generate_order_by_str, generate_where_condition_str,
     },
 };
-use std::collections::HashMap;
-
 use rusqlite::{Connection, Result};
+use std::{collections::HashMap, sync::Arc};
 
 use log::info;
 use rusqlite::types::Value;
 
 use crate::table::Table;
+use crate::util::{Join, JoinType};
 
 /// Constructs a new SELECT query builder.
 ///
@@ -76,6 +76,7 @@ pub struct SelectQueryBuilder<'a, T: Table + Default> {
     having_condition: Option<Condition>,
     except_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
     union_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
+    joins: Option<Vec<Join>>,
 }
 
 impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
@@ -99,6 +100,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             having_condition: None,
             except_clauses: None,
             union_clauses: None,
+            joins: None,
         }
     }
 
@@ -234,6 +236,35 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         self
     }
 
+    /// Adds a JOIN clause to the query, allowing you to combine rows from two or more tables based on a related column.
+    ///
+    /// This method modifies the current query builder to include a join clause with the specified join type,
+    /// target table, and condition for the join. If there are already existing JOIN clauses, the new clause
+    /// will be added to the list. If no JOIN clauses exist, a new list will be created with the provided
+    /// join information.
+    ///
+    /// # Arguments
+    ///
+    /// * `join_type` - The type of join to perform (e.g., INNER, LEFT, RIGHT, FULL).
+    /// * `table` - The table to join with the current table.
+    /// * `on_condition` - The condition that specifies how the tables are related (the ON clause).
+    ///
+    /// # Returns
+    ///
+    /// Returns the modified `SelectQueryBuilder` instance with the new JOIN clause added.
+    pub fn join(
+        mut self,
+        join_type: JoinType,
+        table: Arc<dyn Table>,
+        on_condition: Condition,
+    ) -> Self {
+        match self.joins {
+            Some(ref mut joins) => joins.push(Join::new(join_type, table, on_condition)),
+            None => self.joins = Some(vec![Join::new(join_type, table, on_condition)]),
+        }
+        self
+    }
+
     /// Builds the query string, this function should be used internally.
     pub fn build_query(&self) -> String {
         let columns_str = self
@@ -249,6 +280,29 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             .map(|t| t.get_name().to_string())
             .unwrap_or("".to_string());
 
+        // Generate JOIN clauses, if any
+        let join_clauses: Vec<String> = match &self.joins {
+            Some(joins) => joins
+                .iter()
+                .map(|join| {
+                    let join_type_str = match join.join_type {
+                        JoinType::Inner => "INNER JOIN",
+                        JoinType::Left => "LEFT JOIN",
+                        JoinType::Right => "RIGHT JOIN",
+                        JoinType::Full => "FULL OUTER JOIN",
+                    };
+                    format!(
+                        "{} {} ON {}",
+                        join_type_str,
+                        join.table.get_name(),
+                        generate_where_condition_str(Some(join.on_condition.clone()))
+                            .replace("WHERE", "")
+                    )
+                })
+                .collect(),
+            None => Vec::new(),
+        };
+
         let distinct_str = if self.distinct { "DISTINCT " } else { "" };
         let where_condition_str = generate_where_condition_str(self.where_condition.clone());
         let group_by_str = generate_group_by_str(&self.group_by);
@@ -258,11 +312,19 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         let having_str =
             generate_having_str(self.group_by.is_some(), self.having_condition.as_ref());
 
+        // Create the JOIN clause or an empty string
+        let join_clause = if !join_clauses.is_empty() {
+            join_clauses.join(" ")
+        } else {
+            String::new()
+        };
+
         let mut query = format!(
-            "SELECT {}{} FROM {} {} {} {} {} {}",
+            "SELECT {}{} FROM {} {} {} {} {} {} {}",
             distinct_str,
             columns_str,
             table_name,
+            join_clause,
             where_condition_str,
             group_by_str,
             having_str,

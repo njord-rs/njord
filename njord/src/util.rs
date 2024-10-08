@@ -27,6 +27,36 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+use std::sync::Arc;
+
+use crate::condition::Condition;
+use crate::table::Table;
+
+#[derive(Clone)]
+pub enum JoinType {
+    Inner,
+    Left,
+    Right,
+    Full,
+}
+
+#[derive(Clone)]
+pub struct Join {
+    pub join_type: JoinType,
+    pub table: Arc<dyn Table>,
+    pub on_condition: Condition,
+}
+
+impl Join {
+    pub fn new(join_type: JoinType, table: Arc<dyn Table>, on_condition: Condition) -> Self {
+        Join {
+            join_type,
+            table,
+            on_condition,
+        }
+    }
+}
+
 /// Converts values for SQL INSERT
 ///
 /// # Arguments
