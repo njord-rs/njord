@@ -1,10 +1,10 @@
 use crate::schema::NearEarthObject;
+use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite::{self, SqliteError};
 use reqwest::header::ACCEPT;
+use serde::Deserialize;
 use serde_json::Value;
 use std::path::Path;
-use serde::Deserialize;
-use njord::keys::AutoIncrementPrimaryKey;
 
 mod schema;
 
@@ -35,18 +35,20 @@ async fn main() -> Result<(), SqliteError> {
     match neo {
         Ok(data) => {
             for obj in data["near_earth_objects"].as_array().unwrap() {
-                let response_obj: NearEarthObjectResponse = serde_json::from_value(obj.clone()).unwrap();
+                let response_obj: NearEarthObjectResponse =
+                    serde_json::from_value(obj.clone()).unwrap();
 
                 let near_earth_obj = NearEarthObject {
                     id: AutoIncrementPrimaryKey::default(), // Auto-generate id
-                    neo_id: response_obj.neo_id, // Map id to neo_id
+                    neo_id: response_obj.neo_id,            // Map id to neo_id
                     neo_reference_id: response_obj.neo_reference_id,
                     name: response_obj.name,
                     name_limited: response_obj.name_limited,
                     designation: response_obj.designation,
                     nasa_jpl_url: response_obj.nasa_jpl_url,
                     absolute_magnitude_h: response_obj.absolute_magnitude_h,
-                    is_potentially_hazardous_asteroid: response_obj.is_potentially_hazardous_asteroid,
+                    is_potentially_hazardous_asteroid: response_obj
+                        .is_potentially_hazardous_asteroid,
                     is_sentry_object: false, // Set this field as needed
                 };
                 println!("{:#?}", near_earth_obj);
@@ -57,7 +59,7 @@ async fn main() -> Result<(), SqliteError> {
     }
 
     let conn = sqlite::open(db_path)?;
-    sqlite::insert(conn, near_earth_objects)?;
+    sqlite::insert(&conn, near_earth_objects)?;
 
     Ok(())
 }
