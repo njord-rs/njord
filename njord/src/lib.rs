@@ -30,6 +30,7 @@
 pub mod column;
 pub mod condition;
 pub mod keys;
+pub mod query;
 #[cfg(feature = "sqlite")]
 pub mod sqlite;
 pub mod table;

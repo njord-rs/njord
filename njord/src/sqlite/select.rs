@@ -30,6 +30,7 @@
 use crate::{
     column::Column,
     condition::Condition,
+    query::QueryBuilder,
     sqlite::util::{
         generate_group_by_str, generate_having_str, generate_limit_str, generate_offset_str,
         generate_order_by_str, generate_where_condition_str,
@@ -67,16 +68,16 @@ pub struct SelectQueryBuilder<'a, T: Table + Default> {
     conn: &'a Connection,
     table: Option<T>,
     columns: Vec<Column<'a, T>>,
-    where_condition: Option<Condition>,
+    where_condition: Option<Condition<'a>>,
     distinct: bool,
     group_by: Option<Vec<String>>,
     order_by: Option<HashMap<Vec<String>, String>>,
     limit: Option<usize>,
     offset: Option<usize>,
-    having_condition: Option<Condition>,
+    having_condition: Option<Condition<'a>>,
     except_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
     union_clauses: Option<Vec<SelectQueryBuilder<'a, T>>>,
-    joins: Option<Vec<Join>>,
+    joins: Option<Vec<Join<'a>>>,
 }
 
 impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
@@ -135,7 +136,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `condition` - The condition to be applied in the WHERE clause.
-    pub fn where_clause(mut self, condition: Condition) -> Self {
+    pub fn where_clause(mut self, condition: Condition<'a>) -> Self {
         self.where_condition = Some(condition);
         self
     }
@@ -185,7 +186,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `condition` - The condition to be applied in the HAVING clause.
-    pub fn having(mut self, condition: Condition) -> Self {
+    pub fn having(mut self, condition: Condition<'a>) -> Self {
         self.having_condition = Some(condition);
         self
     }
@@ -256,7 +257,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         mut self,
         join_type: JoinType,
         table: Arc<dyn Table>,
-        on_condition: Condition,
+        on_condition: Condition<'a>,
     ) -> Self {
         match self.joins {
             Some(ref mut joins) => joins.push(Join::new(join_type, table, on_condition)),
@@ -393,5 +394,17 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             .collect::<Result<Vec<T>>>();
 
         result.map_err(|err| err.into())
+    }
+}
+
+/// Implement `QueryBuilder` for `SelectQueryBuilder`
+///
+/// The where statement ensures the T is long lived
+impl<'a, T> QueryBuilder<'a> for SelectQueryBuilder<'a, T>
+where
+    T: Table + Default + Clone + 'a, // Added 'a bound here
+{
+    fn to_sql(&self) -> String {
+        self.build_query()
     }
 }

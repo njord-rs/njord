@@ -52,27 +52,27 @@ use crate::table::Table;
 /// # Returns
 ///
 /// A `DeleteQueryBuilder` instance.
-pub fn delete<T: Table + Default>(conn: Connection) -> DeleteQueryBuilder<T> {
+pub fn delete<'a, T: Table + Default>(conn: &'a Connection) -> DeleteQueryBuilder<'a, T> {
     DeleteQueryBuilder::new(conn)
 }
 
 /// A builder for constructing DELETE queries.
-pub struct DeleteQueryBuilder<T: Table + Default> {
-    conn: Connection,
+pub struct DeleteQueryBuilder<'a, T: Table + Default> {
+    conn: &'a Connection,
     table: Option<T>,
-    where_condition: Option<Condition>,
+    where_condition: Option<Condition<'a>>,
     order_by: Option<HashMap<Vec<String>, String>>,
     limit: Option<usize>,
     offset: Option<usize>,
 }
 
-impl<T: Table + Default> DeleteQueryBuilder<T> {
+impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
     /// Creates a new `DeleteQueryBuilder` instance.
     ///
     /// # Arguments
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
-    pub fn new(conn: Connection) -> Self {
+    pub fn new(conn: &'a Connection) -> Self {
         DeleteQueryBuilder {
             conn,
             table: None,
@@ -98,7 +98,7 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
     /// # Arguments
     ///
     /// * `condition` - The condition to be applied in the WHERE clause.
-    pub fn where_clause(mut self, condition: Condition) -> Self {
+    pub fn where_clause(mut self, condition: Condition<'a>) -> Self {
         self.where_condition = Some(condition);
         self
     }
@@ -138,7 +138,7 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
     /// # Returns
     ///
     /// A `Result` indicating success or failure of the deletion operation.
-    pub fn build(mut self) -> Result<(), String> {
+    pub fn build(self) -> Result<(), String> {
         let table_name = self
             .table
             .as_ref()
@@ -165,10 +165,7 @@ impl<T: Table + Default> DeleteQueryBuilder<T> {
         println!("{}", query);
 
         // Execute SQL
-        let _ = match self.conn.transaction() {
-            Ok(tx) => tx.execute(&query.to_string(), []),
-            Err(_) => todo!(),
-        };
+        let _ = self.conn.execute(&query.to_string(), []);
 
         Ok(())
     }
