@@ -18,9 +18,11 @@ rusqlite = { version = "0.32.1", features = ["bundled"] }
 log = "0.4.22"
 rand = "0.8.4"
 serde = { version = "1.0.210", features = ["derive"] }
+postgres = "0.19.9"
 
 [dev-dependencies]
 njord_derive = { version = "0.3.0", path = "../njord_derive" }
+mockall = "0.11"
 
 # This cfg cannot be enabled, but it still forces Cargo to keep njord_derive's
 # version in lockstep with njord's, even if someone depends on the two crates
@@ -33,7 +35,12 @@ njord_derive = { version = "0.3.0", path = "../njord_derive" }
 [features]
 default = ["sqlite"]
 sqlite = []
+postgres = []
 
 [[test]]
 name = "sqlite_tests"
 path = "tests/sqlite/mod.rs"
+
+[[test]]
+name = "postgres_tests"
+path = "tests/postgres/mod.rs"

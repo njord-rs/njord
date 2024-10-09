@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,13 +29,53 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-#[cfg(feature = "postgres")]
-pub mod postgres;
-pub mod query;
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
-pub mod table;
-pub mod util;
+use postgres::{Client, Error};
+
+pub mod delete;
+pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
+
+pub use delete::delete;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
+
+pub trait PostgresConnection {
+    fn connect(&self, connection_string: &str) -> Result<Client, Error>;
+}
+
+pub struct RealPostgresConnection;
+
+/// Open a database connection.
+///
+/// This function opens a connection to a Postgres database located at the specified path.
+///
+/// # Arguments
+///
+/// * `db_path` - A reference to the path where the Postgres database is located.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `Connection` if the operation was successful, or an `Error` if an error occurred.
+///
+/// # Errors
+///
+/// This function can return an error if:
+///
+/// * The specified database path does not exist.
+/// * There are permission issues when trying to access the database.
+/// * The database is corrupted or not a valid Postgres database.
+impl PostgresConnection for RealPostgresConnection {
+    fn connect(&self, connection_string: &str) -> Result<Client, Error> {
+        Client::connect(connection_string, postgres::NoTls)
+    }
+}
+
+/// Open a database connection to a postgres server.
+pub fn open(connection_string: &str) -> Result<Client, Error> {
+    let connection = RealPostgresConnection {};
+    connection.connect(connection_string)
+}

@@ -3,6 +3,7 @@ members = [
     "njord",
     "njord_derive",
     "njord_examples/sqlite",
+    "njord_examples/postgres",
 ]
 
 resolver = "2"

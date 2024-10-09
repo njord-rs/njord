@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,13 +29,24 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-#[cfg(feature = "postgres")]
-pub mod postgres;
-pub mod query;
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
-pub mod table;
-pub mod util;
+use postgres::Error as PostgresLibError;
+
+/// Represents errors that can occur during SQLite operations.
+#[derive(Debug)]
+pub enum PostgresError {
+    /// Error that occurs during a SELECT operation.
+    SelectError(PostgresLibError),
+    /// Error that occurs during an INSERT operation.
+    InsertError(PostgresLibError),
+    /// Error that occurs during an UPDATE operation.
+    UpdateError(PostgresLibError),
+    /// Error that occurs during a DELETE operation.
+    DeleteError(PostgresLibError),
+}
+
+impl From<PostgresLibError> for PostgresError {
+    /// Converts a `rusqlite::Error` into a `SqliteError`.
+    fn from(error: PostgresLibError) -> Self {
+        PostgresError::InsertError(error)
+    }
+}
