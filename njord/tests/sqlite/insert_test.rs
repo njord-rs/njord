@@ -1,13 +1,16 @@
 use super::User;
+use njord::column::Column;
+use njord::condition::{Condition, Value};
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite;
 use std::path::Path;
+use std::vec;
 
 #[test]
 fn insert_row() {
     let db_relative_path = "./db/insert.db";
     let db_path = Path::new(&db_relative_path);
-    let conn = sqlite::open(db_path);
+    let mut conn = sqlite::open(db_path);
 
     let table_row: User = User {
         id: AutoIncrementPrimaryKey::default(),
@@ -17,8 +20,47 @@ fn insert_row() {
     };
 
     match conn {
-        Ok(c) => {
+        Ok(ref mut c) => {
             let result = sqlite::insert(c, vec![table_row]);
+            assert!(result.is_ok());
+        }
+        Err(e) => {
+            panic!("Failed to INSERT: {:?}", e);
+        }
+    }
+}
+
+#[test]
+fn insert_with_sub_query() {
+    let db_relative_path = "./db/insert.db";
+    let db_path = Path::new(&db_relative_path);
+    let mut conn = sqlite::open(db_path);
+
+    match conn {
+        Ok(ref mut c) => {
+            let subquery = sqlite::select(
+                c,
+                vec![
+                    Column::<User>::Text("username".to_string()),
+                    Column::<User>::Text("email".to_string()),
+                    Column::<User>::Text("address".to_string()),
+                ],
+            )
+            .from(User::default())
+            .where_clause(Condition::Eq(
+                "username".to_string(),
+                Value::Literal("mjovanc".to_string()),
+            ));
+
+            let result = sqlite::insert::into::<User>(
+                c,
+                vec![
+                    "username".to_string(),
+                    "email".to_string(),
+                    "address".to_string(),
+                ],
+                Box::new(subquery),
+            );
             assert!(result.is_ok());
         }
         Err(e) => {
