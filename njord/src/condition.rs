@@ -27,32 +27,62 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+use crate::query::QueryBuilder;
+
 /// Represents a condition used in building SQL queries.
 #[derive(Clone)]
-pub enum Condition {
+pub enum Condition<'a> {
     /// Equality condition: column = value.
-    Eq(String, String),
+    Eq(String, Value<'a>),
     /// Inequality condition: column <> value.
-    Ne(String, String),
+    Ne(String, Value<'a>),
     /// Less than condition: column < value.
-    Lt(String, String),
+    Lt(String, Value<'a>),
     /// Greater than condition: column > value.
-    Gt(String, String),
+    Gt(String, Value<'a>),
     /// Less than or equal to condition: column <= value.
-    Le(String, String),
+    Le(String, Value<'a>),
     /// Greater than or equal to condition: column >= value.
-    Ge(String, String),
+    Ge(String, Value<'a>),
     /// Logical AND condition.
-    And(Box<Condition>, Box<Condition>),
+    And(Box<Condition<'a>>, Box<Condition<'a>>),
     /// Logical OR condition.
-    Or(Box<Condition>, Box<Condition>),
+    Or(Box<Condition<'a>>, Box<Condition<'a>>),
     /// In condition: column IN (value1, value2, ...).
-    In(String, Vec<String>),
+    In(String, Vec<Value<'a>>),
     /// Not in condition: column NOT IN (value1, value2, ...).
-    NotIn(String, Vec<String>),
+    NotIn(String, Vec<Value<'a>>),
 }
 
-impl Condition {
+/// Required to implement support for subqueries and literals.
+#[derive(Clone)]
+pub enum Value<'a> {
+    /// A literal value, such as a string or number.
+    Literal(String),
+    /// A subquery.
+    Subquery(Box<dyn QueryBuilder<'a> + 'a>),
+}
+
+impl<'a> Value<'a> {
+    pub fn is_numeric(&self) -> bool {
+        match self {
+            Value::Literal(literal) => Condition::is_numeric(literal),
+            _ => false,
+        }
+    }
+}
+
+/// Implement Display for Value
+impl<'a> std::fmt::Display for Value<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Value::Literal(literal) => write!(f, "{}", literal),
+            Value::Subquery(subquery) => write!(f, "{}", subquery.to_sql()),
+        }
+    }
+}
+
+impl<'a> Condition<'a> {
     /// Checks if the given value is numeric.
     ///
     /// # Arguments
@@ -77,42 +107,42 @@ impl Condition {
                 // If contains a dot, assume it's a table.column
                 if column.contains('.') {
                     format!("{} = {}", column, value)
-                } else if Condition::is_numeric(value) {
+                } else if value.is_numeric() {
                     format!("{} = {}", column, value)
                 } else {
                     format!("{} = '{}'", column, value)
                 }
             }
             Condition::Ne(column, value) => {
-                if Condition::is_numeric(value) {
+                if value.is_numeric() {
                     format!("{} <> {}", column, value)
                 } else {
                     format!("{} <> '{}'", column, value)
                 }
             }
             Condition::Lt(column, value) => {
-                if Condition::is_numeric(value) {
+                if value.is_numeric() {
                     format!("{} < {}", column, value)
                 } else {
                     format!("{} < '{}'", column, value)
                 }
             }
             Condition::Gt(column, value) => {
-                if Condition::is_numeric(value) {
+                if value.is_numeric() {
                     format!("{} > {}", column, value)
                 } else {
                     format!("{} > '{}'", column, value)
                 }
             }
             Condition::Le(column, value) => {
-                if Condition::is_numeric(value) {
+                if value.is_numeric() {
                     format!("{} <= {}", column, value)
                 } else {
                     format!("{} <= '{}'", column, value)
                 }
             }
             Condition::Ge(column, value) => {
-                if Condition::is_numeric(value) {
+                if value.is_numeric() {
                     format!("{} >= {}", column, value)
                 } else {
                     format!("{} >= '{}'", column, value)

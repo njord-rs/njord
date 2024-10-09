@@ -65,7 +65,7 @@ pub struct UpdateQueryBuilder<'a, T: Table + Default> {
     table: Option<T>,
     columns: Vec<String>,
     sub_queries: HashMap<String, SelectQueryBuilder<'a, T>>,
-    where_condition: Option<Condition>,
+    where_condition: Option<Condition<'a>>,
     order_by: Option<HashMap<Vec<String>, String>>,
     limit: Option<usize>,
     offset: Option<usize>,
@@ -116,7 +116,7 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `condition` - The condition to be applied in the WHERE clause.
-    pub fn where_clause(mut self, condition: Condition) -> Self {
+    pub fn where_clause(mut self, condition: Condition<'a>) -> Self {
         self.where_condition = Some(condition);
         self
     }

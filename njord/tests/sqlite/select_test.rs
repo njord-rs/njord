@@ -1,7 +1,7 @@
-use njord::column::Column;
 use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite;
+use njord::{column::Column, condition::Value};
 use std::collections::HashMap;
 use std::path::Path;
 
@@ -48,7 +48,10 @@ fn update() {
 
     let columns = vec!["username".to_string()];
 
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
 
     let table_row: User = User {
         id: AutoIncrementPrimaryKey::<usize>::new(Some(0)),
@@ -61,8 +64,8 @@ fn update() {
     order.insert(vec!["id".to_string()], "DESC".to_string());
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::update(&c, table_row)
+        Ok(ref c) => {
+            let result = sqlite::update(c, table_row)
                 .set(columns)
                 .where_clause(condition)
                 .order_by(order)
@@ -84,13 +87,16 @@ fn delete() {
     let db_path = Path::new(&db_relative_path);
     let conn = sqlite::open(db_path);
 
-    let condition = Condition::Eq("address".to_string(), "Some Random Address 1".to_string());
+    let condition = Condition::Eq(
+        "address".to_string(),
+        Value::Literal("Some Random Address 1".to_string()),
+    );
 
     let mut order = HashMap::new();
     order.insert(vec!["id".to_string()], "DESC".to_string());
 
     match conn {
-        Ok(c) => {
+        Ok(ref c) => {
             let result = sqlite::delete(c)
                 .from(User::default())
                 .where_clause(condition)
@@ -119,11 +125,14 @@ fn select() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .build();
@@ -149,11 +158,14 @@ fn select_distinct() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .distinct()
@@ -184,12 +196,15 @@ fn select_group_by() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
     let group_by = vec!["username".to_string(), "email".to_string()];
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .group_by(group_by)
@@ -216,15 +231,18 @@ fn select_order_by() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
     let group_by = vec!["username".to_string(), "email".to_string()];
 
     let mut order_by = HashMap::new();
     order_by.insert(vec!["email".to_string()], "ASC".to_string());
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
@@ -252,15 +270,18 @@ fn select_limit_offset() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
     let group_by = vec!["username".to_string(), "email".to_string()];
 
     let mut order_by = HashMap::new();
     order_by.insert(vec!["id".to_string()], "DESC".to_string());
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
@@ -290,17 +311,20 @@ fn select_having() {
         Column::Text("email".to_string()),
         Column::Text("address".to_string()),
     ];
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
     let group_by = vec!["username".to_string(), "email".to_string()];
 
     let mut order_by = HashMap::new();
     order_by.insert(vec!["email".to_string()], "DESC".to_string());
 
-    let having_condition = Condition::Gt("id".to_string(), "1".to_string());
+    let having_condition = Condition::Gt("id".to_string(), Value::Literal("1".to_string()));
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
@@ -330,22 +354,31 @@ fn select_except() {
         Column::Text("address".to_string()),
     ];
 
-    let condition1 = Condition::Eq("username".to_string(), "mjovanc".to_string());
-    let condition2 = Condition::Eq("username".to_string(), "otheruser".to_string());
-    let condition3 = Condition::Eq("username".to_string(), "anotheruser".to_string());
+    let condition1 = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
+    let condition2 = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("otheruser".to_string()),
+    );
+    let condition3 = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("anotheruser".to_string()),
+    );
 
     match conn {
-        Ok(c) => {
+        Ok(ref c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(&c, columns.clone())
+            let query1 = sqlite::select(c, columns.clone())
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(&c, columns.clone())
+            let query2 = sqlite::select(c, columns.clone())
                 .from(User::default())
                 .where_clause(condition2);
 
-            let query3 = sqlite::select(&c, columns.clone())
+            let query3 = sqlite::select(c, columns.clone())
                 .from(User::default())
                 .where_clause(condition3);
 
@@ -376,17 +409,17 @@ fn select_union() {
         Column::Text("address".to_string()),
     ];
 
-    let condition1 = Condition::Eq("id".to_string(), 42.to_string());
-    let condition2 = Condition::Eq("id".to_string(), 43.to_string());
+    let condition1 = Condition::Eq("id".to_string(), Value::Literal(42.to_string()));
+    let condition2 = Condition::Eq("id".to_string(), Value::Literal(43.to_string()));
 
     match conn {
-        Ok(c) => {
+        Ok(ref c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(&c, columns.clone())
+            let query1 = sqlite::select(c, columns.clone())
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(&c, columns.clone())
+            let query2 = sqlite::select(c, columns.clone())
                 .from(User::default())
                 .where_clause(condition2);
 
@@ -466,17 +499,20 @@ fn select_in() {
     let condition = Condition::And(
         Box::new(Condition::In(
             "username".to_string(),
-            vec!["mjovanc".to_string(), "otheruser".to_string()],
+            vec![
+                Value::Literal("mjovanc".to_string()),
+                Value::Literal("otheruser".to_string()),
+            ],
         )),
         Box::new(Condition::NotIn(
             "username".to_string(),
-            vec!["chasewillden".to_string()],
+            vec![Value::Literal("chasewillden".to_string())],
         )),
     );
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(User::default())
                 .where_clause(condition)
                 .build();

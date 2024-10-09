@@ -173,14 +173,14 @@ pub fn remove_quotes_and_backslashes(input: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::condition::Condition;
+    use crate::condition::{Condition, Value};
 
     #[test]
     fn test_generate_where_condition_str() {
         // Test when condition is Some
-        let condition = Condition::Eq("age".to_string(), "30".to_string());
+        let condition = Condition::Eq("age".to_string(), Value::Literal("30".to_string()));
         let _result = generate_where_condition_str(Some(condition)); // TODO: need to fix this later
-                                                                    // assert_eq!(result, format!("WHERE {}", condition.build()));
+                                                                     // assert_eq!(result, format!("WHERE {}", condition.build()));
 
         // Test when condition is None
         let result = generate_where_condition_str(None);
@@ -238,7 +238,7 @@ mod tests {
     #[test]
     fn test_generate_having_str() {
         // Test when group_by is true and having_condition is Some
-        let condition = Condition::Gt("COUNT(age)".to_string(), "5".to_string());
+        let condition = Condition::Gt("COUNT(age)".to_string(), Value::Literal("5".to_string()));
         let result = generate_having_str(true, Some(&condition));
         assert_eq!(result, format!("HAVING {}", condition.build()));
 
