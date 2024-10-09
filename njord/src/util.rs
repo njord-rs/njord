@@ -41,14 +41,14 @@ pub enum JoinType {
 }
 
 #[derive(Clone)]
-pub struct Join {
+pub struct Join<'a> {
     pub join_type: JoinType,
     pub table: Arc<dyn Table>,
-    pub on_condition: Condition,
+    pub on_condition: Condition<'a>,
 }
 
-impl Join {
-    pub fn new(join_type: JoinType, table: Arc<dyn Table>, on_condition: Condition) -> Self {
+impl<'a> Join<'a> {
+    pub fn new(join_type: JoinType, table: Arc<dyn Table>, on_condition: Condition<'a>) -> Self {
         Join {
             join_type,
             table,

@@ -1,7 +1,7 @@
-use njord::column::Column;
 use njord::condition::Condition;
 use njord::sqlite;
 use njord::util::JoinType;
+use njord::{column::Column, condition::Value};
 use std::path::Path;
 use std::sync::Arc;
 
@@ -21,10 +21,13 @@ fn select_inner_join() {
     ];
 
     // Assuming a hypothetical join condition: users.id = products.user_id
-    let join_condition = Condition::Eq("users.id".to_string(), "products.user_id".to_string());
+    let join_condition = Condition::Eq(
+        "users.id".to_string(),
+        Value::Literal("products.user_id".to_string()),
+    );
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(UsersWithJoin::default())
                 .join(
                     JoinType::Inner,
@@ -59,10 +62,13 @@ fn select_left_join() {
     ];
 
     // Assuming a hypothetical join condition: users.id = products.user_id
-    let join_condition = Condition::Eq("users.id".to_string(), "products.user_id".to_string());
+    let join_condition = Condition::Eq(
+        "users.id".to_string(),
+        Value::Literal("products.user_id".to_string()),
+    );
     match conn {
-        Ok(c) => {
-            let result = sqlite::select(&c, columns)
+        Ok(ref c) => {
+            let result = sqlite::select(c, columns)
                 .from(UsersWithJoin::default())
                 .join(JoinType::Left, Arc::new(Product::default()), join_condition)
                 .build();

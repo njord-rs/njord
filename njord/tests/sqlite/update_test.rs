@@ -1,6 +1,6 @@
 use super::User;
 use njord::column::Column;
-use njord::condition::Condition;
+use njord::condition::{Condition, Value};
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite::select::SelectQueryBuilder;
 use njord::sqlite::{self};
@@ -15,7 +15,10 @@ fn update() {
 
     let columns = vec!["username".to_string()];
 
-    let condition = Condition::Eq("username".to_string(), "mjovanc".to_string());
+    let condition = Condition::Eq(
+        "username".to_string(),
+        Value::Literal("mjovanc".to_string()),
+    );
 
     let table_row: User = User {
         id: AutoIncrementPrimaryKey::<usize>::new(Some(0)),
@@ -28,8 +31,8 @@ fn update() {
     order.insert(vec!["id".to_string()], "DESC".to_string());
 
     match conn {
-        Ok(c) => {
-            let result = sqlite::update(&c, table_row)
+        Ok(ref c) => {
+            let result = sqlite::update(c, table_row)
                 .set(columns)
                 .where_clause(condition)
                 .order_by(order)
@@ -66,7 +69,7 @@ fn update_with_sub_queries() {
                 .from(User::default())
                 .where_clause(Condition::Eq(
                     "email".to_string(),
-                    "mjovanc@icloud.com".to_string(),
+                    Value::Literal("mjovanc@icloud.com".to_string()),
                 ))
                 .limit(1);
 
@@ -75,7 +78,10 @@ fn update_with_sub_queries() {
             let result = sqlite::update(&c, table_row)
                 .set(columns)
                 .set_subqueries(set_subqueries)
-                .where_clause(Condition::Eq("username".to_owned(), "otheruser".to_owned()))
+                .where_clause(Condition::Eq(
+                    "username".to_owned(),
+                    Value::Literal("mjovanc".to_owned()),
+                ))
                 .build();
 
             println!("{:?}", result);
