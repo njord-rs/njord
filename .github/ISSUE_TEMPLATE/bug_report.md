@@ -13,7 +13,7 @@ assignees: ''
 * Is this *really* a bug?
   - If the behavior is documented, but you disagree with it, please do file an issue, but as a "Design consideration," not a "Bug report."
   - If you don't understand why something behaves the way it does, create an issue or send a DM on Twitter: https://twitter.com/mjovanc.
-* Is the problem not in some third-party library, not in [imperator](https://github.com/mjovanc/njord/issues)?
+* Is the problem not in some third-party library, not in [imperator](https://github.com/njord-rs/njord/issues)?
 * Maybe you're using some ancient version, and the problem doesn't happen with the latest releases of the compiler and the library?
 -->
 
