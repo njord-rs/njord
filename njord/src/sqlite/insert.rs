@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,7 +29,7 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use crate::table::Table;
+use crate::{query::QueryBuilder, table::Table};
 
 use rusqlite::Error as RusqliteError;
 
@@ -52,9 +54,10 @@ use std::fmt::Error;
 ///
 /// A `Result` containing a `String` representing the joined SQL statements
 /// if the insertion is successful, or a `RusqliteError` if an error occurs.
-pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<String, RusqliteError> {
-    let tx: rusqlite::Transaction<'_> = conn.transaction()?;
-
+pub fn insert<'a, T: Table>(
+    conn: &'a Connection,
+    table_rows: Vec<T>,
+) -> Result<String, RusqliteError> {
     let mut statements: Vec<String> = Vec::new();
     for table_row in table_rows {
         match generate_statement(&table_row) {
@@ -65,13 +68,68 @@ pub fn insert<T: Table>(mut conn: Connection, table_rows: Vec<T>) -> Result<Stri
 
     let joined_statements = statements.join("; ");
 
-    tx.execute_batch(&joined_statements)?;
-
-    tx.commit()?;
+    // FIXME: Convert to transaction
+    let _ = conn.execute_batch(&joined_statements)?;
 
     info!("Inserted into table, done.");
 
+    // FIXME: Return the number of rows affected
     Ok(joined_statements)
+}
+
+/// Generates an SQL INSERT INTO statement for a given table row.
+///
+/// # Arguments
+///
+/// * `table_row` - A reference to an object implementing the `Table` trait.
+///
+/// # Returns
+///
+/// A `Result` containing a `String` representing the generated SQL statement
+/// if the operation is successful, or a `RusqliteError` if an error occurs.
+pub fn into<'a, T: Table + Default>(
+    conn: &'a Connection,
+    columns: Vec<String>,
+    subquery: Box<dyn QueryBuilder<'a> + 'a>,
+) -> Result<String, RusqliteError> {
+    let statement = generate_insert_into_statement::<T>(columns, subquery);
+    let sql = statement.unwrap();
+
+    // FIXME: Convert to transaction
+    let _ = conn.execute_batch(&sql);
+
+    info!("Inserted into table, done.");
+
+    // FIXME: Return the number of rows affected
+    return Ok(sql);
+}
+
+/// Generates an SQL INSERT INTO statement for a given subquery.
+///
+/// # Arguments
+///
+/// * `columns` - A `Vec` of column names.
+/// * `subquery` - A `QueryBuilder` object representing the subquery.
+///
+/// # Returns
+///
+/// A `Result` containing a `String` representing the generated SQL statement
+/// if the operation is successful, or a `RusqliteError` if an error occurs.
+fn generate_insert_into_statement<'a, T: Table + Default>(
+    columns: Vec<String>,
+    subquery: Box<dyn QueryBuilder<'a> + 'a>,
+) -> Result<String, RusqliteError> {
+    let columns_str = columns.join(", ");
+    let subquery_str = subquery.to_sql();
+    let table_row = T::default();
+    let table_name = table_row.get_name().replace("\"", "").replace("\\", "");
+
+    let sql = format!(
+        "INSERT INTO {} ({}) {}",
+        table_name, columns_str, subquery_str
+    );
+
+    Ok(sql)
 }
 
 /// Generates an SQL INSERT statement for a given table row.
