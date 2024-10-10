@@ -38,13 +38,15 @@ use crate::{
     },
     query::QueryBuilder,
 };
-use std::{collections::HashMap, sync::Arc};
+use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc};
 
 use log::info;
 use postgres::Client;
 
 use crate::table::Table;
 use crate::util::{Join, JoinType};
+
+use super::error::PostgresError;
 
 /// Constructs a new SELECT query builder.
 ///
@@ -57,7 +59,7 @@ use crate::util::{Join, JoinType};
 ///
 /// A `SelectQueryBuilder` instance.
 pub fn select<'a, T: Table + Default>(
-    conn: &'a Client,
+    conn: &'a mut Client,
     columns: Vec<Column<'a, T>>,
 ) -> SelectQueryBuilder<'a, T> {
     SelectQueryBuilder::new(conn, columns)
@@ -66,7 +68,7 @@ pub fn select<'a, T: Table + Default>(
 /// A builder for constructing SELECT queries.
 #[derive(Clone)]
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
-    conn: &'a Client,
+    conn: Rc<RefCell<&'a mut Client>>,
     table: Option<T>,
     columns: Vec<Column<'a, T>>,
     where_condition: Option<Condition<'a>>,
@@ -88,9 +90,9 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// * `conn` - A `Client` to the Postgres database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: &'a Client, columns: Vec<Column<'a, T>>) -> Self {
+    pub fn new(conn: &'a mut Client, columns: Vec<Column<'a, T>>) -> Self {
         SelectQueryBuilder {
-            conn,
+            conn: Rc::new(RefCell::new(conn)),
             table: None,
             columns,
             where_condition: None,
@@ -359,42 +361,94 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// A `Result` containing a vector of selected table rows if successful,
     /// or a `ruPostgres::Error` if an error occurs during the execution.
-    pub fn build(self) -> Result<Vec<T>> {
+
+    pub fn build(self) -> Result<Vec<T>, PostgresError> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
         println!("{}", final_query);
 
-        // Prepare SQL statement
-        let mut stmt = self.conn.prepare(final_query.as_str())?;
+        let mut conn = self.conn.borrow_mut();
+        let results = conn.query(final_query.as_str(), &[])?;
 
-        // Rest of the query execution remains unchanged
-        let iter = stmt.query_map((), |row| {
+        let instance = T::default();
+        let columns = instance.get_columns();
+
+        println!("Columns: {:?}", columns);
+
+        // Create a HashMap for quicker column type lookups
+        let column_map: HashMap<&str, &str> = columns
+            .iter()
+            .map(|(name, typ)| (name.as_str(), typ.as_str()))
+            .collect();
+
+        let mut instances: Vec<T> = Vec::new();
+        // Get index
+        for row in results {
             let mut instance = T::default();
-            let columns = instance.get_column_fields();
 
-            for (index, column) in columns.iter().enumerate() {
-                let value = row.get::<usize, Value>(index)?;
-
-                let string_value = match value {
-                    Value::Integer(val) => val.to_string(),
-                    Value::Null => String::new(),
-                    Value::Real(val) => val.to_string(),
-                    Value::Text(val) => val.to_string(),
-                    Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
-                };
-
-                instance.set_column_value(column, &string_value);
+            for (index, column) in row.columns().iter().enumerate() {
+                let column_name = column.name();
+                if let Some(&column_type) = column_map.get(column_name) {
+                    match column_type {
+                        "INTEGER" => {
+                            let value: i32 = row.get(index);
+                            instance.set_column_value(column_name, &value.to_string());
+                        }
+                        "REAL" => {
+                            let value: f32 = row.get(index);
+                            instance.set_column_value(column_name, &value.to_string());
+                        }
+                        "TEXT" => {
+                            let value: &str = row.get(index);
+                            instance.set_column_value(column_name, value);
+                        }
+                        "BLOB" => {
+                            let value: Vec<u8> = row.get(index);
+                            instance.set_column_value(column_name, &format!("{:?}", value));
+                        }
+                        "TEXT NULL" => {
+                            let value: Option<&str> = row.get(index);
+                            match value {
+                                Some(v) => instance.set_column_value(column_name, v),
+                                None => instance.set_column_value(column_name, "NULL"),
+                            }
+                        }
+                        "INTEGER NULL" => {
+                            let value: Option<i32> = row.get(index);
+                            match value {
+                                Some(v) => instance.set_column_value(column_name, &v.to_string()),
+                                None => instance.set_column_value(column_name, "NULL"),
+                            }
+                        }
+                        "REAL NULL" => {
+                            let value: Option<f32> = row.get(index);
+                            match value {
+                                Some(v) => instance.set_column_value(column_name, &v.to_string()),
+                                None => instance.set_column_value(column_name, "NULL"),
+                            }
+                        }
+                        "BLOB NULL" => {
+                            let value: Option<Vec<u8>> = row.get(index);
+                            match value {
+                                Some(v) => {
+                                    instance.set_column_value(column_name, &format!("{:?}", v))
+                                }
+                                None => instance.set_column_value(column_name, "NULL"),
+                            }
+                        }
+                        _ => {
+                            let value: &str = row.get(index);
+                            instance.set_column_value(column_name, value);
+                        }
+                    }
+                }
             }
 
-            Ok(instance)
-        })?;
+            instances.push(instance);
+        }
 
-        let result: Result<Vec<T>> = iter
-            .map(|row_result| row_result.and_then(|row| Ok(row)))
-            .collect::<Result<Vec<T>>>();
-
-        result.map_err(|err| err.into())
+        Ok(instances)
     }
 }
 

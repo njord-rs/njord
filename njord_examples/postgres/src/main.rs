@@ -1,5 +1,5 @@
 use crate::schema::NearEarthObject;
-use njord::{keys::AutoIncrementPrimaryKey, postgres};
+use njord::{column::Column, keys::AutoIncrementPrimaryKey, postgres};
 use reqwest::header::ACCEPT;
 use serde::Deserialize;
 use serde_json::Value;
@@ -35,6 +35,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
             postgres::open("postgresql://myuser:mypassword@localhost:5432/mydatabase").unwrap();
 
         postgres::insert(&mut conn, near_earth_objects).unwrap();
+
+        let results = postgres::select(&mut conn, vec![Column::Text("id".to_string())])
+            .from(NearEarthObject::default())
+            .build();
+
+        for r in results.unwrap() {
+            println!("{:#?}", r);
+        }
     })
     .join()
     {
@@ -65,7 +73,7 @@ async fn get_and_process_neos() -> Result<Vec<NearEarthObject>, Box<dyn Error>> 
             is_sentry_object: false, // Set this field as needed
         };
 
-        println!("{:#?}", near_earth_obj);
+        // println!("{:#?}", near_earth_obj);
         near_earth_objects.push(near_earth_obj);
     }
 
