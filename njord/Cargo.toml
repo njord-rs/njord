@@ -39,3 +39,7 @@ mysql = []
 [[test]]
 name = "sqlite_tests"
 path = "tests/sqlite/mod.rs"
+
+[[test]]
+name = "mysql_tests"
+path = "tests/mysql/mod.rs"
