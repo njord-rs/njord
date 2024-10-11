@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,13 +29,36 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-#[cfg(feature = "mysql")]
-pub mod mysql;
-pub mod query;
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
-pub mod table;
-pub mod util;
+use mysql::{Error, Pool, PooledConn};
+
+pub mod delete;
+pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
+
+pub use delete::delete;
+pub use error::MySqlError;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
+
+/// Open a database connection.
+///
+/// This function opens a connection to a MySql database located at the specified path.
+///
+/// # Arguments
+///
+/// * `db_path` - A reference to the path where the MySql database is located.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `PooledConn` if the operation was successful, or an `Error` if an error occurred.
+pub fn open(url: &str) -> Result<PooledConn, Error> {
+    let pool = Pool::new(url)?;
+
+    let conn = pool.get_conn()?;
+
+    Ok(conn)
+}
