@@ -59,8 +59,11 @@ jobs:
       - name: Build Project
         run: cargo build --release
 
-      - name: Running Tests for SQLite
-        run: cargo test --test sqlite
+      - name: Running Unit Tests for SQLite
+        run: cargo test sqlite
+
+      - name: Running Integration Tests for SQLite
+        run: cargo test --test sqlite_tests
 
 #      - name: Set up MySQL schema
 #        env:
@@ -69,11 +72,14 @@ jobs:
 #          echo "Injecting schema and data into MySQL..."
 #          mysql -h 127.0.0.1 -u root njord_db < njord/db/test/mysql.sql
 
-      - name: Running Tests for MySQL
+      - name: Running Unit Tests for MySQL
+        run: cargo test mysql
+
+      - name: Running Integration Tests for MySQL
         env:
           MYSQL_DATABASE: njord_db
           MYSQL_USER: njord_user
           MYSQL_PASSWORD: njord_password
           MYSQL_HOST: 127.0.0.1
-        run: cargo test --test mysql
+        run: cargo test --test sqlite_tests
 
