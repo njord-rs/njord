@@ -31,22 +31,22 @@
 
 use crate::{query::QueryBuilder, table::Table};
 
+use mysql::{prelude::Queryable, PooledConn};
 use rusqlite::Error as RusqliteError;
 
 use log::info;
-use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
-/// Inserts rows into a SQLite table.
+/// Inserts rows into a MySql table.
 ///
-/// This function takes a `Connection` and a vector of objects implementing
+/// This function takes a `PooledConn` and a vector of objects implementing
 /// the `Table` trait, which represents rows to be inserted into the table.
 /// It generates SQL INSERT statements for each row and executes them within
 /// a transaction.
 ///
 /// # Arguments
 ///
-/// * `conn` - A `Connection` to the SQLite database.
+/// * `conn` - A `PooledConn` to the MySql database.
 /// * `table_rows` - A vector of objects implementing the `Table` trait representing
 ///                  the rows to be inserted into the database.
 ///
@@ -55,7 +55,7 @@ use std::fmt::Error;
 /// A `Result` containing a `String` representing the joined SQL statements
 /// if the insertion is successful, or a `RusqliteError` if an error occurs.
 pub fn insert<'a, T: Table>(
-    conn: &'a Connection,
+    conn: &'a mut PooledConn,
     table_rows: Vec<T>,
 ) -> Result<String, RusqliteError> {
     let mut statements: Vec<String> = Vec::new();
@@ -69,7 +69,10 @@ pub fn insert<'a, T: Table>(
     let joined_statements = statements.join(", ");
 
     // FIXME: Convert to transaction
-    let _ = conn.execute_batch(&joined_statements)?;
+    match conn.query_drop(&joined_statements) {
+        Ok(_) => info!("Inserted into table, done."),
+        Err(err) => eprintln!("Error: {}", err),
+    }
 
     info!("Inserted into table, done.");
 
@@ -88,7 +91,7 @@ pub fn insert<'a, T: Table>(
 /// A `Result` containing a `String` representing the generated SQL statement
 /// if the operation is successful, or a `RusqliteError` if an error occurs.
 pub fn into<'a, T: Table + Default>(
-    conn: &'a Connection,
+    conn: &'a mut PooledConn,
     columns: Vec<String>,
     subquery: Box<dyn QueryBuilder<'a> + 'a>,
 ) -> Result<String, RusqliteError> {
@@ -96,7 +99,7 @@ pub fn into<'a, T: Table + Default>(
     let sql = statement.unwrap();
 
     // FIXME: Convert to transaction
-    let _ = conn.execute_batch(&sql);
+    let _ = conn.query_drop(&sql);
 
     info!("Inserted into table, done.");
 
