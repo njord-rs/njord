@@ -18,6 +18,7 @@ rusqlite = { version = "0.32.1", features = ["bundled"] }
 log = "0.4.22"
 rand = "0.8.4"
 serde = { version = "1.0.210", features = ["derive"] }
+mysql = "25.0.1"
 
 [dev-dependencies]
 njord_derive = { version = "0.3.0", path = "../njord_derive" }
@@ -33,6 +34,7 @@ njord_derive = { version = "0.3.0", path = "../njord_derive" }
 [features]
 default = ["sqlite"]
 sqlite = []
+mysql = []
 
 [[test]]
 name = "sqlite_tests"
