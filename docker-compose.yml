@@ -3,17 +3,17 @@ version: "3.8"
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql_container
+    container_name: njord_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: neo # Optional: Pre-create a database
-      MYSQL_USER: user # Optional: Create a new user
-      MYSQL_PASSWORD: password # Optional: Set password for the new user
+      MYSQL_ROOT_PASSWORD: njord_rootpwd
+      MYSQL_DATABASE: njord_db
+      MYSQL_USER: njord_user
+      MYSQL_PASSWORD: njord_password
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql # Persistent data storage
-      - ./njord_examples/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql # Initialization script
+      - mysql_data:/var/lib/mysql
+      - ./njord_examples/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   mysql_data:
