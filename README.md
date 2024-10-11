@@ -32,7 +32,12 @@ A lightweight and extensible ORM library for Rust.
 - [Contributors](#contributors)
 - [License](#license)
 
+After cloning the repo, make sure you set the hooks config to our config files:
 
+```shell
+git config --local core.hooksPath .config/githooks/
+```
+This will allow to do format checks and fixes before doing the commit to ensure code quality.
 
 ## Supported Databases
 
