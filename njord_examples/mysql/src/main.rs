@@ -1,6 +1,7 @@
 use std::fmt::Error;
 
 use crate::schema::NearEarthObject;
+use njord::column::Column;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::mysql;
 use reqwest::header::ACCEPT;
@@ -26,6 +27,29 @@ pub struct NearEarthObjectResponse {
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    let _ = insert().await;
+    let _ = select();
+
+    Ok(())
+}
+
+fn select() -> Result<(), Box<dyn std::error::Error>> {
+    let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
+    let mut conn = mysql::open(url).unwrap();
+
+    let results = mysql::select(&mut conn, vec![Column::Text("id".to_string())])
+        .from(NearEarthObject::default())
+        .build();
+
+    match results {
+        Ok(data) => println!("Selected: {:#?}", data.len()),
+        Err(err) => eprintln!("Error: {}", err),
+    }
+
+    Ok(())
+}
+
+async fn insert() -> Result<(), Box<dyn std::error::Error>> {
     let neo = get_near_earth_objects(0, 10).await;
     let mut near_earth_objects: Vec<NearEarthObject> = Vec::new();
 

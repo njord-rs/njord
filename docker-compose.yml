@@ -14,6 +14,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./njord_examples/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./njord/db/test/mysql.sql:/docker-entrypoint-initdb.d/tests.sql
 
 volumes:
   mysql_data:
