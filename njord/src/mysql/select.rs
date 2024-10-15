@@ -42,7 +42,7 @@ use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc};
 
 use log::info;
 use mysql::prelude::*;
-use mysql::{prelude::FromRow, Error, PooledConn};
+use mysql::{Error, PooledConn, Value};
 
 use crate::table::Table;
 use crate::util::{Join, JoinType};
@@ -57,7 +57,7 @@ use crate::util::{Join, JoinType};
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<'a, T: Table + Default + FromRow>(
+pub fn select<'a, T: Table + Default>(
     conn: &'a mut PooledConn,
     columns: Vec<Column<'a, T>>,
 ) -> SelectQueryBuilder<'a, T> {
@@ -66,7 +66,7 @@ pub fn select<'a, T: Table + Default + FromRow>(
 
 /// A builder for constructing SELECT queries.
 #[derive(Clone)]
-pub struct SelectQueryBuilder<'a, T: Table + Default + FromRow> {
+pub struct SelectQueryBuilder<'a, T: Table + Default> {
     conn: Rc<RefCell<&'a mut PooledConn>>,
     table: Option<T>,
     columns: Vec<Column<'a, T>>,
@@ -82,7 +82,7 @@ pub struct SelectQueryBuilder<'a, T: Table + Default + FromRow> {
     joins: Option<Vec<Join<'a>>>,
 }
 
-impl<'a, T: Table + Default + FromRow> SelectQueryBuilder<'a, T> {
+impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// Creates a new `SelectQueryBuilder` instance.
     ///
     /// # Arguments
@@ -366,10 +366,46 @@ impl<'a, T: Table + Default + FromRow> SelectQueryBuilder<'a, T> {
         info!("{}", final_query);
         println!("{}", final_query);
 
-        // Borrow the connection mutably from the RefCell
         let mut conn = self.conn.borrow_mut();
+        let query_set = conn.query_iter(final_query.as_str()).unwrap();
 
-        let results: Vec<T> = conn.query(final_query.as_str())?;
+        let mut results: Vec<T> = Vec::new();
+
+        for row_result in query_set {
+            let row = row_result.unwrap(); // Unwrap the row result
+            let mut instance = T::default();
+
+            for column in row.columns_ref() {
+                // Cells in a row can be indexed by numeric index or by column name
+                let column_value = &row[column.name_str().as_ref()];
+
+                let column_value_str = match column_value {
+                    Value::NULL => "NULL".to_string(),
+                    Value::Bytes(bytes) => String::from_utf8_lossy(bytes).to_string(),
+                    Value::Int(i) => i.to_string(),
+                    Value::UInt(u) => u.to_string(),
+                    Value::Float(f) => f.to_string(),
+                    Value::Double(d) => d.to_string(),
+                    Value::Date(year, month, day, hour, min, sec, micro) => format!(
+                        "{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:06}",
+                        year, month, day, hour, min, sec, micro
+                    ),
+                    Value::Time(neg, days, hours, minutes, seconds, micros) => format!(
+                        "{}{:02}:{:02}:{:02}.{:06}",
+                        if *neg { "-" } else { "" },
+                        days * 24 + u32::from(*hours),
+                        minutes,
+                        seconds,
+                        micros
+                    ),
+                };
+
+                instance.set_column_value(column.name_str().as_ref(), &column_value_str);
+            }
+
+            // Move `instance` to the `results` only after it is fully set up
+            results.push(instance);
+        }
 
         Ok(results)
     }
@@ -380,7 +416,7 @@ impl<'a, T: Table + Default + FromRow> SelectQueryBuilder<'a, T> {
 /// The where statement ensures the T is long lived
 impl<'a, T> QueryBuilder<'a> for SelectQueryBuilder<'a, T>
 where
-    T: Table + Default + Clone + FromRow + 'a, // Added 'a bound here
+    T: Table + Default + Clone + 'a, // Added 'a bound here
 {
     fn to_sql(&self) -> String {
         self.build_query()
