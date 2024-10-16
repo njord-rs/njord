@@ -65,12 +65,19 @@ jobs:
       - name: Running Integration Tests for SQLite
         run: cargo test --test sqlite_tests
 
-#      - name: Set up MySQL schema
-#        env:
-#          MYSQL_PWD: rootpassword
-#        run: |
-#          echo "Injecting schema and data into MySQL..."
-#          mysql -h 127.0.0.1 -u root njord_db < njord/db/test/mysql.sql
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
+
+      - name: Set up MySQL schema
+        env:
+          MYSQL_PWD: rootpassword
+        run: |
+          echo "Injecting schema and data into MySQL..."
+          mysql -h 127.0.0.1 -u njord_user -pnjord_password njord_db < njord/db/test/mysql.sql
 
       - name: Running Unit Tests for MySQL
         run: cargo test mysql
@@ -82,4 +89,3 @@ jobs:
           MYSQL_PASSWORD: njord_password
           MYSQL_HOST: 127.0.0.1
         run: cargo test --test sqlite_tests
-
