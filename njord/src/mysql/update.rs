@@ -40,10 +40,7 @@ use crate::{
 };
 
 use log::info;
-use mysql::{
-    prelude::{FromRow, Queryable},
-    PooledConn,
-};
+use mysql::{prelude::Queryable, PooledConn};
 
 use crate::table::Table;
 
@@ -59,7 +56,7 @@ use super::select::SelectQueryBuilder;
 /// # Returns
 ///
 /// An `UpdateQueryBuilder` instance.
-pub fn update<'a, T: Table + Default + FromRow>(
+pub fn update<'a, T: Table + Default>(
     conn: &'a mut PooledConn,
     table: T,
 ) -> UpdateQueryBuilder<'a, T> {
@@ -67,7 +64,7 @@ pub fn update<'a, T: Table + Default + FromRow>(
 }
 
 /// A builder for constructing UPDATE queries.
-pub struct UpdateQueryBuilder<'a, T: Table + Default + FromRow> {
+pub struct UpdateQueryBuilder<'a, T: Table + Default> {
     conn: &'a mut PooledConn,
     table: Option<T>,
     columns: Vec<String>,
@@ -78,7 +75,7 @@ pub struct UpdateQueryBuilder<'a, T: Table + Default + FromRow> {
     offset: Option<usize>,
 }
 
-impl<'a, T: Table + Default + FromRow> UpdateQueryBuilder<'a, T> {
+impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
     /// Creates a new `UpdateQueryBuilder` instance.
     ///
     /// # Arguments
