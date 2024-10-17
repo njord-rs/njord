@@ -37,9 +37,9 @@ fn select() -> Result<(), Box<dyn std::error::Error>> {
     let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
     let mut conn = mysql::open(url).unwrap();
 
-    let results = mysql::select(&mut conn, vec![Column::Text("id".to_string())])
+    let results = mysql::select(vec![Column::Text("id".to_string())])
         .from(NearEarthObject::default())
-        .build();
+        .build(&mut conn);
 
     match results {
         Ok(data) => println!("Selected: {:#?}", data.len()),
