@@ -38,7 +38,7 @@ use crate::{
     },
     query::QueryBuilder,
 };
-use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
 use log::info;
 use mysql::prelude::*;
@@ -57,17 +57,13 @@ use crate::util::{Join, JoinType};
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<'a, T: Table + Default>(
-    conn: &'a mut PooledConn,
-    columns: Vec<Column<'a, T>>,
-) -> SelectQueryBuilder<'a, T> {
-    SelectQueryBuilder::new(conn, columns)
+pub fn select<'a, T: Table + Default>(columns: Vec<Column<'a, T>>) -> SelectQueryBuilder<'a, T> {
+    SelectQueryBuilder::new(columns)
 }
 
 /// A builder for constructing SELECT queries.
 #[derive(Clone)]
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
-    conn: Rc<RefCell<&'a mut PooledConn>>,
     table: Option<T>,
     columns: Vec<Column<'a, T>>,
     where_condition: Option<Condition<'a>>,
@@ -89,9 +85,8 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// * `conn` - A `PooledConn` to the MySql database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: &'a mut PooledConn, columns: Vec<Column<'a, T>>) -> Self {
+    pub fn new(columns: Vec<Column<'a, T>>) -> Self {
         SelectQueryBuilder {
-            conn: Rc::new(RefCell::new(conn)),
             table: None,
             columns,
             where_condition: None,
@@ -360,13 +355,12 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// A `Result` containing a vector of selected table rows if successful,
     /// or a `rusqlite::Error` if an error occurs during the execution.
-    pub fn build(&mut self) -> Result<Vec<T>, Error> {
+    pub fn build(&mut self, conn: &mut PooledConn) -> Result<Vec<T>, Error> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
         println!("{}", final_query);
 
-        let mut conn = self.conn.borrow_mut();
         let query_set = conn.query_iter(final_query.as_str()).unwrap();
 
         let mut results: Vec<T> = Vec::new();

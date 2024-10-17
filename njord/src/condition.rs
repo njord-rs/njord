@@ -59,6 +59,8 @@ pub enum Condition<'a> {
 pub enum Value<'a> {
     /// A literal value, such as a string or number.
     Literal(String),
+    /// A list of literals. ["foo", "bar", "baz"]
+    LiteralList(Vec<String>),
     /// A subquery.
     Subquery(Box<dyn QueryBuilder<'a> + 'a>),
 }
@@ -78,6 +80,16 @@ impl<'a> std::fmt::Display for Value<'a> {
         match self {
             Value::Literal(literal) => write!(f, "{}", literal),
             Value::Subquery(subquery) => write!(f, "{}", subquery.to_sql()),
+            Value::LiteralList(literals) => {
+                let mut result = String::new();
+                for (i, literal) in literals.iter().enumerate() {
+                    if i > 0 {
+                        result.push_str(", ");
+                    }
+                    result.push_str(literal);
+                }
+                write!(f, "({})", result)
+            }
         }
     }
 }
