@@ -55,7 +55,7 @@ use super::select::SelectQueryBuilder;
 /// # Returns
 ///
 /// An `UpdateQueryBuilder` instance.
-pub fn update<'a, T: Table + Default>(conn: &'a Connection, table: T) -> UpdateQueryBuilder<'a, T> {
+pub fn update<T: Table + Default>(conn: &Connection, table: T) -> UpdateQueryBuilder<T> {
     UpdateQueryBuilder::new(conn, table)
 }
 

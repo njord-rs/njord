@@ -57,7 +57,7 @@ use crate::util::{Join, JoinType};
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<'a, T: Table + Default>(columns: Vec<Column<'a, T>>) -> SelectQueryBuilder<'a, T> {
+pub fn select<T: Table + Default>(columns: Vec<Column<T>>) -> SelectQueryBuilder<T> {
     SelectQueryBuilder::new(columns)
 }
 
