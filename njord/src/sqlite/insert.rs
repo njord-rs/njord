@@ -54,8 +54,8 @@ use std::fmt::Error;
 ///
 /// A `Result` containing a `String` representing the joined SQL statements
 /// if the insertion is successful, or a `RusqliteError` if an error occurs.
-pub fn insert<'a, T: Table>(
-    conn: &'a Connection,
+pub fn insert<T: Table>(
+    conn: &Connection,
     table_rows: Vec<T>,
 ) -> Result<String, RusqliteError> {
     let mut statements: Vec<String> = Vec::new();

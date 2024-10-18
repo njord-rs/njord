@@ -88,4 +88,4 @@ jobs:
           MYSQL_USER: njord_user
           MYSQL_PASSWORD: njord_password
           MYSQL_HOST: 127.0.0.1
-        run: cargo test --test sqlite_tests
+        run: cargo test --test mysql_tests

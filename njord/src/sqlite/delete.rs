@@ -52,7 +52,7 @@ use crate::table::Table;
 /// # Returns
 ///
 /// A `DeleteQueryBuilder` instance.
-pub fn delete<'a, T: Table + Default>(conn: &'a Connection) -> DeleteQueryBuilder<'a, T> {
+pub fn delete<T: Table + Default>(conn: &Connection) -> DeleteQueryBuilder<T> {
     DeleteQueryBuilder::new(conn)
 }
 

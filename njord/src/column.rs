@@ -18,21 +18,21 @@ impl<'a, T: Table + Default> Column<'a, T> {
     }
 }
 
-// Implement fmt::Display for Column
+// Implementation of fmt::Display for Column
 impl<'a, T: Table + Default> std::fmt::Display for Column<'a, T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.build())
     }
 }
 
-// Implement PartialEq for Column
+// Implementation of PartialEq for Column
 impl<'a, T: Table + Default> PartialEq for Column<'a, T> {
     fn eq(&self, other: &Self) -> bool {
         self.build() == other.build()
     }
 }
 
-// Implement PartialEq<String> for Column
+// Implementation of PartialEq<String> for Column
 impl<'a, T: Table + Default> PartialEq<String> for Column<'a, T> {
     fn eq(&self, other: &String) -> bool {
         match self {
@@ -42,7 +42,7 @@ impl<'a, T: Table + Default> PartialEq<String> for Column<'a, T> {
     }
 }
 
-// You can also implement PartialEq<&str> for convenience
+// Implementation of PartialEq<&str> for Column
 impl<'a, T: Table + Default> PartialEq<&str> for Column<'a, T> {
     fn eq(&self, other: &&str) -> bool {
         match self {

@@ -56,10 +56,10 @@ use super::select::SelectQueryBuilder;
 /// # Returns
 ///
 /// An `UpdateQueryBuilder` instance.
-pub fn update<'a, T: Table + Default>(
-    conn: &'a mut PooledConn,
+pub fn update<T: Table + Default>(
+    conn: &mut PooledConn,
     table: T,
-) -> UpdateQueryBuilder<'a, T> {
+) -> UpdateQueryBuilder<T> {
     UpdateQueryBuilder::new(conn, table)
 }
 
