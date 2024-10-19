@@ -32,10 +32,10 @@ pub mod condition;
 pub mod keys;
 pub mod table;
 pub mod util;
+pub mod query;
 
 #[cfg(feature = "sqlite")]
 pub mod sqlite;
 
 #[cfg(feature = "mysql")]
 pub mod mysql;
-pub mod query;
