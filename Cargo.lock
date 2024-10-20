@@ -1190,7 +1190,7 @@ dependencies = [
 
 [[package]]
 name = "njord"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "log",
  "mysql 25.0.1",
@@ -1202,7 +1202,7 @@ dependencies = [
 
 [[package]]
 name = "njord_derive"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "proc-macro2",
  "quote",
