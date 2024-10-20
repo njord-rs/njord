@@ -25,7 +25,7 @@ A lightweight and extensible ORM library for Rust.
 |------------|----------|--------------------------------------|
 | SQLite     | ✅       | Currently supported.                 |
 | PostgreSQL | ❌       | Not supported, help us implement it? |
-| MySQL      | 🏗️        | Currently developing.                |
+| MySQL      | ✅        | Currently supported.                |
 | MariaDB    | ❌       | Not supported, help us implement it? |
 | Oracle     | ❌       | Not supported, help us implement it? |
 | MSSQL      | ❌       | Not supported, help us implement it? |
