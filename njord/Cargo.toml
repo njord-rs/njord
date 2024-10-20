@@ -1,6 +1,6 @@
 [package]
 name = "njord"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "A lightweight ORM library in Rust."
@@ -13,7 +13,7 @@ homepage = "https://njord.rs"
 keywords = ["orm", "database", "sql"]
 
 [dependencies]
-njord_derive = { version = "0.3.0", path = "../njord_derive" }
+njord_derive = { version = "0.4.0", path = "../njord_derive" }
 rusqlite = { version = "0.32.1", features = ["bundled"] }
 log = "0.4.22"
 rand = "0.8.4"
@@ -21,7 +21,7 @@ serde = { version = "1.0.210", features = ["derive"] }
 mysql = "25.0.1"
 
 [dev-dependencies]
-njord_derive = { version = "0.3.0", path = "../njord_derive" }
+njord_derive = { version = "0.4.0", path = "../njord_derive" }
 
 # This cfg cannot be enabled, but it still forces Cargo to keep njord_derive's
 # version in lockstep with njord's, even if someone depends on the two crates
@@ -29,7 +29,7 @@ njord_derive = { version = "0.3.0", path = "../njord_derive" }
 # is compatible with exactly one serde release because the generated code
 # involves nonpublic APIs which are not bound by semver.
 [target.'cfg(any())'.dependencies]
-njord_derive = { version = "0.3.0", path = "../njord_derive" }
+njord_derive = { version = "0.4.0", path = "../njord_derive" }
 
 [features]
 default = ["sqlite"]
