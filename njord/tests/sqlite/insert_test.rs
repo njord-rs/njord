@@ -41,9 +41,9 @@ fn insert_with_sub_query() {
             let subquery = sqlite::select(
                 c,
                 vec![
-                    Column::<User>::Text("username".to_string()),
-                    Column::<User>::Text("email".to_string()),
-                    Column::<User>::Text("address".to_string()),
+                    Column::Text("username".to_string()),
+                    Column::Text("email".to_string()),
+                    Column::Text("address".to_string()),
                 ],
             )
             .from(User::default())
