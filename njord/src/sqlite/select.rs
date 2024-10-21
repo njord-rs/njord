@@ -57,7 +57,7 @@ use crate::util::{Join, JoinType};
 /// A `SelectQueryBuilder` instance.
 pub fn select<'a, T: Table + Default>(
     conn: &'a Connection,
-    columns: Vec<Column<'a, T>>,
+    columns: Vec<Column<'a>>,
 ) -> SelectQueryBuilder<'a, T> {
     SelectQueryBuilder::new(conn, columns)
 }
@@ -67,7 +67,7 @@ pub fn select<'a, T: Table + Default>(
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
     conn: &'a Connection,
     table: Option<T>,
-    columns: Vec<Column<'a, T>>,
+    columns: Vec<Column<'a>>,
     where_condition: Option<Condition<'a>>,
     distinct: bool,
     group_by: Option<Vec<String>>,
@@ -87,7 +87,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: &'a Connection, columns: Vec<Column<'a, T>>) -> Self {
+    pub fn new(conn: &'a Connection, columns: Vec<Column<'a>>) -> Self {
         SelectQueryBuilder {
             conn,
             table: None,
@@ -110,7 +110,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn select(mut self, columns: Vec<Column<'a, T>>) -> Self {
+    pub fn select(mut self, columns: Vec<Column<'a>>) -> Self {
         self.columns = columns;
         self
     }

@@ -1,8 +1,7 @@
 use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
-use njord::mysql::{self, insert};
+use njord::mysql::{self};
 use njord::{column::Column, condition::Value};
-use serde::de::value;
 use std::collections::HashMap;
 
 use crate::{User, UserWithSubQuery};
@@ -628,78 +627,144 @@ fn select_union() {
     ]);
 }
 
-// #[test]
-// fn select_sub_queries() {
-//     let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
-//     let mut conn = mysql::open(url);
+#[test]
+fn select_sub_queries() {
+    insert_mock_data(vec![
+        User {
+            id: AutoIncrementPrimaryKey::default(),
+            username: "select_sub_queries_test".to_string(),
+            email: "select_sub_queries_test@example.com".to_string(),
+            address: "Some Random Address 1".to_string(),
+        },
+        User {
+            id: AutoIncrementPrimaryKey::default(),
+            username: "select_sub_queries_test2".to_string(),
+            email: "select_sub_queries_test2@example.com".to_string(),
+            address: "Some Random Address 1".to_string(),
+        },
+        User {
+            id: AutoIncrementPrimaryKey::default(),
+            username: "select_sub_queries_test3".to_string(),
+            email: "select_sub_queries_test3@example.com".to_string(),
+            address: "SubQuery".to_string(),
+        },
+    ]);
 
-//     match conn {
-//         Ok(ref mut c) => {
-//             let sub_query = mysql::select(vec![Column::Text("username".to_string())])
-//                 .from(UserWithSubQuery::default());
+    let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
+    let mut conn = mysql::open(url);
 
-//             let columns = vec![
-//                 Column::Text("id".to_string()),
-//                 Column::Text("username".to_string()),
-//                 Column::Text("email".to_string()),
-//                 Column::Text("address".to_string()),
-//                 Column::SubQuery(sub_query),
-//             ];
+    match conn {
+        Ok(ref mut c) => {
+            let sub_query = mysql::select(vec![Column::Text("address".to_string())])
+                .from(UserWithSubQuery::default())
+                .where_clause(Condition::Eq(
+                    "username".to_string(),
+                    Value::Literal("select_sub_queries_test3".to_string()),
+                ))
+                .limit(1);
 
-//             let result = mysql::select(columns)
-//                 .from(UserWithSubQuery::default())
-//                 .build(c);
+            let columns = vec![
+                Column::Text("id".to_string()),
+                Column::Text("username".to_string()),
+                Column::Text("email".to_string()),
+                Column::Text("address".to_string()),
+                Column::SubQuery(Box::new(sub_query), "additional_address".to_string()),
+            ];
 
-//             match result {
-//                 Ok(r) => {
-//                     assert_eq!(r.len(), 2);
-//                     assert_eq!(r[0].additional_address, "mjovanc");
-//                 }
-//                 Err(e) => panic!("Failed to SELECT: {:?}", e),
-//             };
-//         }
-//         Err(e) => panic!("Failed to SELECT: {:?}", e),
-//     };
-// }
+            let result = mysql::select(columns)
+                .from(UserWithSubQuery::default())
+                .where_clause(Condition::In(
+                    "username".to_string(),
+                    vec![
+                        Value::Literal("select_sub_queries_test".to_string()),
+                        Value::Literal("select_sub_queries_test2".to_string()),
+                    ],
+                ))
+                .build(c);
 
-// #[test]
-// fn select_in() {
-//     let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
-//     let mut conn = mysql::open(url);
+            match result {
+                Ok(r) => {
+                    assert!(r.len() > 0);
+                    assert_eq!(r[0].additional_address, "SubQuery");
+                }
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
 
-//     let columns = vec![
-//         Column::Text("id".to_string()),
-//         Column::Text("username".to_string()),
-//         Column::Text("email".to_string()),
-//         Column::Text("address".to_string()),
-//     ];
+    delete_mock_data(vec![
+        "select_sub_queries_test".to_string(),
+        "select_sub_queries_test2".to_string(),
+        "select_sub_queries_test3".to_string(),
+    ]);
+}
 
-//     let condition = Condition::And(
-//         Box::new(Condition::In(
-//             "username".to_string(),
-//             vec![
-//                 Value::Literal("mjovanc".to_string()),
-//                 Value::Literal("otheruser".to_string()),
-//             ],
-//         )),
-//         Box::new(Condition::NotIn(
-//             "username".to_string(),
-//             vec![Value::Literal("chasewillden".to_string())],
-//         )),
-//     );
+#[test]
+fn select_in() {
+    insert_mock_data(vec![
+        User {
+            id: AutoIncrementPrimaryKey::default(),
+            username: "select_in_test".to_string(),
+            email: "select_in_test@example.com".to_string(),
+            address: "Some Random Address 1".to_string(),
+        },
+        User {
+            id: AutoIncrementPrimaryKey::default(),
+            username: "select_in_test2".to_string(),
+            email: "select_in_test2@example.com".to_string(),
+            address: "Some Random Address 1".to_string(),
+        },
+        User {
+            id: AutoIncrementPrimaryKey::default(),
+            username: "select_in_test3".to_string(),
+            email: "select_in_test3@example.com".to_string(),
+            address: "Some Random Address 1".to_string(),
+        },
+    ]);
 
-//     match conn {
-//         Ok(ref mut c) => {
-//             let result = mysql::select(c, columns)
-//                 .from(User::default())
-//                 .where_clause(condition)
-//                 .build();
+    let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
+    let mut conn = mysql::open(url);
 
-//             match result {
-//                 Ok(r) => assert_eq!(r.len(), 2),
-//                 Err(e) => panic!("Failed to SELECT: {:?}", e),
-//             };
-//         }
-//         Err(e) => panic!("Failed to SELECT: {:?}", e),
-//     };
-// }
+    let columns = vec![
+        Column::Text("id".to_string()),
+        Column::Text("username".to_string()),
+        Column::Text("email".to_string()),
+        Column::Text("address".to_string()),
+    ];
+
+    let condition = Condition::And(
+        Box::new(Condition::In(
+            "username".to_string(),
+            vec![
+                Value::Literal("select_in_test".to_string()),
+                Value::Literal("select_in_test2".to_string()),
+            ],
+        )),
+        Box::new(Condition::NotIn(
+            "username".to_string(),
+            vec![Value::Literal("select_in_test3".to_string())],
+        )),
+    );
+
+    match conn {
+        Ok(ref mut c) => {
+            let result = mysql::select(columns)
+                .from(User::default())
+                .where_clause(condition)
+                .build(c);
+
+            match result {
+                Ok(r) => assert_eq!(r.len(), 2),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+
+    delete_mock_data(vec![
+        "select_in_test".to_string(),
+        "select_in_test2".to_string(),
+        "select_in_test3".to_string(),
+    ]);
+}

@@ -57,7 +57,7 @@ use crate::util::{Join, JoinType};
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<T: Table + Default>(columns: Vec<Column<T>>) -> SelectQueryBuilder<T> {
+pub fn select<T: Table + Default>(columns: Vec<Column>) -> SelectQueryBuilder<T> {
     SelectQueryBuilder::new(columns)
 }
 
@@ -65,7 +65,7 @@ pub fn select<T: Table + Default>(columns: Vec<Column<T>>) -> SelectQueryBuilder
 #[derive(Clone)]
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
     table: Option<T>,
-    columns: Vec<Column<'a, T>>,
+    columns: Vec<Column<'a>>,
     where_condition: Option<Condition<'a>>,
     distinct: bool,
     group_by: Option<Vec<String>>,
@@ -85,7 +85,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// * `conn` - A `PooledConn` to the MySql database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(columns: Vec<Column<'a, T>>) -> Self {
+    pub fn new(columns: Vec<Column<'a>>) -> Self {
         SelectQueryBuilder {
             table: None,
             columns,
@@ -107,7 +107,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn select(mut self, columns: Vec<Column<'a, T>>) -> Self {
+    pub fn select(mut self, columns: Vec<Column<'a>>) -> Self {
         self.columns = columns;
         self
     }

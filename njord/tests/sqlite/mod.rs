@@ -18,7 +18,7 @@ pub struct User {
     pub address: String,
 }
 
-#[derive(Table)]
+#[derive(Table, Clone)]
 #[table_name = "users"]
 pub struct UserWithSubQuery {
     pub id: AutoIncrementPrimaryKey<usize>,
