@@ -464,7 +464,7 @@ fn select_sub_queries() {
                 Column::Text("username".to_string()),
                 Column::Text("email".to_string()),
                 Column::Text("address".to_string()),
-                Column::SubQuery(sub_query),
+                Column::SubQuery(Box::new(sub_query), "additional_address".to_string()),
             ];
 
             let result = sqlite::select(&c, columns)
