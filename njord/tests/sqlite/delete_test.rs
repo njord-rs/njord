@@ -50,7 +50,7 @@ fn delete_with_subquery() {
     match conn {
         Ok(ref c) => {
             let sub_query =
-                SelectQueryBuilder::new(c, vec![Column::<User>::Text("username".to_string())])
+                SelectQueryBuilder::<User>::new(c, vec![Column::Text("username".to_string())])
                     .where_clause(Condition::Eq(
                         "id".to_string(),
                         Value::Literal(1.to_string()),

@@ -43,7 +43,7 @@ use serde::{Deserialize, Deserializer};
 /// # Type Parameters
 ///
 /// * `T` - The type of the primary key value, which can be any type.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PrimaryKey<T>(T);
 
 impl<T> PrimaryKey<T> {
