@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,18 +29,24 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-pub mod query;
-pub mod table;
-pub mod util;
+use oracle::Error as OracleLibError;
 
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+/// Represents errors that can occur during SQLite operations.
+#[derive(Debug)]
+pub enum OracleError {
+    /// Error that occurs during a SELECT operation.
+    SelectError(OracleLibError),
+    /// Error that occurs during an INSERT operation.
+    InsertError(OracleLibError),
+    /// Error that occurs during an UPDATE operation.
+    UpdateError(OracleLibError),
+    /// Error that occurs during a DELETE operation.
+    DeleteError(OracleLibError),
+}
 
-#[cfg(feature = "mysql")]
-pub mod mysql;
-
-#[cfg(feature = "oracle")]
-pub mod oracle;
+impl From<OracleLibError> for OracleError {
+    /// Converts a `rusqlite::Error` into a `OracleError`.
+    fn from(error: OracleLibError) -> Self {
+        OracleError::InsertError(error)
+    }
+}

@@ -1,4 +1,4 @@
-name: build
+name: build-mysql
 
 on:
   push:
@@ -17,8 +17,8 @@ on:
       - "**/website/**"
 
 jobs:
-  build:
-    name: build
+  mysql:
+    name: mysql
     runs-on: ubuntu-latest
 
     services:
@@ -57,13 +57,7 @@ jobs:
         run: cargo clippy --all-targets --all-features
 
       - name: Build Project
-        run: cargo build --release
-
-      - name: Running Unit Tests for SQLite
-        run: cargo test sqlite
-
-      - name: Running Integration Tests for SQLite
-        run: cargo test --test sqlite_tests
+        run: cargo build --release --features "mysql"
 
       - name: Wait for MySQL to be ready
         run: |
@@ -74,13 +68,10 @@ jobs:
 
       - name: Set up MySQL schema
         env:
-          MYSQL_PWD: rootpassword
+          MYSQL_PWD: njord_rootpwd
         run: |
           echo "Injecting schema and data into MySQL..."
           mysql -h 127.0.0.1 -u njord_user -pnjord_password njord_db < njord/db/test/mysql.sql
-
-      - name: Running Unit Tests for MySQL
-        run: cargo test mysql
 
       - name: Running Integration Tests for MySQL
         env:
@@ -89,3 +80,68 @@ jobs:
           MYSQL_PASSWORD: njord_password
           MYSQL_HOST: 127.0.0.1
         run: cargo test --test mysql_tests
+  oracle:
+    name: oracle
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
+
+      - name: Build Project
+        run: cargo build --release --features "oracle"
+
+      - run: mkdir ${{ github.workspace }}/database-files
+
+      - uses: gvenzl/setup-oracle-free@v1
+        with:
+          app-user: njord_user
+          app-user-password: njord_password
+          volume: ${{ github.workspace }}/database-files
+          startup-scripts: ${{ github.workspace }}/njord/db/test/oracle
+      # Install Oracle Instant Client
+      - name: Install Oracle Instant Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libaio1
+          wget https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          unzip instantclient-basic-linux.x64-23.5.0.24.07.zip
+          sudo mkdir -p /opt/oracle # Create the directory structure if it doesn't exist
+          sudo mv instantclient_23_5 /opt/oracle/instantclient
+          sudo sh -c "echo /opt/oracle/instantclient > /etc/ld.so.conf.d/oracle-instantclient.conf"
+          sudo ldconfig
+
+      - name: Set Oracle Library Path
+        run: |
+          echo "/opt/oracle/instantclient" | sudo tee -a /etc/ld.so.conf.d/oracle-instantclient.conf
+          sudo ldconfig
+        env:
+          LD_LIBRARY_PATH: "/opt/oracle/instantclient"
+
+      - name: Check Oracle Client
+        run: |
+          ls /opt/oracle/instantclient
+          ldd /opt/oracle/instantclient/libclntsh.so
+
+      - name: Running Integration Tests for Oracle
+        env:
+          ORACLE_DATABASE: FREEPDB1
+          APP_USER: test
+          APP_USER_PASSWORD: test
+          ORACLE_HOST: 127.0.0.1
+        run: cargo test --test oracle_tests
