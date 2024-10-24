@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,18 +29,47 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-pub mod query;
-pub mod table;
-pub mod util;
+use oracle::{Connection, Error};
 
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+pub mod delete;
+pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
 
-#[cfg(feature = "mysql")]
-pub mod mysql;
+pub use delete::delete;
+pub use error::OracleError;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
 
-#[cfg(feature = "oracle")]
-pub mod oracle;
+/// Open a database connection.
+///
+/// This function opens a connection to a Oracle database located at the specified path.
+///
+/// # Arguments
+///
+/// * `username` - A reference to the username for the Oracle database.
+/// * `password` - A reference to the password for the Oracle database.
+/// * `connect_string` - A reference to the connect string for the Oracle database.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `PooledConn` if the operation was successful, or an `Error` if an error occurred.
+pub fn open(username: &str, password: &str, connect_string: &str) -> Result<Connection, Error> {
+    let conn = Connection::connect(username, password, connect_string);
+
+    match conn {
+        Ok(conn) => {
+            println!("Successfully connected to Oracle database");
+
+            return Ok(conn);
+        }
+        Err(err) => {
+            println!("Error: {}", err);
+
+            return Err(err);
+        }
+    }
+}

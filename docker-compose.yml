@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mysql:
     image: mysql:8.0
@@ -14,7 +12,30 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./njord_examples/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./njord/db/test/mysql.sql:/docker-entrypoint-initdb.d/tests.sql
+
+  oracle:
+    image: gvenzl/oracle-free:latest
+    container_name: njord_oracle
+    environment:
+      ORACLE_PASSWORD: njord_password
+      APP_USER: test
+      APP_USER_PASSWORD: test
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    volumes:
+      - ./njord_examples/oracle/init_scripts:/container-entrypoint-initdb.d
+      - ./njord/db/test/oracle:/container-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+      start_interval: 5s
 
 volumes:
   mysql_data:
+  oracle_data:
