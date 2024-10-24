@@ -29,6 +29,8 @@ A lightweight and extensible ORM library for Rust.
 | MariaDB    | 🏗️      | Currently developing.                |
 | Oracle     | 🏗️      | Currently developing.                |
 | MSSQL      | ❌      | Not supported, help us implement it? |
+| IBM Db2     | ❌      | Not supported, help us implement it? |
+| LDAP      | ❌      | Not supported, help us implement it? |
 
 ## Getting Help
 
