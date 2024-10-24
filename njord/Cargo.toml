@@ -19,6 +19,7 @@ log = "0.4.22"
 rand = "0.8.4"
 serde = { version = "1.0.210", features = ["derive"] }
 mysql = "25.0.1"
+oracle = { version = "0.6.2", features = ["chrono"] }
 
 [dev-dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
@@ -35,6 +36,7 @@ njord_derive = { version = "0.4.0", path = "../njord_derive" }
 default = ["sqlite"]
 sqlite = []
 mysql = []
+oracle = []
 
 [[test]]
 name = "sqlite_tests"
@@ -43,3 +45,7 @@ path = "tests/sqlite/mod.rs"
 [[test]]
 name = "mysql_tests"
 path = "tests/mysql/mod.rs"
+
+[[test]]
+name = "oracle_tests"
+path = "tests/oracle/mod.rs"
