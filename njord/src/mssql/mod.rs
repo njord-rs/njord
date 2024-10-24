@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,21 +29,53 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-pub mod query;
-pub mod table;
-pub mod util;
+pub mod delete;
+pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
 
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+use tiberius::{error::Error, Client, Config};
+use tokio::net::TcpStream;
+use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 
-#[cfg(feature = "mysql")]
-pub mod mysql;
+pub use delete::delete;
+pub use error::MSSQLError;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
 
-#[cfg(feature = "oracle")]
-pub mod oracle;
+/// Wrapping client inside of connection so the entire type doesn't have to be used every time
+#[derive(Debug)]
+pub struct Connection {
+    pub client: Client<Compat<TcpStream>>,
+}
 
-#[cfg(feature = "mssql")]
-pub mod mssql;
+/// Open a database connection.
+///
+/// This function opens a connection to a Oracle database located at the specified path.
+///
+/// # Arguments
+///
+/// * `host` - A reference to the host of the database.
+/// * `password` - A reference to the password of the database.
+/// * `port` - A reference to the port of the database.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `PooledConn` if the operation was successful, or an `Error` if an error occurred.
+pub async fn open(connection_string: &str) -> Result<Connection, Error> {
+    let config = Config::from_ado_string(connection_string);
+
+    let _ = match config {
+        Ok(c) => {
+            let tcp = TcpStream::connect(c.get_addr()).await?;
+            tcp.set_nodelay(true)?;
+
+            let client = Client::connect(c, tcp.compat_write()).await?;
+            return Ok(Connection { client });
+        }
+        Err(e) => return Err(e),
+    };
+}

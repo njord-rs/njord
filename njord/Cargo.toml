@@ -20,6 +20,9 @@ rand = "0.8.4"
 serde = { version = "1.0.210", features = ["derive"] }
 mysql = "25.0.1"
 oracle = { version = "0.6.2", features = ["chrono"] }
+tiberius = "0.12.3"
+tokio = "1.41.0"
+tokio-util = { version = "0.7.12", features = ["compat"] }
 
 [dev-dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
@@ -37,6 +40,7 @@ default = ["sqlite"]
 sqlite = []
 mysql = []
 oracle = []
+mssql = []
 
 [[test]]
 name = "sqlite_tests"
@@ -49,3 +53,7 @@ path = "tests/mysql/mod.rs"
 [[test]]
 name = "oracle_tests"
 path = "tests/oracle/mod.rs"
+
+[[test]]
+name = "mssql_tests"
+path = "tests/mssql/mod.rs"

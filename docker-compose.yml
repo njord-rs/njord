@@ -35,7 +35,32 @@ services:
       retries: 10
       start_period: 5s
       start_interval: 5s
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: njord_mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${Sa_Password:-njord_password}
+      - MSSQL_PID=Developer
+    ports:
+      - 1433:1433
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - ./njord_examples/mssql/init_scripts:/container-entrypoint-initdb.d
+      - ./njord/db/test/mssql:/container-entrypoint-initdb.d
+    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-njord_password} -Q 'SELECT 1' || exit 1",
+        ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
 
 volumes:
   mysql_data:
   oracle_data:
+  mssql_data:
