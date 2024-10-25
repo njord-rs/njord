@@ -31,6 +31,12 @@ A lightweight and extensible ORM library for Rust.
 | MSSQL      | ❌      | Not supported, help us implement it? |
 | IBM Db2     | ❌      | Not supported, help us implement it? |
 | LDAP      | ❌      | Not supported, help us implement it? |
+| Sybase      | ❌      | Not supported, help us implement it? |
+| H2      | ❌      | Not supported, help us implement it? |
+| Snowflake      | ❌      | Not supported, help us implement it? |
+| Microsoft Access      | ❌      | Not supported, help us implement it? |
+| Apache Hive      | ❌      | Not supported, help us implement it? |
+| Teradata      | ❌      | Not supported, help us implement it? |
 
 ## Getting Help
 
