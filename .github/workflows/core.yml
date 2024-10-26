@@ -213,6 +213,13 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_SA_PASSWORD: njord_password
           MSSQL_PID: Developer
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P njord_password -Q 'SELECT 1' || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          --health-start-period=10s
 
     steps:
       - uses: actions/checkout@v4
