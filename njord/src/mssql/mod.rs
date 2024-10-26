@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,21 +29,52 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-pub mod query;
-pub mod table;
-pub mod util;
+pub mod delete;
+pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
 
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+use tiberius::{error::Error, Client, Config};
+use tokio::net::TcpStream;
+use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 
-#[cfg(feature = "mysql")]
-pub mod mysql;
+pub use delete::delete;
+pub use error::MSSQLError;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
 
-#[cfg(feature = "oracle")]
-pub mod oracle;
+/// Wrapping client inside of connection so the entire type doesn't have to be used every time
+#[derive(Debug)]
+pub struct Connection {
+    pub client: Client<Compat<TcpStream>>,
+}
 
-#[cfg(feature = "mssql")]
-pub mod mssql;
+/// Open a database connection.
+///
+/// This function opens a connection to a Oracle database located at the specified path.
+///
+/// # Arguments
+///
+/// * `db_path` - A reference to the path where the Oracle database is located.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `PooledConn` if the operation was successful, or an `Error` if an error occurred.
+pub async fn open(connection_string: &str) -> Result<Connection, Error> {
+    let mut config = Config::from_jdbc_string(connection_string).unwrap();
+    config.trust_cert();
+    let tcp = TcpStream::connect(config.get_addr()).await?;
+    tcp.set_nodelay(true)?;
+
+    let client = match Client::connect(config, tcp.compat_write()).await {
+        Ok(client) => client,
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            return Err(err);
+        }
+    };
+    return Ok(Connection { client });
+}

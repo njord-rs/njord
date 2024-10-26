@@ -21,22 +21,22 @@ A lightweight and extensible ORM library for Rust.
 
 ## Supported Databases
 
-| Database   | Support | Status                               |
-| ---------- | ------- | ------------------------------------ |
-| SQLite     | ✅      | Currently supported.                 |
-| PostgreSQL | 🏗️      | Currently developing.                |
-| MySQL      | ✅️     | Currently supported.                 |
-| MariaDB    | 🏗️      | Currently developing.                |
-| Oracle     | 🏗️      | Currently developing.                |
-| MSSQL      | ❌      | Not supported, help us implement it? |
-| IBM Db2     | ❌      | Not supported, help us implement it? |
-| LDAP      | ❌      | Not supported, help us implement it? |
-| Sybase      | ❌      | Not supported, help us implement it? |
-| H2      | ❌      | Not supported, help us implement it? |
-| Snowflake      | ❌      | Not supported, help us implement it? |
-| Microsoft Access      | ❌      | Not supported, help us implement it? |
+| Database         | Support | Status                               |
+| ---------------- | ------- | ------------------------------------ |
+| SQLite           | ✅      | Currently supported.                 |
+| PostgreSQL       | 🏗️      | Currently developing.                |
+| MySQL            | ✅️     | Currently supported.                 |
+| MariaDB          | 🏗️      | Currently developing.                |
+| Oracle           | ✅️     | Currently supported.                 |
+| MSSQL            | ✅️     | Currently supported.                 |
+| IBM Db2          | ❌      | Not supported, help us implement it? |
+| LDAP             | ❌      | Not supported, help us implement it? |
+| Sybase           | ❌      | Not supported, help us implement it? |
+| H2               | ❌      | Not supported, help us implement it? |
+| Snowflake        | ❌      | Not supported, help us implement it? |
+| Microsoft Access | ❌      | Not supported, help us implement it? |
 | Apache Hive      | ❌      | Not supported, help us implement it? |
-| Teradata      | ❌      | Not supported, help us implement it? |
+| Teradata         | ❌      | Not supported, help us implement it? |
 
 ## Getting Help
 

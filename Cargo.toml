@@ -5,6 +5,7 @@ members = [
     "njord_examples/sqlite",
     "njord_examples/mysql",
     "njord_examples/oracle",
+    "njord_examples/mssql",
 ]
 
 resolver = "2"

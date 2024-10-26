@@ -1,4 +1,4 @@
-name: build-mysql
+name: build
 
 on:
   push:
@@ -17,6 +17,58 @@ on:
       - "**/website/**"
 
 jobs:
+  # Splitting out into separate jobs for linting on all targets/features
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
+
+  sqlite:
+    name: sqlite
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build Project
+        run: |
+          cd njord
+          cargo build --release --features "sqlite"
+
+      - name: Running Integration Tests for SQLite
+        run: |
+          cd njord
+          cargo test --features "sqlite" --test sqlite_tests
+
   mysql:
     name: mysql
     runs-on: ubuntu-latest
@@ -53,11 +105,10 @@ jobs:
             ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Run Clippy
-        run: cargo clippy --all-targets --all-features
-
       - name: Build Project
-        run: cargo build --release --features "mysql"
+        run: |
+          cd njord
+          cargo build --release --features "mysql"
 
       - name: Wait for MySQL to be ready
         run: |
@@ -79,7 +130,10 @@ jobs:
           MYSQL_USER: njord_user
           MYSQL_PASSWORD: njord_password
           MYSQL_HOST: 127.0.0.1
-        run: cargo test --test mysql_tests
+        run: |
+          cd njord
+          cargo test --features "mysql" --test mysql_tests
+
   oracle:
     name: oracle
     runs-on: ubuntu-latest
@@ -100,11 +154,10 @@ jobs:
             ~/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Run Clippy
-        run: cargo clippy --all-targets --all-features
-
       - name: Build Project
-        run: cargo build --release --features "oracle"
+        run: |
+          cd njord
+          cargo build --release --features "oracle"
 
       - run: mkdir ${{ github.workspace }}/database-files
 
@@ -144,4 +197,64 @@ jobs:
           APP_USER: test
           APP_USER_PASSWORD: test
           ORACLE_HOST: 127.0.0.1
-        run: cargo test --test oracle_tests
+        run: |
+          cd njord
+          cargo test --features "oracle" --test oracle_tests
+  mssql:
+    name: mssql
+    runs-on: ubuntu-20.04
+
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: njord_password
+          MSSQL_PID: Developer
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build Project
+        run: |
+          cd njord
+          cargo build --release --features "mssql"
+
+      - name: Wait for SQL Server to be ready
+        run: |
+          echo "Waiting for SQL Server to be fully operational..."
+          until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P njord_password -Q "SELECT @@VERSION" > /dev/null 2>&1
+          do
+            echo "SQL Server is still initializing. Waiting..."
+            sleep 5
+          done
+          echo "SQL Server is now operational."
+
+      - name: Set up MSSQL schema
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P njord_password -C -i "${{ github.workspace }}/njord/db/test/mssql/setup.sql"
+
+      - name: Running Integration Tests for MSSQL
+        env:
+          MSSQL_DATABASE: NjordDatabase
+          MSSQL_USER: sa
+          MSSQL_PASSWORD: njord_password
+          MSSQL_HOST: mssql
+        run: |
+          cd njord
+          cargo test --features "mssql" --test mssql_tests
