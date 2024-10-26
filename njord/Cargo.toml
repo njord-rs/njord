@@ -14,12 +14,15 @@ keywords = ["orm", "database", "sql"]
 
 [dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
-rusqlite = { version = "0.32.1", features = ["bundled"] }
 log = "0.4.22"
 rand = "0.8.4"
+rusqlite = { version = "0.32.1", features = ["bundled"], optional = true }
 serde = { version = "1.0.210", features = ["derive"] }
-mysql = "25.0.1"
-oracle = { version = "0.6.2", features = ["chrono"] }
+mysql = { version = "25.0.1", optional = true }
+oracle = { version = "0.6.2", features = ["chrono"], optional = true }
+tiberius = { version = "0.12.3", default-features = false, features = ["chrono", "time", "tds73", "rust_decimal", "bigdecimal", "rustls"], optional = true }
+tokio = { version = "1.41.0", features = ["full"], optional = true }
+tokio-util = { version = "0.7.12", features = ["compat"], optional = true }
 
 [dev-dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
@@ -34,9 +37,10 @@ njord_derive = { version = "0.4.0", path = "../njord_derive" }
 
 [features]
 default = ["sqlite"]
-sqlite = []
-mysql = []
-oracle = []
+sqlite = ["dep:rusqlite"]
+mysql = ["dep:mysql"]
+oracle = ["dep:oracle"]
+mssql = ["dep:tiberius", "dep:tokio", "dep:tokio-util"]
 
 [[test]]
 name = "sqlite_tests"
@@ -49,3 +53,7 @@ path = "tests/mysql/mod.rs"
 [[test]]
 name = "oracle_tests"
 path = "tests/oracle/mod.rs"
+
+[[test]]
+name = "mssql_tests"
+path = "tests/mssql/mod.rs"

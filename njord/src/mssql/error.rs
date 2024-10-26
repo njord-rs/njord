@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,21 +29,25 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-pub mod query;
-pub mod table;
-pub mod util;
+use tiberius::error::Error as MSSQLLibError;
 
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+/// Represents errors that can occur during MSSQL operations.
+#[derive(Debug)]
+pub enum MSSQLError {
+    /// Error that occurs during a SELECT operation.
+    SelectError(MSSQLLibError),
+    /// Error that occurs during an INSERT operation.
+    InsertError(MSSQLLibError),
+    /// Error that occurs during an UPDATE operation.
+    UpdateError(MSSQLLibError),
+    /// Error that occurs during a DELETE operation.
+    DeleteError(MSSQLLibError),
+    InvalidQuery,
+}
 
-#[cfg(feature = "mysql")]
-pub mod mysql;
-
-#[cfg(feature = "oracle")]
-pub mod oracle;
-
-#[cfg(feature = "mssql")]
-pub mod mssql;
+impl From<MSSQLLibError> for MSSQLError {
+    /// Converts a `tiberius::Error` into a `MSSQLError`.
+    fn from(error: MSSQLLibError) -> Self {
+        MSSQLError::InsertError(error)
+    }
+}
