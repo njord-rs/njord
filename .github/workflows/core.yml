@@ -213,13 +213,6 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_SA_PASSWORD: njord_password
           MSSQL_PID: Developer
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P njord_password -Q 'SELECT 1' || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-          --health-start-period=10s
 
     steps:
       - uses: actions/checkout@v4
@@ -242,9 +235,19 @@ jobs:
           cd njord
           cargo build --release --features "mssql"
 
+      - name: Wait for SQL Server to be ready
+        run: |
+          echo "Waiting for SQL Server to be fully operational..."
+          until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P njord_password -Q "SELECT @@VERSION" > /dev/null 2>&1
+          do
+            echo "SQL Server is still initializing. Waiting..."
+            sleep 5
+          done
+          echo "SQL Server is now operational."
+
       - name: Set up MSSQL schema
         run: |
-          /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U sa -P njord_password -C -i "${{ github.workspace }}/njord/db/test/mssql/setup.sql"
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P njord_password -C -i "${{ github.workspace }}/njord/db/test/mssql/setup.sql"
 
       - name: Running Integration Tests for MSSQL
         env:
