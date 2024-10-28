@@ -17,7 +17,7 @@ njord_derive = { version = "0.4.0", path = "../njord_derive" }
 log = "0.4.22"
 rand = "0.8.4"
 rusqlite = { version = "0.32.1", features = ["bundled"], optional = true }
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.213", features = ["derive"] }
 mysql = { version = "25.0.1", optional = true }
 oracle = { version = "0.6.2", features = ["chrono"], optional = true }
 tiberius = { version = "0.12.3", default-features = false, features = ["chrono", "time", "tds73", "rust_decimal", "bigdecimal", "rustls"], optional = true }
