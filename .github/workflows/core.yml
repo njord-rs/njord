@@ -211,7 +211,7 @@ jobs:
           - 1433:1433
         env:
           ACCEPT_EULA: Y
-          MSSQL_SA_PASSWORD: njord_password
+          MSSQL_SA_PASSWORD: Njord_passw0rd
           MSSQL_PID: Developer
 
     steps:
@@ -238,7 +238,7 @@ jobs:
       - name: Wait for SQL Server to be ready
         run: |
           echo "Waiting for SQL Server to be fully operational..."
-          until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P njord_password -Q "SELECT @@VERSION" > /dev/null 2>&1
+          until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Njord_passw0rd -Q "SELECT @@VERSION" > /dev/null 2>&1
           do
             echo "SQL Server is still initializing. Waiting..."
             sleep 5
@@ -247,13 +247,13 @@ jobs:
 
       - name: Set up MSSQL schema
         run: |
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P njord_password -C -i "${{ github.workspace }}/njord/db/test/mssql/setup.sql"
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Njord_passw0rd -C -i "${{ github.workspace }}/njord/db/test/mssql/setup.sql"
 
       - name: Running Integration Tests for MSSQL
         env:
           MSSQL_DATABASE: NjordDatabase
           MSSQL_USER: sa
-          MSSQL_PASSWORD: njord_password
+          MSSQL_PASSWORD: Njord_passw0rd
           MSSQL_HOST: mssql
         run: |
           cd njord

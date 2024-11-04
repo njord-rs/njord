@@ -36,7 +36,7 @@ async fn main() -> Result<(), Error> {
 
 async fn select() -> Result<(), Box<dyn std::error::Error>> {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await?;
 
     let results = mssql::select(vec![Column::Text("id".to_string())])
@@ -83,7 +83,7 @@ async fn insert() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await?;
 
     let _ = match mssql::insert(&mut conn, near_earth_objects).await {
