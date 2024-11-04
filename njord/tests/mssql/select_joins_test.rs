@@ -10,7 +10,7 @@ use crate::{Category, CategoryWithJoin, Product};
 
 async fn insert_mock_data<T: Table + Clone + Default>(table_rows: Vec<T>) {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
@@ -26,7 +26,7 @@ async fn insert_mock_data<T: Table + Clone + Default>(table_rows: Vec<T>) {
 
 async fn delete_mock_data<T: Table + Clone + Default>(names: Vec<String>, column: String) {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
@@ -70,7 +70,7 @@ async fn select_inner_join() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     // Assume we have pre-inserted some data into the users and products tables
@@ -141,7 +141,7 @@ async fn select_left_join() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     // Assume we have pre-inserted some data into the users and products tables

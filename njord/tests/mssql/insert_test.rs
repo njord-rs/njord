@@ -6,7 +6,7 @@ use std::vec;
 #[tokio::test]
 async fn insert_row() {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let table_row: User = User {
