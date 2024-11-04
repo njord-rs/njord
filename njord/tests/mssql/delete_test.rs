@@ -9,7 +9,7 @@ async fn delete_row() {
     insert_row().await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
@@ -33,7 +33,7 @@ async fn delete_row() {
 /// Helper function to insert a row to be deleted
 async fn insert_row() {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let table_row: User = User {
