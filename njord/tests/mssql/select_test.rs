@@ -8,7 +8,7 @@ use crate::{User, UserWithSubQuery};
 
 async fn insert_mock_data(table_rows: Vec<User>) {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
@@ -24,7 +24,7 @@ async fn insert_mock_data(table_rows: Vec<User>) {
 
 async fn delete_mock_data(usernames: Vec<String>) {
     let connection_string =
-    "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+    "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
@@ -51,7 +51,7 @@ async fn delete_mock_data(usernames: Vec<String>) {
 #[tokio::test]
 async fn open_db() {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let conn = mssql::open(connection_string).await;
     assert!(conn.is_ok());
 }
@@ -59,7 +59,7 @@ async fn open_db() {
 #[tokio::test]
 async fn insert_row() {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let table_row: User = User {
@@ -83,7 +83,7 @@ async fn insert_row() {
 #[tokio::test]
 async fn update() {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec!["username".to_string()];
@@ -122,7 +122,7 @@ async fn update() {
 #[tokio::test]
 async fn delete() {
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let condition = Condition::Eq(
@@ -168,7 +168,7 @@ async fn select() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
@@ -226,7 +226,7 @@ async fn select_distinct() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
@@ -287,7 +287,7 @@ async fn select_order_by() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
@@ -347,7 +347,7 @@ async fn select_group_by() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
@@ -395,7 +395,7 @@ async fn select_having() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
@@ -463,7 +463,7 @@ async fn select_except() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
@@ -545,7 +545,7 @@ async fn select_except() {
 //     ]);
 
 //     let connection_string = "//localhost:1521/FREEPDB1";
-//     let mut conn = mssql::open("njord_user", "njord_password", connection_string);
+//     let mut conn = mssql::open("njord_user", "Njord_passw0rd", connection_string);
 
 //     let columns = vec![
 //         Column::Text("id".to_string()),
@@ -629,7 +629,7 @@ async fn select_sub_queries() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
@@ -705,7 +705,7 @@ async fn select_in() {
     .await;
 
     let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=njord_password;databaseName=NjordDatabase;";
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     let columns = vec![
