@@ -12,7 +12,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./njord_examples/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./njord/db/test/mysql.sql:/docker-entrypoint-initdb.d/tests.sql
 
   oracle:
@@ -41,7 +40,7 @@ services:
     container_name: njord_mssql
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=njord_password
+      - MSSQL_SA_PASSWORD=Njord_passw0rd
       - MSSQL_PID=Developer
     ports:
       - 1433:1433
@@ -54,7 +53,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P njord_password -C -i /tmp/init/create_tables.sql && /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P njord_password -C -i /tmp/tests/setup.sql || exit 1",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Njord_passw0rd -C -i /tmp/init/create_tables.sql && /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Njord_passw0rd -C -i /tmp/tests/setup.sql || exit 1",
         ]
       interval: 10s
       retries: 10
