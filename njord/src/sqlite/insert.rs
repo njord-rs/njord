@@ -33,7 +33,7 @@ use crate::{query::QueryBuilder, table::Table};
 
 use rusqlite::Error as RusqliteError;
 
-use log::info;
+use log::{debug, info};
 use rusqlite::{Connection, Result};
 use std::fmt::Error;
 
@@ -54,10 +54,7 @@ use std::fmt::Error;
 ///
 /// A `Result` containing a `String` representing the joined SQL statements
 /// if the insertion is successful, or a `RusqliteError` if an error occurs.
-pub fn insert<T: Table>(
-    conn: &Connection,
-    table_rows: Vec<T>,
-) -> Result<String, RusqliteError> {
+pub fn insert<T: Table>(conn: &Connection, table_rows: Vec<T>) -> Result<String, RusqliteError> {
     let mut statements: Vec<String> = Vec::new();
     for (index, table_row) in table_rows.iter().enumerate() {
         match generate_statement(table_row, index == 0) {
@@ -161,7 +158,7 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
     for (column_name, value) in column_fields.iter().zip(column_values.iter()) {
         // Check if the field is an AutoIncrementPrimaryKey
         if table_row.is_auto_increment_primary_key(value) {
-            println!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
+            debug!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
             continue;
         }
         columns_str.push_str(&format!("{}, ", column_name));
@@ -190,7 +187,7 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
         format!("({})", values_str)
     };
 
-    println!("{}", sql); // For debugging purposes
+    debug!("{}", sql); // For debugging purposes
 
     Ok(sql)
 }

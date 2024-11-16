@@ -171,7 +171,6 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
         );
 
         info!("{}", query);
-        println!("{}", query);
 
         // Prepare SQL statement
         match self.conn.client.execute(query.as_str(), &[]).await {

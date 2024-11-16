@@ -218,7 +218,6 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
         );
 
         info!("{}", query);
-        println!("{}", query);
 
         // Prepare SQL statement
         let _ = self.conn.execute(query.as_str(), &[]);
