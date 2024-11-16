@@ -1,3 +1,4 @@
+use ::mysql::PooledConn;
 use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::mysql::{self};
@@ -21,28 +22,18 @@ fn insert_mock_data(table_rows: Vec<User>) {
     }
 }
 
-fn delete_mock_data(usernames: Vec<String>) {
-    let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
-    let mut conn = mysql::open(url);
+fn delete_mock_data(conn: &mut PooledConn, usernames: Vec<String>) {
+    let value_list: Vec<Value> = usernames
+        .into_iter()
+        .map(Value::Literal) // Wrap each username as a Value::Literal
+        .collect();
 
-    match conn {
-        Ok(ref mut c) => {
-            // Transform Vec<String> into Vec<Value>
-            let value_list: Vec<Value> = usernames
-                .into_iter()
-                .map(Value::Literal) // Wrap each username as a Value::Literal
-                .collect();
+    let result = mysql::delete()
+        .from(User::default())
+        .where_clause(Condition::In("username".to_string(), value_list))
+        .build(conn);
 
-            let result = mysql::delete(c)
-                .from(User::default())
-                .where_clause(Condition::In("username".to_string(), value_list))
-                .build();
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to DELETE: {:?}", e);
-        }
-    }
+    assert!(result.is_ok());
 }
 
 #[test]
@@ -99,13 +90,13 @@ fn update() {
 
     match conn {
         Ok(ref mut c) => {
-            let result = mysql::update(c, table_row)
+            let result = mysql::update(table_row)
                 .set(columns)
                 .where_clause(condition)
                 .order_by(order)
                 .limit(4)
                 .offset(0)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
@@ -130,13 +121,13 @@ fn delete() {
 
     match conn {
         Ok(ref mut c) => {
-            let result = mysql::delete(c)
+            let result = mysql::delete()
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order)
                 .limit(20)
                 .offset(0)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
@@ -188,11 +179,11 @@ fn select() {
                 Ok(r) => assert_eq!(r.len(), 1),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data( c, vec!["select_test".to_string(), "select_test2".to_string()]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec!["select_test".to_string(), "select_test2".to_string()]);
 }
 
 #[test]
@@ -248,14 +239,14 @@ fn select_distinct() {
                 }
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_distinct_test".to_string(),
+                "select_distinct_test2".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_distinct_test".to_string(),
-        "select_distinct_test2".to_string(),
-    ]);
 }
 
 #[test]
@@ -304,14 +295,14 @@ fn select_order_by() {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_order_by_test".to_string(),
+                "select_order_by_test2".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_order_by_test".to_string(),
-        "select_order_by_test2".to_string(),
-    ]);
 }
 
 #[test]
@@ -356,14 +347,14 @@ fn select_group_by() {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_group_by_test".to_string(),
+                "select_group_by_test2".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_group_by_test".to_string(),
-        "select_group_by_test2".to_string(),
-    ]);
 }
 
 #[test]
@@ -406,11 +397,11 @@ fn select_limit_offset() {
                 Ok(r) => assert_eq!(r.len(), 1),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec!["select_limit_offset_test".to_string()]); 
         }
         Err(error) => panic!("Failed to SELECT: {:?}", error),
     };
-
-    delete_mock_data(vec!["select_limit_offset_test".to_string()]);
 }
 
 #[test]
@@ -457,11 +448,11 @@ fn select_having() {
                 Ok(r) => assert_eq!(r.len(), 1),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec!["select_having_test".to_string()]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data(vec!["select_having_test".to_string()]);
 }
 
 #[test]
@@ -533,15 +524,15 @@ fn select_except() {
                 }
                 Err(e) => panic!("Failed to SELECT with EXCEPT: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_except_test".to_string(),
+                "select_except_test2".to_string(),
+                "select_except_test3".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_except_test".to_string(),
-        "select_except_test2".to_string(),
-        "select_except_test3".to_string(),
-    ]);
 }
 
 #[test]
@@ -616,15 +607,15 @@ fn select_union() {
                 }
                 Err(e) => panic!("Failed to SELECT with UNION: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_union_test".to_string(),
+                "select_union_test2".to_string(),
+                "select_union_test3".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data(vec![
-        "select_union_test".to_string(),
-        "select_union_test2".to_string(),
-        "select_union_test3".to_string(),
-    ]);
 }
 
 #[test]
@@ -689,15 +680,15 @@ fn select_sub_queries() {
                 }
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_sub_queries_test".to_string(),
+                "select_sub_queries_test2".to_string(),
+                "select_sub_queries_test3".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_sub_queries_test".to_string(),
-        "select_sub_queries_test2".to_string(),
-        "select_sub_queries_test3".to_string(),
-    ]);
 }
 
 #[test]
@@ -758,13 +749,13 @@ fn select_in() {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec![
+                "select_in_test".to_string(),
+                "select_in_test2".to_string(),
+                "select_in_test3".to_string(),
+            ]);
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_in_test".to_string(),
-        "select_in_test2".to_string(),
-        "select_in_test3".to_string(),
-    ]);
 }

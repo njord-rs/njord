@@ -1,3 +1,4 @@
+use ::oracle::Connection;
 use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::oracle;
@@ -8,62 +9,31 @@ use std::sync::Arc;
 
 use crate::{Category, CategoryWithJoin, Product};
 
-fn insert_mock_data<T: Table + Clone + Default>(table_rows: Vec<T>) {
-    let connection_string = "//localhost:1521/FREEPDB1";
-    let mut conn = oracle::open("njord_user", "njord_password", connection_string);
-
-    match conn {
-        Ok(ref mut c) => {
-            let result = oracle::insert(c, table_rows);
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to INSERT: {:?}", e);
-        }
-    }
+fn insert_mock_data<T: Table + Clone + Default>(conn: &mut Connection, table_rows: Vec<T>) {
+    let result = oracle::insert(conn, table_rows);
+    assert!(result.is_ok());
 }
 
-fn delete_mock_data<T: Table + Clone + Default>(names: Vec<String>, column: String) {
-    let connection_string = "//localhost:1521/FREEPDB1";
-    let mut conn = oracle::open("njord_user", "njord_password", connection_string);
+fn delete_mock_data<T: Table + Clone + Default>(
+    conn: &mut Connection,
+    names: Vec<String>,
+    column: String,
+) {
+    // Transform Vec<String> into Vec<Value>
+    let value_list: Vec<Value> = names
+        .into_iter()
+        .map(Value::Literal) // Wrap each username as a Value::Literal
+        .collect();
 
-    match conn {
-        Ok(ref mut c) => {
-            // Transform Vec<String> into Vec<Value>
-            let value_list: Vec<Value> = names
-                .into_iter()
-                .map(Value::Literal) // Wrap each username as a Value::Literal
-                .collect();
-
-            let result = oracle::delete(c)
-                .from(T::default())
-                .where_clause(Condition::In(column, value_list))
-                .build();
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to DELETE: {:?}", e);
-        }
-    }
+    let result = oracle::delete()
+        .from(T::default())
+        .where_clause(Condition::In(column, value_list))
+        .build(conn);
+    assert!(result.is_ok());
 }
 
 #[test]
 fn select_inner_join() {
-    insert_mock_data(vec![Category {
-        id: AutoIncrementPrimaryKey::new(Some(1)),
-        name: "select_inner_join_test".to_string(),
-    }]);
-
-    insert_mock_data(vec![Product {
-        id: AutoIncrementPrimaryKey::new(Some(1)),
-        name: "select_inner_join_test".to_string(),
-        description: "select_inner_join_test".to_string(),
-        price: 10.0,
-        stock_quantity: 10,
-        discount: 0.0,
-        category_id: 1,
-    }]);
-
     let connection_string = "//localhost:1521/FREEPDB1";
     let mut conn = oracle::open("njord_user", "njord_password", connection_string);
 
@@ -81,6 +51,27 @@ fn select_inner_join() {
     );
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![Category {
+                    id: AutoIncrementPrimaryKey::new(Some(1)),
+                    name: "select_inner_join_test".to_string(),
+                }],
+            );
+
+            insert_mock_data(
+                c,
+                vec![Product {
+                    id: AutoIncrementPrimaryKey::new(Some(1)),
+                    name: "select_inner_join_test".to_string(),
+                    description: "select_inner_join_test".to_string(),
+                    price: 10.0,
+                    stock_quantity: 10,
+                    discount: 0.0,
+                    category_id: 1,
+                }],
+            );
+
             let result = oracle::select(columns)
                 .from(CategoryWithJoin::default())
                 .join(
@@ -97,38 +88,25 @@ fn select_inner_join() {
                 }
                 Err(e) => panic!("Failed to SELECT with JOIN: {:?}", e),
             };
+
+            delete_mock_data::<Category>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            );
+
+            delete_mock_data::<Product>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data::<Category>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    );
-
-    delete_mock_data::<Product>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    );
 }
 
 #[test]
 fn select_left_join() {
-    insert_mock_data(vec![Category {
-        id: AutoIncrementPrimaryKey::new(Some(1)),
-        name: "select_inner_join_test".to_string(),
-    }]);
-
-    insert_mock_data(vec![Product {
-        id: AutoIncrementPrimaryKey::new(Some(1)),
-        name: "select_inner_join_test".to_string(),
-        description: "select_inner_join_test".to_string(),
-        price: 10.0,
-        stock_quantity: 10,
-        discount: 0.0,
-        category_id: 1,
-    }]);
-
     let connection_string = "//localhost:1521/FREEPDB1";
     let mut conn = oracle::open("njord_user", "njord_password", connection_string);
 
@@ -146,6 +124,27 @@ fn select_left_join() {
     );
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![Category {
+                    id: AutoIncrementPrimaryKey::new(Some(1)),
+                    name: "select_inner_join_test".to_string(),
+                }],
+            );
+
+            insert_mock_data(
+                c,
+                vec![Product {
+                    id: AutoIncrementPrimaryKey::new(Some(1)),
+                    name: "select_inner_join_test".to_string(),
+                    description: "select_inner_join_test".to_string(),
+                    price: 10.0,
+                    stock_quantity: 10,
+                    discount: 0.0,
+                    category_id: 1,
+                }],
+            );
+
             let result = oracle::select(columns)
                 .from(CategoryWithJoin::default())
                 .join(JoinType::Left, Arc::new(Product::default()), join_condition)
@@ -158,17 +157,19 @@ fn select_left_join() {
                 }
                 Err(e) => panic!("Failed to SELECT with JOIN: {:?}", e),
             };
+
+            delete_mock_data::<Category>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            );
+
+            delete_mock_data::<Product>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data::<Category>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    );
-
-    delete_mock_data::<Product>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    );
 }

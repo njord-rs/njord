@@ -22,13 +22,13 @@ fn delete() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::delete(c)
+            let result = sqlite::delete()
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order)
                 .limit(20)
                 .offset(0)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
@@ -50,7 +50,7 @@ fn delete_with_subquery() {
     match conn {
         Ok(ref c) => {
             let sub_query =
-                SelectQueryBuilder::<User>::new(c, vec![Column::Text("username".to_string())])
+                SelectQueryBuilder::<User>::new(vec![Column::Text("username".to_string())])
                     .where_clause(Condition::Eq(
                         "id".to_string(),
                         Value::Literal(1.to_string()),
@@ -60,10 +60,10 @@ fn delete_with_subquery() {
             let condition =
                 Condition::Eq("address".to_string(), Value::Subquery(Box::new(sub_query)));
 
-            let result = sqlite::delete(c)
+            let result = sqlite::delete()
                 .from(User::default())
                 .where_clause(condition)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
