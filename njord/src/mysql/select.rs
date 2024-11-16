@@ -359,7 +359,6 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
-        println!("{}", final_query);
 
         let query_set = conn.query_iter(final_query.as_str()).unwrap();
 

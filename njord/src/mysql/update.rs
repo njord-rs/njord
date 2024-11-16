@@ -56,10 +56,7 @@ use super::select::SelectQueryBuilder;
 /// # Returns
 ///
 /// An `UpdateQueryBuilder` instance.
-pub fn update<T: Table + Default>(
-    conn: &mut PooledConn,
-    table: T,
-) -> UpdateQueryBuilder<T> {
+pub fn update<T: Table + Default>(conn: &mut PooledConn, table: T) -> UpdateQueryBuilder<T> {
     UpdateQueryBuilder::new(conn, table)
 }
 
@@ -221,7 +218,6 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
         );
 
         info!("{}", query);
-        println!("{}", query);
 
         // Prepare SQL statement
         let _ = self.conn.query_drop(query.as_str());

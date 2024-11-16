@@ -163,7 +163,6 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
         );
 
         info!("{}", query);
-        println!("{}", query);
 
         // Execute SQL
         let _ = self.conn.execute(&query, &[]);
