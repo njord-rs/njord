@@ -14,13 +14,13 @@ async fn delete_row() {
 
     match conn {
         Ok(ref mut c) => {
-            let result = mssql::delete(c)
+            let result = mssql::delete()
                 .from(User::default())
                 .where_clause(Condition::Eq(
                     "username".to_string(),
                     Value::Literal("chasewillden2".to_string()),
                 ))
-                .build()
+                .build(c)
                 .await;
             assert!(result.is_ok());
         }

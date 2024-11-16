@@ -46,20 +46,15 @@ use crate::table::Table;
 
 /// Constructs a new DELETE query builder.
 ///
-/// # Arguments
-///
-/// * `conn` - A `PooledConn` to the MySql database.
-///
 /// # Returns
 ///
 /// A `DeleteQueryBuilder` instance.
-pub fn delete<T: Table + Default>(conn: &mut PooledConn) -> DeleteQueryBuilder<T> {
-    DeleteQueryBuilder::new(conn)
+pub fn delete<T: Table + Default>() -> DeleteQueryBuilder<'static, T> {
+    DeleteQueryBuilder::new()
 }
 
 /// A builder for constructing DELETE queries.
 pub struct DeleteQueryBuilder<'a, T: Table + Default> {
-    conn: &'a mut PooledConn,
     table: Option<T>,
     where_condition: Option<Condition<'a>>,
     order_by: Option<HashMap<Vec<String>, String>>,
@@ -69,13 +64,8 @@ pub struct DeleteQueryBuilder<'a, T: Table + Default> {
 
 impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
     /// Creates a new `DeleteQueryBuilder` instance.
-    ///
-    /// # Arguments
-    ///
-    /// * `conn` - A `PooledConn` to the MySql database.
-    pub fn new(conn: &'a mut PooledConn) -> Self {
+    pub fn new() -> Self {
         DeleteQueryBuilder {
-            conn,
             table: None,
             where_condition: None,
             order_by: None,
@@ -136,10 +126,14 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
 
     /// Builds and executes the DELETE query.
     ///
+    /// # Arguments
+    ///
+    /// * `conn` - A `PooledConn` to the MySql database.
+    /// 
     /// # Returns
     ///
     /// A `Result` indicating success or failure of the deletion operation.
-    pub fn build(self) -> Result<(), String> {
+    pub fn build(self, conn: &mut PooledConn) -> Result<(), String> {
         let table_name = self
             .table
             .as_ref()
@@ -165,7 +159,7 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
         info!("{}", query);
 
         // Execute SQL
-        let _ = self.conn.query_drop(&query.to_string());
+        let _ = conn.query_drop(&query.to_string());
 
         Ok(())
     }

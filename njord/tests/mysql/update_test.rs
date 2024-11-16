@@ -19,12 +19,12 @@ fn delete_row() {
 
     match conn {
         Ok(ref mut c) => {
-            let result = mysql::update(c, User::default())
+            let result = mysql::update(User::default())
                 .set(columns)
                 .where_clause(condition)
                 .limit(4)
                 .offset(0)
-                .build();
+                .build(c);
             assert!(result.is_ok());
         }
         Err(e) => {

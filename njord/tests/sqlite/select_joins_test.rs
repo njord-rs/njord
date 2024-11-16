@@ -27,14 +27,14 @@ fn select_inner_join() {
     );
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(UsersWithJoin::default())
                 .join(
                     JoinType::Inner,
                     Arc::new(Product::default()),
                     join_condition,
                 )
-                .build();
+                .build(c);
             match result {
                 Ok(r) => {
                     // Check the number of results and assert against expected values
@@ -68,10 +68,10 @@ fn select_left_join() {
     );
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(UsersWithJoin::default())
                 .join(JoinType::Left, Arc::new(Product::default()), join_condition)
-                .build();
+                .build(c);
             match result {
                 Ok(r) => {
                     // Check the number of results and assert against expected values

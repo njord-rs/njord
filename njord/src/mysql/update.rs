@@ -50,19 +50,17 @@ use super::select::SelectQueryBuilder;
 ///
 /// # Arguments
 ///
-/// * `conn` - A `PooledConn` to the MySql database.
 /// * `table` - An instance of the table to be updated.
 ///
 /// # Returns
 ///
 /// An `UpdateQueryBuilder` instance.
-pub fn update<T: Table + Default>(conn: &mut PooledConn, table: T) -> UpdateQueryBuilder<T> {
-    UpdateQueryBuilder::new(conn, table)
+pub fn update<T: Table + Default>(table: T) -> UpdateQueryBuilder<'static, T> {
+    UpdateQueryBuilder::new(table)
 }
 
 /// A builder for constructing UPDATE queries.
 pub struct UpdateQueryBuilder<'a, T: Table + Default> {
-    conn: &'a mut PooledConn,
     table: Option<T>,
     columns: Vec<String>,
     sub_queries: HashMap<String, SelectQueryBuilder<'a, T>>,
@@ -77,11 +75,9 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
     ///
     /// # Arguments
     ///
-    /// * `conn` - A `PooledConn` to the MySql database.
     /// * `table` - An instance of the table to be updated.
-    pub fn new(conn: &'a mut PooledConn, table: T) -> Self {
+    pub fn new(table: T) -> Self {
         UpdateQueryBuilder {
-            conn,
             table: Some(table),
             columns: Vec::new(),
             sub_queries: HashMap::new(),
@@ -154,10 +150,14 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
 
     /// Builds and executes the UPDATE query.
     ///
+    /// # Arguments
+    ///
+    /// * `conn` - A mutable reference to the MySQL connection.
+    /// 
     /// # Returns
     ///
     /// A `Result` indicating success or failure of the update operation.
-    pub fn build(self) -> Result<(), String> {
+    pub fn build(self, conn: &mut PooledConn) -> Result<(), String> {
         let table_name = self
             .table
             .as_ref()
@@ -220,7 +220,7 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
         info!("{}", query);
 
         // Prepare SQL statement
-        let _ = self.conn.query_drop(query.as_str());
+        let _ = conn.query_drop(query.as_str());
 
         Ok(())
     }

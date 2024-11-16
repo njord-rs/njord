@@ -35,10 +35,10 @@ fn delete_mock_data<T: Table + Clone + Default>(names: Vec<String>, column: Stri
                 .map(Value::Literal) // Wrap each username as a Value::Literal
                 .collect();
 
-            let result = mysql::delete(c)
+            let result = mysql::delete()
                 .from(T::default())
                 .where_clause(Condition::In(column, value_list))
-                .build();
+                .build(c);
             assert!(result.is_ok());
         }
         Err(e) => {

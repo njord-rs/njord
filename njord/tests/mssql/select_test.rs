@@ -6,46 +6,24 @@ use std::collections::HashMap;
 
 use crate::{User, UserWithSubQuery};
 
-async fn insert_mock_data(table_rows: Vec<User>) {
-    let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
-    let mut conn = mssql::open(connection_string).await;
-
-    match conn {
-        Ok(ref mut c) => {
-            let result = mssql::insert(c, table_rows).await;
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to INSERT: {:?}", e);
-        }
-    }
+async fn insert_mock_data(conn: &mut mssql::Connection, table_rows: Vec<User>) {
+    let result = mssql::insert(conn, table_rows).await;
+    assert!(result.is_ok());
 }
 
-async fn delete_mock_data(usernames: Vec<String>) {
-    let connection_string =
-    "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
-    let mut conn = mssql::open(connection_string).await;
+async fn delete_mock_data(conn: &mut mssql::Connection, usernames: Vec<String>) {
+    // Transform Vec<String> into Vec<Value>
+    let value_list: Vec<Value> = usernames
+        .into_iter()
+        .map(Value::Literal) // Wrap each username as a Value::Literal
+        .collect();
 
-    match conn {
-        Ok(ref mut c) => {
-            // Transform Vec<String> into Vec<Value>
-            let value_list: Vec<Value> = usernames
-                .into_iter()
-                .map(Value::Literal) // Wrap each username as a Value::Literal
-                .collect();
-
-            let result = mssql::delete(c)
-                .from(User::default())
-                .where_clause(Condition::In("username".to_string(), value_list))
-                .build()
-                .await;
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to DELETE: {:?}", e);
-        }
-    }
+    let result = mssql::delete()
+        .from(User::default())
+        .where_clause(Condition::In("username".to_string(), value_list))
+        .build(conn)
+        .await;
+    assert!(result.is_ok());
 }
 
 #[tokio::test]
@@ -135,10 +113,10 @@ async fn delete() {
 
     match conn {
         Ok(ref mut c) => {
-            let result = mssql::delete(c)
+            let result = mssql::delete()
                 .from(User::default())
                 .where_clause(condition)
-                .build()
+                .build(c)
                 .await;
             println!("{:?}", result);
             assert!(result.is_ok());
@@ -151,22 +129,6 @@ async fn delete() {
 
 #[tokio::test]
 async fn select() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_test".to_string(),
-            email: "select_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_test2".to_string(),
-            email: "select_test2@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -184,6 +146,25 @@ async fn select() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_test".to_string(),
+                        email: "select_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_test2".to_string(),
+                        email: "select_test2@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(User::default())
                 .where_clause(condition)
@@ -194,37 +175,19 @@ async fn select() {
                 Ok(r) => assert_eq!(r.len(), 1),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec!["select_test".to_string(), "select_test2".to_string()],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec!["select_test".to_string(), "select_test2".to_string()]).await;
 }
 
 #[tokio::test]
 async fn select_distinct() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_distinct_test".to_string(),
-            email: "select_distinct_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_distinct_test".to_string(),
-            email: "select_distinct_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_distinct_test2".to_string(),
-            email: "select_distinct_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -242,6 +205,31 @@ async fn select_distinct() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_distinct_test".to_string(),
+                        email: "select_distinct_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_distinct_test".to_string(),
+                        email: "select_distinct_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_distinct_test2".to_string(),
+                        email: "select_distinct_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(User::default())
                 .where_clause(condition)
@@ -257,35 +245,22 @@ async fn select_distinct() {
                 }
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec![
+                    "select_distinct_test".to_string(),
+                    "select_distinct_test2".to_string(),
+                ],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_distinct_test".to_string(),
-        "select_distinct_test2".to_string(),
-    ])
-    .await;
 }
 
 #[tokio::test]
 async fn select_order_by() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_order_by_test".to_string(),
-            email: "select_order_by_test@example.com".to_string(),
-            address: "Some Random Address select_order_by".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_order_by_test2".to_string(),
-            email: "select_order_by_test2@example.com".to_string(),
-            address: "Some Random Address select_order_by".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -305,6 +280,25 @@ async fn select_order_by() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_order_by_test".to_string(),
+                        email: "select_order_by_test@example.com".to_string(),
+                        address: "Some Random Address select_order_by".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_order_by_test2".to_string(),
+                        email: "select_order_by_test2@example.com".to_string(),
+                        address: "Some Random Address select_order_by".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(User::default())
                 .where_clause(condition)
@@ -317,35 +311,22 @@ async fn select_order_by() {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec![
+                    "select_order_by_test".to_string(),
+                    "select_order_by_test2".to_string(),
+                ],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_order_by_test".to_string(),
-        "select_order_by_test2".to_string(),
-    ])
-    .await;
 }
 
 #[tokio::test]
 async fn select_group_by() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_group_by_test".to_string(),
-            email: "select_group_by_test@example.com".to_string(),
-            address: "Some Random Address select_group_by".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_group_by_test2".to_string(),
-            email: "select_group_by_test@example.com".to_string(),
-            address: "Some Random Address select_group_by".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -362,6 +343,25 @@ async fn select_group_by() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_group_by_test".to_string(),
+                        email: "select_group_by_test@example.com".to_string(),
+                        address: "Some Random Address select_group_by".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_group_by_test2".to_string(),
+                        email: "select_group_by_test@example.com".to_string(),
+                        address: "Some Random Address select_group_by".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(User::default())
                 .where_clause(condition)
@@ -373,27 +373,22 @@ async fn select_group_by() {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec![
+                    "select_group_by_test".to_string(),
+                    "select_group_by_test2".to_string(),
+                ],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_group_by_test".to_string(),
-        "select_group_by_test2".to_string(),
-    ])
-    .await;
 }
 
 #[tokio::test]
 async fn select_having() {
-    insert_mock_data(vec![User {
-        id: AutoIncrementPrimaryKey::default(),
-        username: "select_having_test".to_string(),
-        email: "select_having_test@example.com".to_string(),
-        address: "Some Random Address 1".to_string(),
-    }])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -418,6 +413,17 @@ async fn select_having() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![User {
+                    id: AutoIncrementPrimaryKey::default(),
+                    username: "select_having_test".to_string(),
+                    email: "select_having_test@example.com".to_string(),
+                    address: "Some Random Address 1".to_string(),
+                }],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(User::default())
                 .where_clause(condition)
@@ -431,37 +437,15 @@ async fn select_having() {
                 Ok(r) => assert_eq!(r.len(), 1),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(c, vec!["select_having_test".to_string()]).await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data(vec!["select_having_test".to_string()]).await;
 }
 
 #[tokio::test]
 async fn select_except() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_except_test".to_string(),
-            email: "select_except_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_except_test2".to_string(),
-            email: "select_except_test2@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_except_test3".to_string(),
-            email: "select_except_test3@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -500,6 +484,31 @@ async fn select_except() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_except_test".to_string(),
+                        email: "select_except_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_except_test2".to_string(),
+                        email: "select_except_test2@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_except_test3".to_string(),
+                        email: "select_except_test3@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             // Test a chain of EXCEPT queries (query1 EXCEPT query2 EXCEPT query3)
             let result = query1.except(query2).except(query3).build(c).await;
 
@@ -509,16 +518,19 @@ async fn select_except() {
                 }
                 Err(e) => panic!("Failed to SELECT with EXCEPT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec![
+                    "select_except_test".to_string(),
+                    "select_except_test2".to_string(),
+                    "select_except_test3".to_string(),
+                ],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_except_test".to_string(),
-        "select_except_test2".to_string(),
-        "select_except_test3".to_string(),
-    ])
-    .await;
 }
 
 // #[tokio::test]
@@ -606,34 +618,37 @@ async fn select_except() {
 
 #[tokio::test]
 async fn select_sub_queries() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_sub_queries_test".to_string(),
-            email: "select_sub_queries_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_sub_queries_test2".to_string(),
-            email: "select_sub_queries_test2@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_sub_queries_test3".to_string(),
-            email: "select_sub_queries_test3@example.com".to_string(),
-            address: "SubQuery".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_sub_queries_test".to_string(),
+                        email: "select_sub_queries_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_sub_queries_test2".to_string(),
+                        email: "select_sub_queries_test2@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_sub_queries_test3".to_string(),
+                        email: "select_sub_queries_test3@example.com".to_string(),
+                        address: "SubQuery".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             let sub_query = mssql::select(vec![Column::Text("address".to_string())])
                 .from(UserWithSubQuery::default())
                 .where_clause(Condition::Eq(
@@ -668,42 +683,23 @@ async fn select_sub_queries() {
                 }
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec![
+                    "select_sub_queries_test".to_string(),
+                    "select_sub_queries_test2".to_string(),
+                    "select_sub_queries_test3".to_string(),
+                ],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_sub_queries_test".to_string(),
-        "select_sub_queries_test2".to_string(),
-        "select_sub_queries_test3".to_string(),
-    ])
-    .await;
 }
 
 #[tokio::test]
 async fn select_in() {
-    insert_mock_data(vec![
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_in_test".to_string(),
-            email: "select_in_test@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_in_test2".to_string(),
-            email: "select_in_test2@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-        User {
-            id: AutoIncrementPrimaryKey::default(),
-            username: "select_in_test3".to_string(),
-            email: "select_in_test3@example.com".to_string(),
-            address: "Some Random Address 1".to_string(),
-        },
-    ])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -731,6 +727,31 @@ async fn select_in() {
 
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_in_test".to_string(),
+                        email: "select_in_test@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_in_test2".to_string(),
+                        email: "select_in_test2@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                    User {
+                        id: AutoIncrementPrimaryKey::default(),
+                        username: "select_in_test3".to_string(),
+                        email: "select_in_test3@example.com".to_string(),
+                        address: "Some Random Address 1".to_string(),
+                    },
+                ],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(User::default())
                 .where_clause(condition)
@@ -741,14 +762,17 @@ async fn select_in() {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
+
+            delete_mock_data(
+                c,
+                vec![
+                    "select_in_test".to_string(),
+                    "select_in_test2".to_string(),
+                    "select_in_test3".to_string(),
+                ],
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
-
-    delete_mock_data(vec![
-        "select_in_test".to_string(),
-        "select_in_test2".to_string(),
-        "select_in_test3".to_string(),
-    ])
-    .await;
 }
