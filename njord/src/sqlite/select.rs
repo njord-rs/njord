@@ -362,7 +362,6 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
-        println!("{}", final_query);
 
         // Prepare SQL statement
         let mut stmt = self.conn.prepare(final_query.as_str())?;

@@ -114,7 +114,6 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
         let query = format!("DELETE FROM {} {}", table_name_str, where_condition_str,);
 
         info!("{}", query);
-        println!("{}", query);
 
         // Execute SQL
         match self.conn.client.execute(&query, &[]).await {

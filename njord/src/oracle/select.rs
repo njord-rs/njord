@@ -331,7 +331,6 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
-        println!("{}", final_query);
 
         let mut stmt = conn.statement(&final_query).build()?;
         let rows = stmt.query(&[])?;
@@ -359,8 +358,6 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
             }
 
             results.push(instance);
-
-            println!();
         }
 
         Ok(results)

@@ -67,7 +67,7 @@ pub fn open(username: &str, password: &str, connect_string: &str) -> Result<Conn
             return Ok(conn);
         }
         Err(err) => {
-            println!("Error: {}", err);
+            eprintln!("Error: {}", err);
 
             return Err(err);
         }
