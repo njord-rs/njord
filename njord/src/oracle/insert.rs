@@ -170,8 +170,12 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
             debug!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
             continue;
         }
+
+        // Escape single quotes in the value
+        let escaped_value = value.replace("'", "''");
+
         columns_str.push_str(&format!("{}, ", column_name));
-        values_str.push_str(&format!("'{}', ", value)); // Surround values with single quotes
+        values_str.push_str(&format!("'{}', ", escaped_value)); // Surround values with single quotes
     }
 
     // Sanitize table name from unwanted quotations or backslashes
