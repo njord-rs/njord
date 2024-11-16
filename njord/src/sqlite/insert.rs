@@ -54,10 +54,7 @@ use std::fmt::Error;
 ///
 /// A `Result` containing a `String` representing the joined SQL statements
 /// if the insertion is successful, or a `RusqliteError` if an error occurs.
-pub fn insert<T: Table>(
-    conn: &Connection,
-    table_rows: Vec<T>,
-) -> Result<String, RusqliteError> {
+pub fn insert<T: Table>(conn: &Connection, table_rows: Vec<T>) -> Result<String, RusqliteError> {
     let mut statements: Vec<String> = Vec::new();
     for (index, table_row) in table_rows.iter().enumerate() {
         match generate_statement(table_row, index == 0) {
@@ -164,8 +161,12 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
             println!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
             continue;
         }
+
+        // Escape single quotes in the value
+        let escaped_value = value.replace("'", "''");
+
         columns_str.push_str(&format!("{}, ", column_name));
-        values_str.push_str(&format!("'{}', ", value)); // Surround values with single quotes
+        values_str.push_str(&format!("'{}', ", escaped_value)); // Surround values with single quotes
     }
 
     // Sanitize table name from unwanted quotations or backslashes
