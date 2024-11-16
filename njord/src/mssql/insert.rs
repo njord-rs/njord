@@ -31,7 +31,7 @@
 
 use crate::{mssql::MSSQLError, query::QueryBuilder, table::Table};
 
-use log::info;
+use log::{debug, info};
 use std::fmt::Error;
 
 use super::Connection;
@@ -67,7 +67,7 @@ pub async fn insert<T: Table>(
 
     let joined_statements = statements.join(", ");
 
-    println!("{}", joined_statements);
+    debug!("{}", joined_statements);
 
     match conn.client.query(&joined_statements, &[]).await {
         Ok(_) => return Ok("Inserted into table, done.".to_string()),
@@ -162,7 +162,7 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
     for (column_name, value) in column_fields.iter().zip(column_values.iter()) {
         // Check if the field is an AutoIncrementPrimaryKey
         if table_row.is_auto_increment_primary_key(value) {
-            println!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
+            debug!("Skipping AutoIncrementPrimaryKey field in SQL statement generation.");
             continue;
         }
         columns_str.push_str(&format!("{}, ", column_name));

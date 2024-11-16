@@ -217,7 +217,6 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
         );
 
         info!("{}", query);
-        println!("{}", query);
 
         // Prepare SQL statement
         match self.conn.prepare(query.as_str()) {
