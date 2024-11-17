@@ -32,13 +32,13 @@ fn update() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::update(c, table_row)
+            let result = sqlite::update(table_row)
                 .set(columns)
                 .where_clause(condition)
                 .order_by(order)
                 .limit(4)
                 .offset(0)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
@@ -65,7 +65,7 @@ fn update_with_sub_queries() {
 
     match conn {
         Ok(c) => {
-            let sub_query = SelectQueryBuilder::new(&c, vec![Column::Text("email".to_string())])
+            let sub_query = SelectQueryBuilder::new(vec![Column::Text("email".to_string())])
                 .from(User::default())
                 .where_clause(Condition::Eq(
                     "email".to_string(),
@@ -75,14 +75,14 @@ fn update_with_sub_queries() {
 
             let set_subqueries = HashMap::from([("email".to_string(), sub_query)]);
 
-            let result = sqlite::update(&c, table_row)
+            let result = sqlite::update(table_row)
                 .set(columns)
                 .set_subqueries(set_subqueries)
                 .where_clause(Condition::Eq(
                     "username".to_owned(),
                     Value::Literal("mjovanc".to_owned()),
                 ))
-                .build();
+                .build(&c);
 
             println!("{:?}", result);
             assert!(result.is_ok());

@@ -13,13 +13,13 @@ fn delete_row() {
 
     match conn {
         Ok(ref mut c) => {
-            let result = oracle::delete(c)
+            let result = oracle::delete()
                 .from(User::default())
                 .where_clause(Condition::Eq(
                     "username".to_string(),
                     Value::Literal("chasewillden2".to_string()),
                 ))
-                .build();
+                .build(c);
             assert!(result.is_ok());
         }
         Err(e) => {

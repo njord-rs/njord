@@ -50,7 +50,6 @@ use crate::util::{Join, JoinType};
 ///
 /// # Arguments
 ///
-/// * `conn` - A `Connection` to the Oracle database.
 /// * `columns` - A vector of strings representing the columns to be selected.
 ///
 /// # Returns
@@ -80,7 +79,6 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// # Arguments
     ///
-    /// * `conn` - A `Connection` to the Oracle database.
     /// * `columns` - A vector of strings representing the columns to be selected.
     pub fn new(columns: Vec<Column<'a>>) -> Self {
         SelectQueryBuilder {
@@ -322,6 +320,10 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the SELECT query.
+    /// 
+    /// # Arguments
+    ///
+    /// * `conn` - A mutable reference to the database connection.
     ///
     /// # Returns
     ///

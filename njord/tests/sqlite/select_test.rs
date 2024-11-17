@@ -65,13 +65,13 @@ fn update() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::update(c, table_row)
+            let result = sqlite::update(table_row)
                 .set(columns)
                 .where_clause(condition)
                 .order_by(order)
                 .limit(4)
                 .offset(0)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
@@ -97,13 +97,13 @@ fn delete() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::delete(c)
+            let result = sqlite::delete()
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order)
                 .limit(20)
                 .offset(0)
-                .build();
+                .build(c);
             println!("{:?}", result);
             assert!(result.is_ok());
         }
@@ -132,10 +132,10 @@ fn select() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => assert_eq!(r.len(), 2),
@@ -165,11 +165,11 @@ fn select_distinct() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
                 .distinct()
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => {
@@ -204,11 +204,11 @@ fn select_group_by() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
                 .group_by(group_by)
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => assert_eq!(r.len(), 1),
@@ -242,12 +242,12 @@ fn select_order_by() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
                 .group_by(group_by)
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => assert_eq!(r.len(), 1),
@@ -281,14 +281,14 @@ fn select_limit_offset() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
                 .group_by(group_by)
                 .limit(1)
                 .offset(0)
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => assert_eq!(r.len(), 1),
@@ -324,13 +324,13 @@ fn select_having() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
                 .order_by(order_by)
                 .group_by(group_by)
                 .having(having_condition)
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => assert_eq!(r.len(), 1),
@@ -370,20 +370,20 @@ fn select_except() {
     match conn {
         Ok(ref c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(c, columns.clone())
+            let query1 = sqlite::select(columns.clone())
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(c, columns.clone())
+            let query2 = sqlite::select(columns.clone())
                 .from(User::default())
                 .where_clause(condition2);
 
-            let query3 = sqlite::select(c, columns.clone())
+            let query3 = sqlite::select(columns.clone())
                 .from(User::default())
                 .where_clause(condition3);
 
             // Test a chain of EXCEPT queries (query1 EXCEPT query2 EXCEPT query3)
-            let result = query1.except(query2).except(query3).build();
+            let result = query1.except(query2).except(query3).build(c);
 
             match result {
                 Ok(r) => {
@@ -415,16 +415,16 @@ fn select_union() {
     match conn {
         Ok(ref c) => {
             // Create a new connection for each query builder
-            let query1 = sqlite::select(c, columns.clone())
+            let query1 = sqlite::select(columns.clone())
                 .from(User::default())
                 .where_clause(condition1);
 
-            let query2 = sqlite::select(c, columns.clone())
+            let query2 = sqlite::select(columns.clone())
                 .from(User::default())
                 .where_clause(condition2);
 
             // Test a chain of UNION queries (query1 UNION query2)
-            let result = query1.union(query2).build();
+            let result = query1.union(query2).build(c);
 
             match result {
                 Ok(r) => {
@@ -456,7 +456,7 @@ fn select_sub_queries() {
 
     match conn {
         Ok(c) => {
-            let sub_query = sqlite::select(&c, vec![Column::Text("username".to_string())])
+            let sub_query = sqlite::select(vec![Column::Text("username".to_string())])
                 .from(UserWithSubQuery::default());
 
             let columns = vec![
@@ -467,9 +467,9 @@ fn select_sub_queries() {
                 Column::SubQuery(Box::new(sub_query), "additional_address".to_string()),
             ];
 
-            let result = sqlite::select(&c, columns)
+            let result = sqlite::select(columns)
                 .from(UserWithSubQuery::default())
-                .build();
+                .build(&c);
 
             match result {
                 Ok(r) => {
@@ -512,10 +512,10 @@ fn select_in() {
 
     match conn {
         Ok(ref c) => {
-            let result = sqlite::select(c, columns)
+            let result = sqlite::select(columns)
                 .from(User::default())
                 .where_clause(condition)
-                .build();
+                .build(c);
 
             match result {
                 Ok(r) => assert_eq!(r.len(), 2),
