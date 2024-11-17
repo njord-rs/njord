@@ -45,20 +45,15 @@ use crate::table::Table;
 
 /// Constructs a new DELETE query builder.
 ///
-/// # Arguments
-///
-/// * `conn` - A `rusqlite::Connection` to the SQLite database.
-///
 /// # Returns
 ///
 /// A `DeleteQueryBuilder` instance.
-pub fn delete<T: Table + Default>(conn: &Connection) -> DeleteQueryBuilder<T> {
-    DeleteQueryBuilder::new(conn)
+pub fn delete<T: Table + Default>() -> DeleteQueryBuilder<'static, T> {
+    DeleteQueryBuilder::new()
 }
 
 /// A builder for constructing DELETE queries.
 pub struct DeleteQueryBuilder<'a, T: Table + Default> {
-    conn: &'a Connection,
     table: Option<T>,
     where_condition: Option<Condition<'a>>,
     order_by: Option<HashMap<Vec<String>, String>>,
@@ -72,9 +67,8 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
     /// # Arguments
     ///
     /// * `conn` - A `rusqlite::Connection` to the SQLite database.
-    pub fn new(conn: &'a Connection) -> Self {
+    pub fn new() -> Self {
         DeleteQueryBuilder {
-            conn,
             table: None,
             where_condition: None,
             order_by: None,
@@ -134,11 +128,15 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the DELETE query.
-    ///
+    /// 
+    /// # Arguments
+    /// 
+    /// * `conn` - A reference to the database connection.
+    /// 
     /// # Returns
     ///
     /// A `Result` indicating success or failure of the deletion operation.
-    pub fn build(self) -> Result<(), String> {
+    pub fn build(self, conn: &Connection) -> Result<(), String> {
         let table_name = self
             .table
             .as_ref()
@@ -164,7 +162,7 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
         info!("{}", query);
 
         // Execute SQL
-        let _ = self.conn.execute(&query.to_string(), []);
+        let _ = conn.execute(&query.to_string(), []);
 
         Ok(())
     }

@@ -1,4 +1,5 @@
 use super::User;
+use ::mysql::PooledConn;
 use njord::condition::{Condition, Value};
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::mysql;
@@ -6,20 +7,20 @@ use std::vec;
 
 #[test]
 fn delete_row() {
-    insert_row();
-
     let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
     let mut conn = mysql::open(url);
 
     match conn {
         Ok(ref mut c) => {
-            let result = mysql::delete(c)
+            insert_row(c);
+
+            let result = mysql::delete()
                 .from(User::default())
                 .where_clause(Condition::Eq(
                     "username".to_string(),
                     Value::Literal("chasewillden2".to_string()),
                 ))
-                .build();
+                .build(c);
             assert!(result.is_ok());
         }
         Err(e) => {
@@ -29,10 +30,7 @@ fn delete_row() {
 }
 
 /// Helper function to insert a row to be deleted
-fn insert_row() {
-    let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
-    let mut conn = mysql::open(url);
-
+fn insert_row(conn: &mut PooledConn) {
     let table_row: User = User {
         id: AutoIncrementPrimaryKey::default(),
         username: "chasewillden2".to_string(),
@@ -40,13 +38,6 @@ fn insert_row() {
         address: "Some Random Address 1".to_string(),
     };
 
-    match conn {
-        Ok(ref mut c) => {
-            let result = mysql::insert(c, vec![table_row]);
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to INSERT: {:?}", e);
-        }
-    }
+    let result = mysql::insert(conn, vec![table_row]);
+    assert!(result.is_ok());
 }

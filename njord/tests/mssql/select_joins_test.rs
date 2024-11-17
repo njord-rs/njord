@@ -8,67 +8,34 @@ use std::sync::Arc;
 
 use crate::{Category, CategoryWithJoin, Product};
 
-async fn insert_mock_data<T: Table + Clone + Default>(table_rows: Vec<T>) {
-    let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
-    let mut conn = mssql::open(connection_string).await;
-
-    match conn {
-        Ok(ref mut c) => {
-            let result = mssql::insert(c, table_rows).await;
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to INSERT: {:?}", e);
-        }
-    }
+async fn insert_mock_data<T: Table + Clone + Default>(
+    conn: &mut mssql::Connection,
+    table_rows: Vec<T>,
+) {
+    let result = mssql::insert(conn, table_rows).await;
+    assert!(result.is_ok());
 }
 
-async fn delete_mock_data<T: Table + Clone + Default>(names: Vec<String>, column: String) {
-    let connection_string =
-        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
-    let mut conn = mssql::open(connection_string).await;
+async fn delete_mock_data<T: Table + Clone + Default>(
+    conn: &mut mssql::Connection,
+    names: Vec<String>,
+    column: String,
+) {
+    let value_list: Vec<Value> = names
+        .into_iter()
+        .map(Value::Literal) // Wrap each username as a Value::Literal
+        .collect();
 
-    match conn {
-        Ok(ref mut c) => {
-            // Transform Vec<String> into Vec<Value>
-            let value_list: Vec<Value> = names
-                .into_iter()
-                .map(Value::Literal) // Wrap each username as a Value::Literal
-                .collect();
-
-            let result = mssql::delete(c)
-                .from(T::default())
-                .where_clause(Condition::In(column, value_list))
-                .build()
-                .await;
-            assert!(result.is_ok());
-        }
-        Err(e) => {
-            panic!("Failed to DELETE: {:?}", e);
-        }
-    }
+    let result = mssql::delete()
+        .from(T::default())
+        .where_clause(Condition::In(column, value_list))
+        .build(conn)
+        .await;
+    assert!(result.is_ok());
 }
 
 #[tokio::test]
 async fn select_inner_join() {
-    insert_mock_data(vec![Category {
-        id: AutoIncrementPrimaryKey::new(Some(2)),
-        name: "select_inner_join_test".to_string(),
-    }])
-    .await;
-
-    insert_mock_data(vec![Product {
-        id: AutoIncrementPrimaryKey::new(Some(2)),
-        name: "select_inner_join_test".to_string(),
-        description: "select_inner_join_test".to_string(),
-        price: 10.0,
-        stock_quantity: 10,
-        discount: 0.0,
-        category_id: 2,
-    }])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -87,6 +54,29 @@ async fn select_inner_join() {
     );
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![Category {
+                    id: AutoIncrementPrimaryKey::new(Some(2)),
+                    name: "select_inner_join_test".to_string(),
+                }],
+            )
+            .await;
+
+            insert_mock_data(
+                c,
+                vec![Product {
+                    id: AutoIncrementPrimaryKey::new(Some(2)),
+                    name: "select_inner_join_test".to_string(),
+                    description: "select_inner_join_test".to_string(),
+                    price: 10.0,
+                    stock_quantity: 10,
+                    discount: 0.0,
+                    category_id: 2,
+                }],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(CategoryWithJoin::default())
                 .join(
@@ -104,42 +94,27 @@ async fn select_inner_join() {
                 }
                 Err(e) => panic!("Failed to SELECT with JOIN: {:?}", e),
             };
+
+            delete_mock_data::<Category>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            )
+            .await;
+
+            delete_mock_data::<Product>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data::<Category>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    )
-    .await;
-
-    delete_mock_data::<Product>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    )
-    .await;
 }
 
 #[tokio::test]
 async fn select_left_join() {
-    insert_mock_data(vec![Category {
-        id: AutoIncrementPrimaryKey::new(Some(1)),
-        name: "select_inner_join_test".to_string(),
-    }])
-    .await;
-
-    insert_mock_data(vec![Product {
-        id: AutoIncrementPrimaryKey::new(Some(1)),
-        name: "select_inner_join_test".to_string(),
-        description: "select_inner_join_test".to_string(),
-        price: 10.0,
-        stock_quantity: 10,
-        discount: 0.0,
-        category_id: 1,
-    }])
-    .await;
-
     let connection_string =
         "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
     let mut conn = mssql::open(connection_string).await;
@@ -158,6 +133,29 @@ async fn select_left_join() {
     );
     match conn {
         Ok(ref mut c) => {
+            insert_mock_data(
+                c,
+                vec![Category {
+                    id: AutoIncrementPrimaryKey::new(Some(1)),
+                    name: "select_inner_join_test".to_string(),
+                }],
+            )
+            .await;
+
+            insert_mock_data(
+                c,
+                vec![Product {
+                    id: AutoIncrementPrimaryKey::new(Some(1)),
+                    name: "select_inner_join_test".to_string(),
+                    description: "select_inner_join_test".to_string(),
+                    price: 10.0,
+                    stock_quantity: 10,
+                    discount: 0.0,
+                    category_id: 1,
+                }],
+            )
+            .await;
+
             let result = mssql::select(columns)
                 .from(CategoryWithJoin::default())
                 .join(JoinType::Left, Arc::new(Product::default()), join_condition)
@@ -171,19 +169,21 @@ async fn select_left_join() {
                 }
                 Err(e) => panic!("Failed to SELECT with JOIN: {:?}", e),
             };
+
+            delete_mock_data::<Category>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            )
+            .await;
+
+            delete_mock_data::<Product>(
+                c,
+                vec!["select_inner_join_test".to_string()],
+                "name".to_string(),
+            )
+            .await;
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
-
-    delete_mock_data::<Category>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    )
-    .await;
-
-    delete_mock_data::<Product>(
-        vec!["select_inner_join_test".to_string()],
-        "name".to_string(),
-    )
-    .await;
 }

@@ -42,20 +42,15 @@ use super::Connection;
 
 /// Constructs a new DELETE query builder.
 ///
-/// # Arguments
-///
-/// * `conn` - A `Connection` to the MSSQL database.
-///
 /// # Returns
 ///
 /// A `DeleteQueryBuilder` instance.
-pub fn delete<T: Table + Default>(conn: &mut Connection) -> DeleteQueryBuilder<T> {
-    DeleteQueryBuilder::new(conn)
+pub fn delete<T: Table + Default>() -> DeleteQueryBuilder<'static, T> {
+    DeleteQueryBuilder::new()
 }
 
 /// A builder for constructing DELETE queries.
 pub struct DeleteQueryBuilder<'a, T: Table + Default> {
-    conn: &'a mut Connection,
     table: Option<T>,
     where_condition: Option<Condition<'a>>,
 }
@@ -63,12 +58,11 @@ pub struct DeleteQueryBuilder<'a, T: Table + Default> {
 impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
     /// Creates a new `DeleteQueryBuilder` instance.
     ///
-    /// # Arguments
+    /// # Returns
     ///
-    /// * `conn` - A `Connection` to the MSSQL database.
-    pub fn new(conn: &'a mut Connection) -> Self {
+    /// A `DeleteQueryBuilder` instance.
+    pub fn new() -> Self {
         DeleteQueryBuilder {
-            conn,
             table: None,
             where_condition: None,
         }
@@ -95,11 +89,15 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the DELETE query.
+    /// 
+    /// # Arguments
+    ///
+    /// * `conn` - A mutable reference to the database connection.
     ///
     /// # Returns
     ///
     /// A `Result` indicating success or failure of the deletion operation.
-    pub async fn build(self) -> Result<(), String> {
+    pub async fn build(self, conn: &mut Connection) -> Result<(), String> {
         let table_name = self
             .table
             .as_ref()
@@ -116,7 +114,7 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
         info!("{}", query);
 
         // Execute SQL
-        match self.conn.client.execute(&query, &[]).await {
+        match conn.client.execute(&query, &[]).await {
             Ok(_) => Ok(()),
             Err(err) => Err(err.to_string()),
         }

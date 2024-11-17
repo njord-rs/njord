@@ -49,23 +49,20 @@ use crate::util::{Join, JoinType};
 ///
 /// # Arguments
 ///
-/// * `conn` - A `rusqlite::Connection` to the SQLite database.
 /// * `columns` - A vector of strings representing the columns to be selected.
 ///
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
 pub fn select<'a, T: Table + Default>(
-    conn: &'a Connection,
     columns: Vec<Column<'a>>,
 ) -> SelectQueryBuilder<'a, T> {
-    SelectQueryBuilder::new(conn, columns)
+    SelectQueryBuilder::new(columns)
 }
 
 /// A builder for constructing SELECT queries.
 #[derive(Clone)]
 pub struct SelectQueryBuilder<'a, T: Table + Default> {
-    conn: &'a Connection,
     table: Option<T>,
     columns: Vec<Column<'a>>,
     where_condition: Option<Condition<'a>>,
@@ -85,11 +82,9 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// # Arguments
     ///
-    /// * `conn` - A `rusqlite::Connection` to the SQLite database.
     /// * `columns` - A vector of strings representing the columns to be selected.
-    pub fn new(conn: &'a Connection, columns: Vec<Column<'a>>) -> Self {
+    pub fn new(columns: Vec<Column<'a>>) -> Self {
         SelectQueryBuilder {
-            conn,
             table: None,
             columns,
             where_condition: None,
@@ -353,18 +348,22 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the SELECT query.
+    /// 
+    /// # Arguments
+    ///
+    /// * `conn` - A reference to the database connection.
     ///
     /// # Returns
     ///
     /// A `Result` containing a vector of selected table rows if successful,
     /// or a `rusqlite::Error` if an error occurs during the execution.
-    pub fn build(self) -> Result<Vec<T>> {
+    pub fn build(self, conn: &Connection) -> Result<Vec<T>> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
 
         // Prepare SQL statement
-        let mut stmt = self.conn.prepare(final_query.as_str())?;
+        let mut stmt = conn.prepare(final_query.as_str())?;
 
         // Rest of the query execution remains unchanged
         let iter = stmt.query_map((), |row| {
