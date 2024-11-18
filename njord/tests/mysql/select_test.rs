@@ -3,6 +3,7 @@ use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::mysql::{self};
 use njord::{column::Column, condition::Value};
+use njord_derive::sql;
 use std::collections::HashMap;
 
 use crate::{User, UserWithSubQuery};
@@ -180,7 +181,10 @@ fn select() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data( c, vec!["select_test".to_string(), "select_test2".to_string()]);
+            delete_mock_data(
+                c,
+                vec!["select_test".to_string(), "select_test2".to_string()],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
@@ -240,10 +244,13 @@ fn select_distinct() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_distinct_test".to_string(),
-                "select_distinct_test2".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_distinct_test".to_string(),
+                    "select_distinct_test2".to_string(),
+                ],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
@@ -296,10 +303,13 @@ fn select_order_by() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_order_by_test".to_string(),
-                "select_order_by_test2".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_order_by_test".to_string(),
+                    "select_order_by_test2".to_string(),
+                ],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
@@ -348,10 +358,13 @@ fn select_group_by() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_group_by_test".to_string(),
-                "select_group_by_test2".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_group_by_test".to_string(),
+                    "select_group_by_test2".to_string(),
+                ],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
@@ -398,7 +411,7 @@ fn select_limit_offset() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data(c, vec!["select_limit_offset_test".to_string()]); 
+            delete_mock_data(c, vec!["select_limit_offset_test".to_string()]);
         }
         Err(error) => panic!("Failed to SELECT: {:?}", error),
     };
@@ -525,11 +538,14 @@ fn select_except() {
                 Err(e) => panic!("Failed to SELECT with EXCEPT: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_except_test".to_string(),
-                "select_except_test2".to_string(),
-                "select_except_test3".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_except_test".to_string(),
+                    "select_except_test2".to_string(),
+                    "select_except_test3".to_string(),
+                ],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
@@ -608,11 +624,14 @@ fn select_union() {
                 Err(e) => panic!("Failed to SELECT with UNION: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_union_test".to_string(),
-                "select_union_test2".to_string(),
-                "select_union_test3".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_union_test".to_string(),
+                    "select_union_test2".to_string(),
+                    "select_union_test3".to_string(),
+                ],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     }
@@ -681,11 +700,14 @@ fn select_sub_queries() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_sub_queries_test".to_string(),
-                "select_sub_queries_test2".to_string(),
-                "select_sub_queries_test3".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_sub_queries_test".to_string(),
+                    "select_sub_queries_test2".to_string(),
+                    "select_sub_queries_test3".to_string(),
+                ],
+            );
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
@@ -750,11 +772,36 @@ fn select_in() {
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
             };
 
-            delete_mock_data(c, vec![
-                "select_in_test".to_string(),
-                "select_in_test2".to_string(),
-                "select_in_test3".to_string(),
-            ]);
+            delete_mock_data(
+                c,
+                vec![
+                    "select_in_test".to_string(),
+                    "select_in_test2".to_string(),
+                    "select_in_test3".to_string(),
+                ],
+            );
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
+
+#[test]
+fn raw_execute() {
+    let url = "mysql://njord_user:njord_password@localhost:3306/njord_db";
+    let conn = mysql::open(url);
+
+    let username = "mjovanc";
+
+    let query = sql! {
+        SELECT *
+        FROM users
+        WHERE username = {username}
+    };
+
+    match conn {
+        Ok(mut c) => {
+            let result = mysql::select::raw_execute::<User>(&query, &mut c);
+            assert!(result.is_ok());
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };

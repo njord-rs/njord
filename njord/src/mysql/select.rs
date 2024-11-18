@@ -348,7 +348,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the SELECT query.
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `conn` - A mutable reference to the database connection.
@@ -362,47 +362,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
 
         info!("{}", final_query);
 
-        let query_set = conn.query_iter(final_query.as_str()).unwrap();
-
-        let mut results: Vec<T> = Vec::new();
-
-        for row_result in query_set {
-            let row = row_result.unwrap(); // Unwrap the row result
-            let mut instance = T::default();
-
-            for column in row.columns_ref() {
-                // Cells in a row can be indexed by numeric index or by column name
-                let column_value = &row[column.name_str().as_ref()];
-
-                let column_value_str = match column_value {
-                    Value::NULL => "NULL".to_string(),
-                    Value::Bytes(bytes) => String::from_utf8_lossy(bytes).to_string(),
-                    Value::Int(i) => i.to_string(),
-                    Value::UInt(u) => u.to_string(),
-                    Value::Float(f) => f.to_string(),
-                    Value::Double(d) => d.to_string(),
-                    Value::Date(year, month, day, hour, min, sec, micro) => format!(
-                        "{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:06}",
-                        year, month, day, hour, min, sec, micro
-                    ),
-                    Value::Time(neg, days, hours, minutes, seconds, micros) => format!(
-                        "{}{:02}:{:02}:{:02}.{:06}",
-                        if *neg { "-" } else { "" },
-                        days * 24 + u32::from(*hours),
-                        minutes,
-                        seconds,
-                        micros
-                    ),
-                };
-
-                instance.set_column_value(column.name_str().as_ref(), &column_value_str);
-            }
-
-            // Move `instance` to the `results` only after it is fully set up
-            results.push(instance);
-        }
-
-        Ok(results)
+        raw_execute(&final_query, conn)
     }
 }
 
@@ -416,4 +376,59 @@ where
     fn to_sql(&self) -> String {
         self.build_query()
     }
+}
+
+/// Executes a raw SQL query and returns a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A mutable reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
+pub fn raw_execute<T: Table + Default>(sql: &str, conn: &mut PooledConn) -> Result<Vec<T>, Error> {
+    let query_set = conn.query_iter(sql).unwrap();
+
+    let mut results: Vec<T> = Vec::new();
+
+    for row_result in query_set {
+        let row = row_result.unwrap(); // Unwrap the row result
+        let mut instance = T::default();
+
+        for column in row.columns_ref() {
+            // Cells in a row can be indexed by numeric index or by column name
+            let column_value = &row[column.name_str().as_ref()];
+
+            let column_value_str = match column_value {
+                Value::NULL => "NULL".to_string(),
+                Value::Bytes(bytes) => String::from_utf8_lossy(bytes).to_string(),
+                Value::Int(i) => i.to_string(),
+                Value::UInt(u) => u.to_string(),
+                Value::Float(f) => f.to_string(),
+                Value::Double(d) => d.to_string(),
+                Value::Date(year, month, day, hour, min, sec, micro) => format!(
+                    "{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:06}",
+                    year, month, day, hour, min, sec, micro
+                ),
+                Value::Time(neg, days, hours, minutes, seconds, micros) => format!(
+                    "{}{:02}:{:02}:{:02}.{:06}",
+                    if *neg { "-" } else { "" },
+                    days * 24 + u32::from(*hours),
+                    minutes,
+                    seconds,
+                    micros
+                ),
+            };
+
+            instance.set_column_value(column.name_str().as_ref(), &column_value_str);
+        }
+
+        // Move `instance` to the `results` only after it is fully set up
+        results.push(instance);
+    }
+
+    Ok(results)
 }

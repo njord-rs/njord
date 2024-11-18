@@ -23,11 +23,11 @@ A highly versatile and feature-rich ORM library for Rust, designed to simplify d
 
 | Database         | JOIN | SELECT | INSERT | UPDATE | DELETE | Raw SQL | Transactions | Notes                              |
 | ---------------- | ---- | ------ | ------ | ------ | ------ | ------- | ------------- | ---------------------------------- |
-| SQLite           | ✅   | ✅     | ✅     | ✅     | ✅     | ✅      | ✅            | Fully supported.                  |
+| SQLite           | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
 | PostgreSQL       | 🏗️   | 🏗️     | 🏗️     | 🏗️     | 🏗️     | 🏗️      | 🏗️            | In development.                   |
 | MySQL            | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
 | MariaDB          | 🏗️   | 🏗️     | 🏗️     | 🏗️     | 🏗️     | 🏗️      | 🏗️            | In development.                   |
-| Oracle           | ✅   | ✅     | ✅     | ✅     | ✅     | ✅      | ✅            | Fully supported.                  |
+| Oracle           | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
 | MSSQL            | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
 | IBM Db2          | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
 | LDAP             | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
