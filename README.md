@@ -25,10 +25,10 @@ A highly versatile and feature-rich ORM library for Rust, designed to simplify d
 | ---------------- | ---- | ------ | ------ | ------ | ------ | ------- | ------------- | ---------------------------------- |
 | SQLite           | ✅   | ✅     | ✅     | ✅     | ✅     | ✅      | ✅            | Fully supported.                  |
 | PostgreSQL       | 🏗️   | 🏗️     | 🏗️     | 🏗️     | 🏗️     | 🏗️      | 🏗️            | In development.                   |
-| MySQL            | ✅   | ✅     | ✅     | ✅     | ✅     | ✅      | ✅            | Fully supported.                  |
+| MySQL            | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
 | MariaDB          | 🏗️   | 🏗️     | 🏗️     | 🏗️     | 🏗️     | 🏗️      | 🏗️            | In development.                   |
 | Oracle           | ✅   | ✅     | ✅     | ✅     | ✅     | ✅      | ✅            | Fully supported.                  |
-| MSSQL            | ✅   | ✅     | ✅     | ✅     | ✅     | ✅      | ✅            | Fully supported.                  |
+| MSSQL            | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
 | IBM Db2          | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
 | LDAP             | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
 | Sybase           | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
