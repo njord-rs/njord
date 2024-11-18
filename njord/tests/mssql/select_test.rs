@@ -2,6 +2,7 @@ use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::mssql;
 use njord::{column::Column, condition::Value};
+use njord_derive::sql;
 use std::collections::HashMap;
 
 use crate::{User, UserWithSubQuery};
@@ -772,6 +773,29 @@ async fn select_in() {
                 ],
             )
             .await;
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
+
+#[tokio::test]
+async fn raw_execut() {
+    let connection_string =
+        "jdbc:sqlserver://localhost;encrypt=true;username=sa;password=Njord_passw0rd;databaseName=NjordDatabase;";
+    let mut conn = mssql::open(connection_string).await;
+
+    let username = "mjovanc";
+
+    let query = sql! {
+        SELECT *
+        FROM users
+        WHERE username = {username}
+    };
+
+    match conn {
+        Ok(ref mut c) => {
+            let result = mssql::select::raw_execute::<User>(&query, c).await;
+            assert!(result.is_ok());
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };
