@@ -7,7 +7,7 @@
 [![documentation](https://img.shields.io/badge/docs-njord-blue?logo=rust)](https://docs.rs/njord/latest/)
 [![discord](https://img.shields.io/discord/1181504958802186240.svg?style=flat&color=lightgray&logo=discord)](https://discord.gg/2uppTzjUHE)
 
-A lightweight and extensible ORM library for Rust.
+A highly versatile and feature-rich ORM library for Rust, designed to simplify database interactions across a wide range of systems with robust performance and flexibility.
 
 ## Table of Contents <!-- omit in toc -->
 
