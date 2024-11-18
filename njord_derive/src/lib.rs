@@ -32,8 +32,10 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 
 use proc_macro2::TokenStream as TokenStream2;
-use quote::quote;
 use syn::{parse_macro_input, DeriveInput, FieldsNamed};
+
+use proc_macro2::{Delimiter, TokenTree as TokenTree2};
+use quote::quote;
 
 use util::{extract_table_name, has_default_impl};
 
@@ -217,4 +219,149 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     };
 
     output.into()
+}
+
+/// The procedural macro `sql!` takes a SQL-like syntax and transforms it into a string.
+// #[proc_macro]
+// pub fn sql(input: TokenStream) -> TokenStream {
+//     /*
+//     GOAL:
+//        let id = 1;
+
+//        let query = sql! {
+//            SELECT *
+//            FROM user
+//            WHERE id = {id}
+//        };
+//     */
+//     let input_string = input.to_string();
+
+//     // Remove the outer quotes
+//     let input_string = input_string.trim_matches(|c| c == '"' || c == '`' || c == '\'');
+
+//     let expanded = quote! {
+//         {
+//             #input_string
+//         }
+//     };
+
+//     expanded.into()
+// }
+
+#[proc_macro]
+pub fn sql(input: TokenStream) -> TokenStream {
+    let input: proc_macro2::TokenStream = input.into();
+    let mut tokens = input.into_iter().peekable();
+    let mut sql_parts = Vec::new();
+    let mut expressions = Vec::new();
+    let mut param_types = Vec::new();
+    let mut current_sql = String::new();
+    let mut last_token_type = TokenType::Other;
+
+    #[derive(PartialEq, Clone)]
+    enum TokenType {
+        Dot,
+        OpenParen,
+        CloseParen,
+        Operator,
+        Other,
+    }
+
+    while let Some(token) = tokens.next() {
+        match token {
+            TokenTree2::Group(group) if group.delimiter() == Delimiter::Brace => {
+                if !current_sql.is_empty() {
+                    sql_parts.push(current_sql);
+                    current_sql = String::new();
+                }
+
+                // Parse the expression to determine its type
+                let expr = group.stream();
+                let expr_str = expr.to_string();
+
+                // Check if it's an identifier (likely a string variable)
+                let needs_quotes = !expr_str.contains("as")
+                    && !expr_str.contains("::")
+                    && !expr_str.starts_with("Some")
+                    && !expr_str.parse::<f64>().is_ok()
+                    && !expr_str.parse::<i64>().is_ok();
+
+                if needs_quotes {
+                    sql_parts.push("'{}'".to_string());
+                } else {
+                    sql_parts.push("{}".to_string());
+                }
+
+                expressions.push(expr);
+                param_types.push(needs_quotes);
+                last_token_type = TokenType::Other;
+            }
+            token => {
+                let token_str = token.to_string();
+                let current_token_type = match token_str.as_str() {
+                    "." => TokenType::Dot,
+                    "(" => TokenType::OpenParen,
+                    ")" => TokenType::CloseParen,
+                    "=" | ">" | "<" | ">=" | "<=" | "!=" => TokenType::Operator,
+                    _ => TokenType::Other,
+                };
+                match current_token_type {
+                    TokenType::Dot => {
+                        current_sql.push('.');
+                    }
+                    TokenType::OpenParen => {
+                        current_sql.push('(');
+                    }
+                    TokenType::CloseParen => {
+                        current_sql.push(')');
+                        if let Some(next) = tokens.peek() {
+                            let next_str = next.to_string();
+                            if !matches!(next_str.as_str(), "," | "." | ")" | ";") {
+                                current_sql.push(' ');
+                            }
+                        }
+                    }
+                    TokenType::Operator => {
+                        if !current_sql.ends_with(' ') {
+                            current_sql.push(' ');
+                        }
+                        current_sql.push_str(&token_str);
+                        current_sql.push(' ');
+                    }
+                    TokenType::Other => {
+                        let needs_space = !current_sql.is_empty()
+                            && !current_sql.ends_with(' ')
+                            && !matches!(last_token_type, TokenType::Dot | TokenType::OpenParen)
+                            && token_str != ","
+                            && token_str != ";";
+                        if needs_space {
+                            current_sql.push(' ');
+                        }
+                        current_sql.push_str(&token_str);
+                        if token_str == "," {
+                            current_sql.push(' ');
+                        }
+                    }
+                }
+                last_token_type = current_token_type;
+            }
+        }
+    }
+
+    if !current_sql.is_empty() {
+        sql_parts.push(current_sql);
+    }
+
+    let sql_format = sql_parts.join("");
+    let expanded = if expressions.is_empty() {
+        quote! {
+            #sql_format.to_string()
+        }
+    } else {
+        quote! {
+            format!(#sql_format #(,#expressions)*)
+        }
+    };
+
+    expanded.into()
 }
