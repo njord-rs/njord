@@ -334,59 +334,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
 
         info!("{}", final_query);
 
-        let mut stream = conn.client.query(final_query, &[]).await?;
-
-        // Clone the column names so we can use the stream later
-        let columns: Vec<String> = stream
-            .columns()
-            .await?
-            .unwrap()
-            .iter()
-            .map(|col| col.name().to_lowercase().to_string())
-            .collect();
-
-        let rows = stream.into_first_result().await?;
-
-        let mut results: Vec<T> = Vec::new();
-
-        for row_result in rows {
-            let mut instance = T::default();
-
-            for (idx, column_data) in row_result.into_iter().enumerate() {
-                let col_name = &columns[idx];
-                // let column_value_str = format!("{:?}", column_data);
-                let column_value_str = match column_data {
-                    ColumnData::U8(Some(val)) => val.to_string(),
-                    ColumnData::I16(Some(val)) => val.to_string(),
-                    ColumnData::I32(Some(val)) => val.to_string(),
-                    ColumnData::I64(Some(val)) => val.to_string(),
-                    ColumnData::F32(Some(val)) => val.to_string(),
-                    ColumnData::F64(Some(val)) => val.to_string(),
-                    ColumnData::Bit(Some(val)) => val.to_string(),
-                    ColumnData::String(Some(val)) => val.to_string(),
-                    ColumnData::Guid(Some(val)) => val.to_string(),
-                    ColumnData::Binary(Some(val)) => format!("{:?}", val), // Handle binary data with debug format.
-                    ColumnData::Numeric(Some(val)) => val.to_string(),
-                    ColumnData::Xml(Some(val)) => format!("{:?}", val), // XML might need custom formatting.
-                    // ColumnData::DateTime(Some(val)) => {
-                    //     // Format Days since 1st of January, 1900
-                    //     format!("{}:00", val.days())
-                    // }
-                    // ColumnData::SmallDateTime(Some(val)) => format!("{}:00", val.days()),
-                    // ColumnData::Time(Some(val)) => val.to_string(),
-                    // ColumnData::Date(Some(val)) => val.to_string(),
-                    // ColumnData::DateTime2(Some(val)) => val.to_string(),
-                    // ColumnData::DateTimeOffset(Some(val)) => val.to_string(),
-                    _ => "NULL".to_string(), // Handle the None cases.
-                };
-
-                instance.set_column_value(col_name, &column_value_str);
-            }
-
-            results.push(instance);
-        }
-
-        Ok(results)
+        raw_execute(&final_query, conn).await
     }
 }
 
@@ -400,4 +348,74 @@ where
     fn to_sql(&self) -> String {
         self.build_query()
     }
+}
+
+/// Executes a raw SQL query and returns the results as a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A mutable reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
+pub async fn raw_execute<T: Table + Default>(
+    sql: &str,
+    conn: &mut Connection,
+) -> Result<Vec<T>, Error> {
+    let mut stream = conn.client.query(sql, &[]).await?;
+
+    // Clone the column names so we can use the stream later
+    let columns: Vec<String> = stream
+        .columns()
+        .await?
+        .unwrap()
+        .iter()
+        .map(|col| col.name().to_lowercase().to_string())
+        .collect();
+
+    let rows = stream.into_first_result().await?;
+
+    let mut results: Vec<T> = Vec::new();
+
+    for row_result in rows {
+        let mut instance = T::default();
+
+        for (idx, column_data) in row_result.into_iter().enumerate() {
+            let col_name = &columns[idx];
+            // let column_value_str = format!("{:?}", column_data);
+            let column_value_str = match column_data {
+                ColumnData::U8(Some(val)) => val.to_string(),
+                ColumnData::I16(Some(val)) => val.to_string(),
+                ColumnData::I32(Some(val)) => val.to_string(),
+                ColumnData::I64(Some(val)) => val.to_string(),
+                ColumnData::F32(Some(val)) => val.to_string(),
+                ColumnData::F64(Some(val)) => val.to_string(),
+                ColumnData::Bit(Some(val)) => val.to_string(),
+                ColumnData::String(Some(val)) => val.to_string(),
+                ColumnData::Guid(Some(val)) => val.to_string(),
+                ColumnData::Binary(Some(val)) => format!("{:?}", val), // Handle binary data with debug format.
+                ColumnData::Numeric(Some(val)) => val.to_string(),
+                ColumnData::Xml(Some(val)) => format!("{:?}", val), // XML might need custom formatting.
+                // ColumnData::DateTime(Some(val)) => {
+                //     // Format Days since 1st of January, 1900
+                //     format!("{}:00", val.days())
+                // }
+                // ColumnData::SmallDateTime(Some(val)) => format!("{}:00", val.days()),
+                // ColumnData::Time(Some(val)) => val.to_string(),
+                // ColumnData::Date(Some(val)) => val.to_string(),
+                // ColumnData::DateTime2(Some(val)) => val.to_string(),
+                // ColumnData::DateTimeOffset(Some(val)) => val.to_string(),
+                _ => "NULL".to_string(), // Handle the None cases.
+            };
+
+            instance.set_column_value(col_name, &column_value_str);
+        }
+
+        results.push(instance);
+    }
+
+    Ok(results)
 }
