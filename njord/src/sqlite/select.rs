@@ -54,9 +54,7 @@ use crate::util::{Join, JoinType};
 /// # Returns
 ///
 /// A `SelectQueryBuilder` instance.
-pub fn select<'a, T: Table + Default>(
-    columns: Vec<Column<'a>>,
-) -> SelectQueryBuilder<'a, T> {
+pub fn select<'a, T: Table + Default>(columns: Vec<Column<'a>>) -> SelectQueryBuilder<'a, T> {
     SelectQueryBuilder::new(columns)
 }
 
@@ -348,7 +346,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the SELECT query.
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `conn` - A reference to the database connection.
@@ -405,4 +403,34 @@ where
     fn to_sql(&self) -> String {
         self.build_query()
     }
+}
+
+pub fn raw_execute<T: Table + Default>(sql: &str, conn: &Connection) -> Result<Vec<T>> {
+    let mut binding = conn.prepare(sql)?;
+    let iter = binding.query_map((), |row| {
+        let mut instance = T::default();
+        let columns = instance.get_column_fields();
+
+        for (index, column) in columns.iter().enumerate() {
+            let value = row.get::<usize, Value>(index)?;
+
+            let string_value = match value {
+                Value::Integer(val) => val.to_string(),
+                Value::Null => String::new(),
+                Value::Real(val) => val.to_string(),
+                Value::Text(val) => val.to_string(),
+                Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
+            };
+
+            instance.set_column_value(column, &string_value);
+        }
+
+        Ok(instance)
+    })?;
+
+    let result: Result<Vec<T>> = iter
+        .map(|row_result| row_result.and_then(|row| Ok(row)))
+        .collect::<Result<Vec<T>>>();
+
+    result.map_err(|err| err.into())
 }
