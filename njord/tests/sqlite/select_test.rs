@@ -2,6 +2,7 @@ use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::sqlite;
 use njord::{column::Column, condition::Value};
+use njord_derive::sql;
 use std::collections::HashMap;
 use std::path::Path;
 
@@ -517,6 +518,62 @@ fn select_in() {
                 .where_clause(condition)
                 .build(c);
 
+            match result {
+                Ok(r) => assert_eq!(r.len(), 2),
+                Err(e) => panic!("Failed to SELECT: {:?}", e),
+            };
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
+
+#[test]
+fn sql_bang() {
+    let user_id = 1;
+
+    let query = sql! {
+        SELECT *
+        FROM user
+        WHERE id = {user_id}
+    };
+
+    assert_eq!(query.to_string(), "SELECT * FROM user WHERE id = '1'");
+
+    let complex_query = sql! {
+        SELECT a.company, COUNT(i.id) AS total_impressions, COUNT(DISTINCT i.ip_address) AS unique_impressions
+        FROM impressions i
+        INNER JOIN cached_content c ON c.content_hash = i.content_hash
+        INNER JOIN ads a ON a.id = c.ad_id
+        GROUP BY a.company;
+    };
+
+    assert_eq!(
+        complex_query.to_string(),
+        "SELECT a.company, COUNT (i.id) AS total_impressions, COUNT (DISTINCT i.ip_address) AS unique_impressions \
+        FROM impressions i \
+        INNER JOIN cached_content c ON c.content_hash = i.content_hash \
+        INNER JOIN ads a ON a.id = c.ad_id \
+        GROUP BY a.company;"
+    );
+}
+
+#[test]
+fn raw_execute() {
+    let db_relative_path = "./db/select.db";
+    let db_path = Path::new(&db_relative_path);
+    let conn = sqlite::open(db_path);
+
+    let username = "mjovanc";
+
+    let query = sql! {
+        SELECT *
+        FROM users
+        WHERE username = {username}
+    };
+
+    match conn {
+        Ok(ref c) => {
+            let result = sqlite::select::raw_execute::<User>(&query, c);
             match result {
                 Ok(r) => assert_eq!(r.len(), 2),
                 Err(e) => panic!("Failed to SELECT: {:?}", e),
