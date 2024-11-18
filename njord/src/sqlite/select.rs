@@ -39,7 +39,6 @@ use crate::{
 use rusqlite::{Connection, Result};
 use std::{collections::HashMap, sync::Arc};
 
-use log::info;
 use rusqlite::types::Value;
 
 use crate::table::Table;
@@ -358,38 +357,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     pub fn build(self, conn: &Connection) -> Result<Vec<T>> {
         let final_query = self.build_query();
 
-        info!("{}", final_query);
-
-        // Prepare SQL statement
-        let mut stmt = conn.prepare(final_query.as_str())?;
-
-        // Rest of the query execution remains unchanged
-        let iter = stmt.query_map((), |row| {
-            let mut instance = T::default();
-            let columns = instance.get_column_fields();
-
-            for (index, column) in columns.iter().enumerate() {
-                let value = row.get::<usize, Value>(index)?;
-
-                let string_value = match value {
-                    Value::Integer(val) => val.to_string(),
-                    Value::Null => String::new(),
-                    Value::Real(val) => val.to_string(),
-                    Value::Text(val) => val.to_string(),
-                    Value::Blob(val) => String::from_utf8_lossy(&val).to_string(),
-                };
-
-                instance.set_column_value(column, &string_value);
-            }
-
-            Ok(instance)
-        })?;
-
-        let result: Result<Vec<T>> = iter
-            .map(|row_result| row_result.and_then(|row| Ok(row)))
-            .collect::<Result<Vec<T>>>();
-
-        result.map_err(|err| err.into())
+        raw_execute(&final_query, conn)
     }
 }
 
@@ -405,6 +373,17 @@ where
     }
 }
 
+/// Executes a raw SQL query and returns a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
 pub fn raw_execute<T: Table + Default>(sql: &str, conn: &Connection) -> Result<Vec<T>> {
     let mut binding = conn.prepare(sql)?;
     let iter = binding.query_map((), |row| {

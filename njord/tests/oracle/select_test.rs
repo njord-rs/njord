@@ -3,6 +3,7 @@ use njord::condition::Condition;
 use njord::keys::AutoIncrementPrimaryKey;
 use njord::oracle::{self};
 use njord::{column::Column, condition::Value};
+use njord_derive::sql;
 use std::collections::HashMap;
 
 use crate::{User, UserWithSubQuery};
@@ -741,6 +742,28 @@ fn select_in() {
                     "select_in_test3".to_string(),
                 ],
             );
+        }
+        Err(e) => panic!("Failed to SELECT: {:?}", e),
+    };
+}
+
+#[test]
+fn raw_execute() {
+    let connection_string = "//localhost:1521/FREEPDB1";
+    let mut conn = oracle::open("njord_user", "njord_password", connection_string);
+
+    let username = "mjovanc";
+
+    let query = sql! {
+        SELECT *
+        FROM users
+        WHERE username = {username}
+    };
+
+    match conn {
+        Ok(ref mut c) => {
+            let result = oracle::select::raw_execute::<User>(&query, c);
+            assert!(result.is_ok());
         }
         Err(e) => panic!("Failed to SELECT: {:?}", e),
     };

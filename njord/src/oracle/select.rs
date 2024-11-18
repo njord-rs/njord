@@ -320,7 +320,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     }
 
     /// Builds and executes the SELECT query.
-    /// 
+    ///
     /// # Arguments
     ///
     /// * `conn` - A mutable reference to the database connection.
@@ -329,40 +329,12 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     ///
     /// A `Result` containing a vector of selected table rows if successful,
     /// or a `rusqlite::Error` if an error occurs during the execution.
-    pub fn build(&mut self, conn: &mut Connection) -> Result<Vec<T>, Error> {
+    pub fn build(self, conn: &Connection) -> Result<Vec<T>, Error> {
         let final_query = self.build_query();
 
         info!("{}", final_query);
 
-        let mut stmt = conn.statement(&final_query).build()?;
-        let rows = stmt.query(&[])?;
-
-        let mut results: Vec<T> = Vec::new();
-
-        let mut columns: Vec<String> = Vec::new();
-
-        for info in rows.column_info() {
-            columns.push(info.name().to_string().to_lowercase());
-        }
-
-        for row_result in rows {
-            let mut instance = T::default();
-
-            // print column values
-            for (idx, val) in row_result?.sql_values().iter().enumerate() {
-                let column_value_str = match val.oracle_type().unwrap() {
-                    _ => format!("{}", val),
-                };
-
-                let col = columns[idx].clone();
-
-                instance.set_column_value(col.to_lowercase().as_str(), &column_value_str);
-            }
-
-            results.push(instance);
-        }
-
-        Ok(results)
+        raw_execute(&final_query, conn)
     }
 }
 
@@ -376,4 +348,51 @@ where
     fn to_sql(&self) -> String {
         self.build_query()
     }
+}
+
+/// Executes a raw SQL query and returns the results as a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A mutable reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
+pub fn raw_execute<T: Table + Default>(sql: &str, conn: &Connection) -> Result<Vec<T>, Error> {
+    let final_query = sql;
+
+    info!("{}", final_query);
+
+    let mut stmt = conn.statement(&final_query).build()?;
+    let rows = stmt.query(&[])?;
+
+    let mut results: Vec<T> = Vec::new();
+
+    let mut columns: Vec<String> = Vec::new();
+
+    for info in rows.column_info() {
+        columns.push(info.name().to_string().to_lowercase());
+    }
+
+    for row_result in rows {
+        let mut instance = T::default();
+
+        // print column values
+        for (idx, val) in row_result?.sql_values().iter().enumerate() {
+            let column_value_str = match val.oracle_type().unwrap() {
+                _ => format!("{}", val),
+            };
+
+            let col = columns[idx].clone();
+
+            instance.set_column_value(col.to_lowercase().as_str(), &column_value_str);
+        }
+
+        results.push(instance);
+    }
+
+    Ok(results)
 }
