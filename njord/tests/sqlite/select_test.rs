@@ -537,7 +537,7 @@ fn sql_bang() {
         WHERE id = {user_id}
     };
 
-    assert_eq!(query.to_string(), "SELECT * FROM user WHERE id = 1");
+    assert_eq!(query.to_string(), "SELECT * FROM user WHERE id = '1'");
 
     let complex_query = sql! {
         SELECT a.company, COUNT(i.id) AS total_impressions, COUNT(DISTINCT i.ip_address) AS unique_impressions
