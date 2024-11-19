@@ -21,43 +21,43 @@ A highly versatile and feature-rich ORM library for Rust, designed to simplify d
 
 ## Feature Support by Database
 
-| Database         | JOIN | SELECT | INSERT | UPDATE | DELETE | Raw SQL | Transactions | Notes                              |
-| ---------------- | ---- | ------ | ------ | ------ | ------ | ------- | ------------- | ---------------------------------- |
-| SQLite           | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
-| PostgreSQL       | 🏗️   | 🏗️     | 🏗️     | 🏗️     | 🏗️     | 🏗️      | 🏗️            | In development.                   |
-| MySQL            | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
-| MariaDB          | 🏗️   | 🏗️     | 🏗️     | 🏗️     | 🏗️     | 🏗️      | 🏗️            | In development.                   |
-| Oracle           | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
-| MSSQL            | ✅   | ✅     | ✅     | ✅     | ✅     | 🏗️      | ✅            | Fully supported.                  |
-| IBM Db2          | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| LDAP             | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| Sybase           | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| H2               | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| Snowflake        | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| Microsoft Access | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| Apache Hive      | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
-| Teradata         | ❌   | ❌     | ❌     | ❌     | ❌     | ❌      | ❌            | Not supported, help us implement! |
+| Database         | JOIN | SELECT | INSERT | UPDATE | DELETE | Raw SQL | Transactions |
+|------------------|------|--------|--------|--------|--------|---------|--------------|
+| SQLite           | ✅    | ✅      | ✅      | ✅      | ✅      | 🏗️     | ✅            |
+| PostgreSQL       | 🏗️  | 🏗️    | 🏗️    | 🏗️    | 🏗️    | 🏗️     | 🏗️          |
+| MySQL            | ✅    | ✅      | ✅      | ✅      | ✅      | 🏗️     | ✅            |
+| MariaDB          | 🏗️  | 🏗️    | 🏗️    | 🏗️    | 🏗️    | 🏗️     | 🏗️          |
+| Oracle           | ✅    | ✅      | ✅      | ✅      | ✅      | 🏗️     | ✅            |
+| MSSQL            | ✅    | ✅      | ✅      | ✅      | ✅      | 🏗️     | ✅            |
+| IBM Db2          | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| LDAP             | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| Sybase           | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| H2               | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| Snowflake        | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| Microsoft Access | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| Apache Hive      | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
+| Teradata         | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
 
 ## Migrations CLI
 
 _Work on CLI migrations is currently in progress under the `njord_cli` branch. No database is supported yet. Below is the planned feature tracking table._
 
-| Database         | Create Migration | Apply Migration | Rollback Migration | Migration History | Seed Data | Schema Diffing | Notes                              |
-| ---------------- | ---------------- | ---------------- | ------------------ | ----------------- | --------- | -------------- | ---------------------------------- |
-| SQLite           | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported yet. Work planned.  |
-| PostgreSQL       | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported yet. Work planned.  |
-| MySQL            | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported yet. Work planned.  |
-| MariaDB          | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported yet. Work planned.  |
-| Oracle           | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported yet. Work planned.  |
-| MSSQL            | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported yet. Work planned.  |
-| IBM Db2          | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| LDAP             | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| Sybase           | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| H2               | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| Snowflake        | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| Microsoft Access | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| Apache Hive      | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
-| Teradata         | ❌               | ❌               | ❌                | ❌                | ❌        | ❌             | Not supported. Contributions welcome! |
+| Database         | Create Migration | Apply Migration | Rollback Migration | Migration History | Seed Data | Schema Diffing |
+|------------------|------------------|-----------------|--------------------|-------------------|-----------|----------------|
+| SQLite           | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| PostgreSQL       | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| MySQL            | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| MariaDB          | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| Oracle           | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| MSSQL            | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| IBM Db2          | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| LDAP             | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| Sybase           | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| H2               | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| Snowflake        | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| Microsoft Access | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| Apache Hive      | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+| Teradata         | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
 
 ## Getting Help
 
