@@ -29,18 +29,10 @@ A highly versatile and feature-rich ORM library for Rust, designed to simplify d
 | MariaDB          | 🏗️  | 🏗️    | 🏗️    | 🏗️    | 🏗️    | 🏗️     | 🏗️          |
 | Oracle           | ✅    | ✅      | ✅      | ✅      | ✅      | 🏗️     | ✅            |
 | MSSQL            | ✅    | ✅      | ✅      | ✅      | ✅      | 🏗️     | ✅            |
-| IBM Db2          | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| LDAP             | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| Sybase           | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| H2               | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| Snowflake        | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| Microsoft Access | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| Apache Hive      | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
-| Teradata         | ❌    | ❌      | ❌      | ❌      | ❌      | ❌       | ❌            |
 
 ## Migrations CLI
 
-_Work on CLI migrations is currently in progress under the `njord_cli` branch. No database is supported yet. Below is the planned feature tracking table._
+_Work on CLI migrations is currently in paused under the `njord_cli` directory. No database is supported yet. Below is the planned feature tracking table once we start again._
 
 | Database         | Create Migration | Apply Migration | Rollback Migration | Migration History | Seed Data | Schema Diffing |
 |------------------|------------------|-----------------|--------------------|-------------------|-----------|----------------|
@@ -50,14 +42,30 @@ _Work on CLI migrations is currently in progress under the `njord_cli` branch. N
 | MariaDB          | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
 | Oracle           | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
 | MSSQL            | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| IBM Db2          | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| LDAP             | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| Sybase           | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| H2               | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| Snowflake        | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| Microsoft Access | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| Apache Hive      | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
-| Teradata         | ❌                | ❌               | ❌                  | ❌                 | ❌         | ❌              |
+
+## Machine Learning Tools
+
+The `njord_ml` is a specialized library for machine learning workflows.
+It provides features to facilitate efficient data handling for ML pipelines, including data extraction, transformation, and injection.
+This toolset will be designed to integrate seamlessly with popular ML frameworks while maintaining robust database support.
+
+### Feature Roadmap
+
+- [ ] Data Preparation
+    - [ ] In-database preprocessing
+    - [ ] Query optimization for ML models
+    - [ ] Data source loading and merging
+    - [ ] Data extraction and transformation
+- [ ] Handling Large Datasets
+  - [ ] Streaming large datasets
+  - [ ] Batch processing for large datasets
+- [ ] Data Management
+  - [ ] Data injection for ML models
+  - [ ] Data validation and verification
+  - [ ] Data versioning and tracking
+  - [ ] Data lineage and provenance
+- [ ] Data Quality Assurance
+  - [ ] Data quality and consistency checks
 
 ## Getting Help
 
