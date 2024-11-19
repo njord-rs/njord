@@ -2,10 +2,12 @@
 members = [
     "njord",
     "njord_derive",
+    "njord_cli",
     "njord_examples/sqlite",
     "njord_examples/mysql",
     "njord_examples/oracle",
     "njord_examples/mssql",
+    "njord_examples/sqlite_cli"
 ]
 
 resolver = "2"
