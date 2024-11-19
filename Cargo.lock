@@ -382,9 +382,7 @@ checksum = "a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
- "js-sys",
  "num-traits",
- "wasm-bindgen",
  "windows-targets 0.52.6",
 ]
 
@@ -1485,7 +1483,6 @@ dependencies = [
  "mysql 25.0.1",
  "njord_derive",
  "oracle 0.6.2",
- "rand",
  "rusqlite",
  "serde",
  "tiberius",
@@ -1497,13 +1494,11 @@ dependencies = [
 name = "njord_cli"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "clap",
  "njord",
  "njord_derive",
  "rusqlite",
  "serde",
- "serde_derive",
  "toml",
 ]
 
@@ -1513,8 +1508,6 @@ version = "0.4.0"
 dependencies = [
  "proc-macro2",
  "quote",
- "regex",
- "rusqlite",
  "syn 2.0.87",
 ]
 
@@ -2359,10 +2352,6 @@ dependencies = [
 [[package]]
 name = "sqlite_cli"
 version = "0.1.0"
-dependencies = [
- "njord",
- "njord_derive",
-]
 
 [[package]]
 name = "static_assertions"
