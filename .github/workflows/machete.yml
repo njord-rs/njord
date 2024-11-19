@@ -58,7 +58,7 @@ jobs:
           branch: ${{ env.branch_name }}
           base: main
           title: "Fix unused dependencies"
-          body: |
-            This PR fixes unused dependencies found by cargo machete.
+          body: "This PR fixes unused dependencies found by cargo machete."
           commit-message: "machete: removing unused dependencies"
-          labels: "dependencies", "automated pr"
+          draft: "false"
+          labels: "dependencies, automated pr"
