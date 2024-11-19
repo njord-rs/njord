@@ -28,5 +28,3 @@ rusqlite = { version = "0.32.1", features = ["bundled"] }
 clap = { version = "4.5.3", features = ["cargo", "derive"] }
 toml = "0.8.12"
 serde = { version = "1.0", features = ["derive"] }
-serde_derive = "1.0"
-chrono = "0.4"

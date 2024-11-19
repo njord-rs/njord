@@ -15,7 +15,6 @@ keywords = ["orm", "database", "sql"]
 [dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
 log = "0.4.22"
-rand = "0.8.4"
 rusqlite = { version = "0.32.1", features = ["bundled"], optional = true }
 serde = { version = "1.0.215", features = ["derive"] }
 mysql = { version = "25.0.1", optional = true }
