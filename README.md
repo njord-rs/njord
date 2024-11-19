@@ -12,6 +12,8 @@ A highly versatile and feature-rich ORM library for Rust, designed to simplify d
 
 - [Feature Support by Database](#feature-support-by-databases)
 - [Migrations CLI](#migrations-cli)
+- [Machine Learning Tools](#machine-learning-tools)
+  - [Feature Roadmap](#feature-roadmap)
 - [Getting Help](#getting-help)
 - [Reporting Issues](#reporting-issues)
 - [Contributing](#contributing)
