@@ -1,4 +1,4 @@
-name: cleanup
+name: machete
 
 on:
   schedule:
