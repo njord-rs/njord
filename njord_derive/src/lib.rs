@@ -43,11 +43,33 @@ mod util;
 
 /// Derives the `Table` trait for a struct.
 ///
-/// This procedural macro generates implementations of the `Table` trait for a struct.
-/// The `Table` trait provides methods for working with database tables.
+/// This procedural macro generates an implementation of the `Table` trait for a struct,
+/// enabling interaction with database tables. It derives functionality based on the struct's
+/// field names and types, automatically mapping them to corresponding SQL column definitions.
 ///
-/// This macro will generate implementations the `Table` trait
-/// based on the struct's field names and types.
+/// # Example
+///
+/// ```rust
+/// use njord_derive::Table;
+///
+/// #[derive(Table)]
+/// #[table_name = "users"]
+/// struct User {
+///     id: i32,
+///     name: String,
+///     email: Option<String>,
+/// }
+/// ```
+///
+/// The `Table` trait will provide:
+/// - `get_name()` - Returns the table name.
+/// - `get_columns()` - Returns column names and their SQL types.
+/// - `get_column_fields()` - Returns the field names as a vector.
+/// - `get_column_values()` - Returns the field values as strings.
+/// - `set_column_value()` - Updates a field value by column name.
+/// - `is_auto_increment_primary_key()` - Checks if a value is an auto-increment primary key.
+///
+/// Additional traits like `Default`, `Display`, and `FromStr` are also implemented if applicable.
 #[proc_macro_derive(Table, attributes(table_name))]
 pub fn table_derive(input: TokenStream) -> TokenStream {
     let cloned_input = input.clone();
@@ -221,33 +243,26 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
     output.into()
 }
 
-/// The procedural macro `sql!` takes a SQL-like syntax and transforms it into a string.
-// #[proc_macro]
-// pub fn sql(input: TokenStream) -> TokenStream {
-//     /*
-//     GOAL:
-//        let id = 1;
-
-//        let query = sql! {
-//            SELECT *
-//            FROM user
-//            WHERE id = {id}
-//        };
-//     */
-//     let input_string = input.to_string();
-
-//     // Remove the outer quotes
-//     let input_string = input_string.trim_matches(|c| c == '"' || c == '`' || c == '\'');
-
-//     let expanded = quote! {
-//         {
-//             #input_string
-//         }
-//     };
-
-//     expanded.into()
-// }
-
+/// A procedural macro `sql!` that takes SQL-like syntax and transforms it into a formatted string.
+///
+/// # Example
+///
+/// ```rust
+/// use njord_derive::sql;
+/// let id = 1;
+///
+/// let query = sql! {
+///     SELECT * FROM user WHERE id = {id}
+/// };
+/// assert_eq!(query, "SELECT * FROM user WHERE id = 1");
+/// ```
+///
+/// This macro supports embedding expressions within SQL queries, ensuring proper formatting
+/// for identifiers and values.
+///
+/// Note:
+/// - Use `{}` syntax for expressions to embed Rust variables.
+/// - Identifiers are automatically quoted if necessary.
 #[proc_macro]
 pub fn sql(input: TokenStream) -> TokenStream {
     let input: proc_macro2::TokenStream = input.into();
