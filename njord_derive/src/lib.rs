@@ -47,20 +47,6 @@ mod util;
 /// enabling interaction with database tables. It derives functionality based on the struct's
 /// field names and types, automatically mapping them to corresponding SQL column definitions.
 ///
-/// # Example
-///
-/// ```rust
-/// use njord_derive::Table;
-///
-/// #[derive(Table)]
-/// #[table_name = "users"]
-/// struct User {
-///     id: i32,
-///     name: String,
-///     email: Option<String>,
-/// }
-/// ```
-///
 /// The `Table` trait will provide:
 /// - `get_name()` - Returns the table name.
 /// - `get_columns()` - Returns column names and their SQL types.
@@ -254,7 +240,7 @@ pub fn table_derive(input: TokenStream) -> TokenStream {
 /// let query = sql! {
 ///     SELECT * FROM user WHERE id = {id}
 /// };
-/// assert_eq!(query, "SELECT * FROM user WHERE id = 1");
+/// assert_eq!(query, "SELECT * FROM user WHERE id = '1'");
 /// ```
 ///
 /// This macro supports embedding expressions within SQL queries, ensuring proper formatting

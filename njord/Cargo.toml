@@ -40,6 +40,7 @@ sqlite = ["dep:rusqlite"]
 mysql = ["dep:mysql"]
 oracle = ["dep:oracle"]
 mssql = ["dep:tiberius", "dep:tokio", "dep:tokio-util"]
+mariadb = ["dep:mysql"]
 
 [[test]]
 name = "sqlite_tests"
@@ -56,3 +57,7 @@ path = "tests/oracle/mod.rs"
 [[test]]
 name = "mssql_tests"
 path = "tests/mssql/mod.rs"
+
+[[test]]
+name = "mariadb_tests"
+path = "tests/mariadb/mod.rs"

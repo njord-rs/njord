@@ -1,6 +1,8 @@
 //! BSD 3-Clause License
 //!
-//! Copyright (c) 2024, Marcus Cvjeticanin
+//! Copyright (c) 2024,
+//!     Marcus Cvjeticanin
+//!     Chase Willden
 //!
 //! Redistribution and use in source and binary forms, with or without
 //! modification, are permitted provided that the following conditions are met:
@@ -27,24 +29,36 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod column;
-pub mod condition;
-pub mod keys;
-pub mod query;
-pub mod table;
-pub mod util;
+use mysql::{Error, Pool, PooledConn};
 
-#[cfg(feature = "sqlite")]
-pub mod sqlite;
+pub mod delete;
+pub mod error;
+pub mod insert;
+pub mod select;
+pub mod update;
+mod util;
 
-#[cfg(feature = "mysql")]
-pub mod mysql;
+pub use delete::delete;
+pub use error::MariaDBError;
+pub use insert::insert;
+pub use select::select;
+pub use update::update;
 
-#[cfg(feature = "oracle")]
-pub mod oracle;
+/// Open a database connection.
+///
+/// This function opens a connection to a MariaDB database located at the specified path.
+///
+/// # Arguments
+///
+/// * `db_path` - A reference to the path where the MariaDB database is located.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `PooledConn` if the operation was successful, or an `Error` if an error occurred.
+pub fn open(url: &str) -> Result<PooledConn, Error> {
+    let pool = Pool::new(url)?;
 
-#[cfg(feature = "mssql")]
-pub mod mssql;
+    let conn = pool.get_conn()?;
 
-#[cfg(feature = "mariadb")]
-pub mod mariadb;
+    Ok(conn)
+}

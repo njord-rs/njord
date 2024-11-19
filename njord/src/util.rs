@@ -75,6 +75,7 @@ impl<'a> Join<'a> {
     /// use std::sync::Arc;
     /// use njord::condition::{Condition, Value};
     /// use njord::util::{Join, JoinType};
+    /// use njord::table::Table;
     /// use njord_derive::Table;
     ///
     /// #[derive(Table)]
