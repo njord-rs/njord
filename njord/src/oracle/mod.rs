@@ -73,3 +73,21 @@ pub fn open(username: &str, password: &str, connect_string: &str) -> Result<Conn
         }
     }
 }
+
+/// Executes a raw SQL query and returns a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
+pub fn raw_execute(conn: &Connection, sql: &str) -> Result<(), OracleError> {
+    match conn.execute(sql, &[]) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.into()),
+    }
+}

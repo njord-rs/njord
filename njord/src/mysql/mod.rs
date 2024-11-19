@@ -29,7 +29,7 @@
 //! OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //! OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use mysql::{Error, Pool, PooledConn};
+use mysql::{prelude::Queryable, Error, Pool, PooledConn};
 
 pub mod delete;
 pub mod error;
@@ -61,4 +61,22 @@ pub fn open(url: &str) -> Result<PooledConn, Error> {
     let conn = pool.get_conn()?;
 
     Ok(conn)
+}
+
+/// Executes a raw SQL query and returns a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
+pub fn raw_execute(conn: &mut PooledConn, sql: &str) -> Result<(), MySqlError> {
+    match conn.query_drop(sql) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.into()),
+    }
 }
