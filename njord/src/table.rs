@@ -62,7 +62,16 @@ pub trait Table {
     /// Set the values of the columns.
     fn set_column_value(&mut self, column: &str, value: &str);
 
-    // Check if a given field is of AutoincrementPrimaryKey
+    /// Determines if the provided value represents an auto-incrementing primary key.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - A string representing the value to check.
+    ///
+    /// # Returns
+    ///
+    /// * `true` if the value indicates an auto-incrementing primary key.
+    /// * `false` otherwise.
     fn is_auto_increment_primary_key(&self, value: &str) -> bool;
 }
 
