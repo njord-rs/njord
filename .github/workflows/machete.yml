@@ -55,8 +55,8 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}  # Source branch (head)
-          base: main  # Target branch (base)
+          branch: ${{ env.branch_name }}
+          base: main
           title: "Fix unused dependencies"
           body: |
             This PR fixes unused dependencies found by cargo machete.
