@@ -3,6 +3,7 @@ members = [
     "njord",
     "njord_derive",
     "njord_cli",
+    "njord_ml",
     "njord_examples/sqlite",
     "njord_examples/mysql",
     "njord_examples/oracle",
