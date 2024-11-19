@@ -62,3 +62,4 @@ jobs:
           commit-message: "machete: removing unused dependencies"
           draft: "false"
           labels: "dependencies, automated pr"
+        continue-on-error: true
