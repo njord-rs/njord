@@ -51,12 +51,14 @@ jobs:
             echo "No changes to commit."
           fi
 
-      - name: Create a Pull Request
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          base: main  # The branch to merge the changes into
-          head: ${{ env.branch_name }}  # Use the branch name from the previous step
+          branch: ${{ github.head_ref }}  # Source branch (head)
+          base: main  # Target branch (base)
           title: "Fix unused dependencies"
-          body: "This PR removes unused dependencies from the project."
-          draft: false
+          body: |
+            This PR fixes unused dependencies found by cargo machete.
+          commit-message: "machete: removing unused dependencies"
+          labels: "dependencies", "automated pr"
