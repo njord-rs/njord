@@ -8,6 +8,7 @@ members = [
     "njord_examples/mysql",
     "njord_examples/oracle",
     "njord_examples/mssql",
+    "njord_examples/mariadb",
     "njord_examples/sqlite_cli"
 ]
 

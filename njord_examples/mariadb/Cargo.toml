@@ -1,0 +1,14 @@
+[package]
+name = "mariadb"
+publish = false
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.81.0"
+
+[dependencies]
+njord = { version = "0.4.0", path = "../../njord", features = ["mariadb"] }
+njord_derive = { version = "0.4.0", path = "../../njord_derive" }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0.215", features = ["derive"] }
+reqwest = { version = "0.12", features = ["json"] }
+serde_json = "1.0.133"

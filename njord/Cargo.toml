@@ -56,3 +56,7 @@ path = "tests/oracle/mod.rs"
 [[test]]
 name = "mssql_tests"
 path = "tests/mssql/mod.rs"
+
+[[test]]
+name = "mariadb_tests"
+path = "tests/mariadb/mod.rs"

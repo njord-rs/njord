@@ -1,4 +1,19 @@
 services:
+  mariadb:
+    image: mariadb
+    container_name: njord_mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: njord_rootpwd
+      MARIADB_DATABASE: njord_db
+      MARIADB_USER: njord_user
+      MARIADB_PASSWORD: njord_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./njord_examples/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./njord/db/test/mariadb.sql:/docker-entrypoint-initdb.d/tests.sql
+
   mysql:
     image: mysql:8.0
     container_name: njord_mysql
@@ -64,3 +79,4 @@ volumes:
   mysql_data:
   oracle_data:
   mssql_data:
+  mariadb_data:
