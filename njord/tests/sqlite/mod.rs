@@ -1,6 +1,7 @@
 mod delete_test;
 mod insert_test;
 mod open_test;
+mod raw_test;
 mod select_joins_test;
 mod select_test;
 mod update_test;

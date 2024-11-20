@@ -78,3 +78,21 @@ pub async fn open(connection_string: &str) -> Result<Connection, Error> {
     };
     return Ok(Connection { client });
 }
+
+/// Executes a raw SQL query and returns a vector of table rows.
+///
+/// # Arguments
+///
+/// * `sql` - The SQL query to execute.
+/// * `conn` - A reference to the database connection.
+///
+/// # Returns
+///
+/// A `Result` containing a vector of table rows if successful,
+/// or a `rusqlite::Error` if an error occurs during the execution.
+pub async fn raw_execute(conn: &mut Connection, sql: &str) -> Result<(), MSSQLError> {
+    match conn.client.execute(sql, &[]).await {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.into()),
+    }
+}
