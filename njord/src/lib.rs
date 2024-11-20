@@ -45,3 +45,6 @@ pub mod oracle;
 
 #[cfg(feature = "mssql")]
 pub mod mssql;
+
+#[cfg(feature = "mariadb")]
+pub mod mariadb;
