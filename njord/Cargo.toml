@@ -12,6 +12,9 @@ rust-version = "1.81.0"
 homepage = "https://njord.rs"
 keywords = ["orm", "database", "sql"]
 
+[badges]
+maintenance = { status = "actively-developed" }
+
 [dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
 log = "0.4.22"
@@ -41,6 +44,9 @@ mysql = ["dep:mysql"]
 oracle = ["dep:oracle"]
 mssql = ["dep:tiberius", "dep:tokio", "dep:tokio-util"]
 mariadb = ["dep:mysql"]
+
+[package.metadata.docs.rs]
+all-features = true
 
 [[test]]
 name = "sqlite_tests"
