@@ -22,8 +22,8 @@ default = [
 sqlite = []
 
 [dependencies]
-njord = { version = "0.4.0", path = "../njord" }
-njord_derive = { version = "0.4.0", path = "../njord_derive" }
+njord = { version = "0.5.0", path = "../njord" }
+njord_derive = { version = "0.5.0", path = "../njord_derive" }
 rusqlite = { version = "0.32.1", features = ["bundled"] }
 clap = { version = "4.5.3", features = ["cargo", "derive"] }
 toml = "0.8.12"
