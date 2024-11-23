@@ -98,7 +98,7 @@ pub fn into<'a, T: Table + Default>(
     info!("Inserted into table, done.");
 
     // FIXME: Return the number of rows affected
-    return Ok(sql);
+    Ok(sql)
 }
 
 /// Generates an SQL INSERT INTO statement for a given subquery.
@@ -191,7 +191,7 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
         format!("({})", values_str)
     };
 
-    debug!("{}", sql); // For debugging purposes
+    debug!("{}", sql);
 
     Ok(sql)
 }

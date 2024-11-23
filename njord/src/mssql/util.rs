@@ -102,7 +102,7 @@ pub fn generate_order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) ->
         String::new()
     };
 
-    return order_by_str;
+    order_by_str
 }
 
 /// Generates an SQL HAVING clause string based on the provided group by flag and condition.

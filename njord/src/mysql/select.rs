@@ -426,7 +426,6 @@ pub fn raw_execute<T: Table + Default>(sql: &str, conn: &mut PooledConn) -> Resu
             instance.set_column_value(column.name_str().as_ref(), &column_value_str);
         }
 
-        // Move `instance` to the `results` only after it is fully set up
         results.push(instance);
     }
 

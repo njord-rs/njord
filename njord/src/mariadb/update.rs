@@ -39,7 +39,7 @@ use crate::{
     },
 };
 
-use log::info;
+use log::{debug, info};
 use mysql::{prelude::Queryable, PooledConn};
 
 use crate::table::Table;
@@ -186,7 +186,6 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
                     };
                     set_fields.push(format!("{} = {}", column, formatted_value));
                 } else {
-                    // Handle the case when the column doesn't exist in the table
                     eprintln!("Column '{}' does not exist in the table", column);
                 }
             }
@@ -217,9 +216,8 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
             format!("{} {}", limit_str, offset_str),
         );
 
-        info!("{}", query);
+        debug!("{}", query);
 
-        // Prepare SQL statement
         let _ = conn.query_drop(query.as_str());
 
         Ok(())

@@ -40,7 +40,7 @@ use crate::{
 };
 use std::{collections::HashMap, sync::Arc};
 
-use log::info;
+use log::{debug, info};
 use oracle::{Connection, Error};
 
 use crate::table::Table;
@@ -332,7 +332,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     pub fn build(self, conn: &Connection) -> Result<Vec<T>, Error> {
         let final_query = self.build_query();
 
-        info!("{}", final_query);
+        debug!("{}", final_query);
 
         raw_execute(&final_query, conn)
     }

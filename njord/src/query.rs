@@ -36,7 +36,7 @@ pub trait QueryBuilder<'a>: QueryBuilderClone<'a> {
     fn to_sql(&self) -> String;
 }
 
-// A helper trait to enable cloning of `Box<dyn QueryBuilder>`
+/// A helper trait to enable cloning of `Box<dyn QueryBuilder>`
 pub trait QueryBuilderClone<'a> {
     fn clone_box(&self) -> Box<dyn QueryBuilder<'a> + 'a>;
 }

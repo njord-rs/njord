@@ -36,7 +36,7 @@ use crate::{
     mssql::util::{generate_where_condition_str, remove_quotes_and_backslashes},
 };
 
-use log::info;
+use log::{debug, info};
 
 use crate::table::Table;
 
@@ -170,9 +170,8 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
             table_name_str, set, where_condition_str,
         );
 
-        info!("{}", query);
+        debug!("{}", query);
 
-        // Prepare SQL statement
         match self.conn.client.execute(query.as_str(), &[]).await {
             Ok(_) => Ok("Success!".to_string()),
             Err(_) => Err("Could not execute...".to_string()),

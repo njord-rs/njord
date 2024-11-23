@@ -158,7 +158,6 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
 
         info!("{}", query);
 
-        // Execute SQL
         let _ = conn.query_drop(&query.to_string());
 
         Ok(())

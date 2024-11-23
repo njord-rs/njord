@@ -96,7 +96,7 @@ pub fn into<'a, T: Table + Default>(
     subquery: Box<dyn QueryBuilder<'a> + 'a>,
 ) -> Result<String, RusqliteError> {
     let statement = generate_insert_into_statement::<T>(columns, subquery);
-    let sql = statement.unwrap();
+    let sql = statement?;
 
     // FIXME: Convert to transaction
     let _ = conn.query_drop(&sql);
@@ -104,7 +104,7 @@ pub fn into<'a, T: Table + Default>(
     info!("Inserted into table, done.");
 
     // FIXME: Return the number of rows affected
-    return Ok(sql);
+    Ok(sql)
 }
 
 /// Generates an SQL INSERT INTO statement for a given subquery.
@@ -197,7 +197,7 @@ fn generate_statement<T: Table>(table_row: &T, first_statement: bool) -> Result<
         format!("({})", values_str)
     };
 
-    debug!("{}", sql); // For debugging purposes
+    debug!("{}", sql);
 
     Ok(sql)
 }

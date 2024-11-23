@@ -76,7 +76,8 @@ pub async fn open(connection_string: &str) -> Result<Connection, Error> {
             return Err(err);
         }
     };
-    return Ok(Connection { client });
+
+    Ok(Connection { client })
 }
 
 /// Executes a raw SQL query and returns a vector of table rows.

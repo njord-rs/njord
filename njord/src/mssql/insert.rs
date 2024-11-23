@@ -70,10 +70,10 @@ pub async fn insert<T: Table>(
     debug!("{}", joined_statements);
 
     match conn.client.query(&joined_statements, &[]).await {
-        Ok(_) => return Ok("Inserted into table, done.".to_string()),
+        Ok(_) => Ok("Inserted into table, done.".to_string()),
         Err(err) => {
             eprintln!("Error: {}", err);
-            return Err(MSSQLError::InvalidQuery);
+            Err(MSSQLError::InvalidQuery)
         }
     }
 }
@@ -102,7 +102,7 @@ pub fn into<'a, T: Table + Default>(
     info!("Inserted into table, done.");
 
     // FIXME: Return the number of rows affected
-    return Ok(sql);
+    Ok(sql)
 }
 
 /// Generates an SQL INSERT INTO statement for a given subquery.
