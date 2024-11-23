@@ -1,4 +1,4 @@
-<img align="right" width="128" height="128" alt="njord" src="https://github.com/njord-rs/njord/blob/78d13f9143f5b99dedab7f2561b9fb0e8ca2b902/resources/logo.png">
+<img align="right" width="128" height="128" alt="njord" src="https://raw.githubusercontent.com/njord-rs/njord/78d13f9143f5b99dedab7f2561b9fb0e8ca2b902/resources/logo.png">
 
 # Njord <!-- omit in toc -->
 
