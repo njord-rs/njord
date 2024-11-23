@@ -1,6 +1,6 @@
 [package]
 name = "njord_derive"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
 description = "You should not use this crate directly, it is internal to Njord ORM."
