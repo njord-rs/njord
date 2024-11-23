@@ -1,4 +1,4 @@
-use super::User;
+use super::{setup_mariadb, teardown_mariadb, User};
 use ::mysql::PooledConn;
 use njord::condition::{Condition, Value};
 use njord::keys::AutoIncrementPrimaryKey;

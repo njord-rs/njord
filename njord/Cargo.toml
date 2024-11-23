@@ -25,9 +25,14 @@ oracle = { version = "0.6.2", features = ["chrono"], optional = true }
 tiberius = { version = "0.12.3", default-features = false, features = ["chrono", "time", "tds73", "rust_decimal", "bigdecimal", "rustls"], optional = true }
 tokio = { version = "1.41.1", features = ["full"], optional = true }
 tokio-util = { version = "0.7.12", features = ["compat"], optional = true }
+ctor = "0.3.0-beta0"
+lazy_static = "1.4.0"
+env_logger = "0.11.5"
 
 [dev-dependencies]
 njord_derive = { version = "0.4.0", path = "../njord_derive" }
+testcontainers = { version = "0.23.1", features = ["blocking"] }
+testcontainers-modules = { version = "0.11.4", features = ["mysql", "mariadb", "mssql_server", "oracle"] }
 
 # This cfg cannot be enabled, but it still forces Cargo to keep njord_derive's
 # version in lockstep with njord's, even if someone depends on the two crates
