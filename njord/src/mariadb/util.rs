@@ -102,7 +102,7 @@ pub fn generate_order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) ->
         String::new()
     };
 
-    return order_by_str;
+    order_by_str
 }
 
 /// Generates an SQL LIMIT clause string based on the provided limit count.
@@ -183,7 +183,6 @@ mod tests {
         let condition = Condition::Eq("age".to_string(), Value::Literal("30".to_string()));
         let _result = generate_where_condition_str(Some(condition)); // TODO: need to fix this later
                                                                      // assert_eq!(result, format!("WHERE {}", condition.build()));
-
         // Test when condition is None
         let result = generate_where_condition_str(None);
         assert_eq!(result, "");

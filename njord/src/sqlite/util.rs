@@ -100,7 +100,7 @@ pub fn generate_order_by_str(order_by: &Option<HashMap<Vec<String>, String>>) ->
         String::new()
     };
 
-    return order_by_str;
+    order_by_str
 }
 
 /// Generates an SQL LIMIT clause string based on the provided limit count.

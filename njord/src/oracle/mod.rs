@@ -64,12 +64,12 @@ pub fn open(username: &str, password: &str, connect_string: &str) -> Result<Conn
         Ok(conn) => {
             println!("Successfully connected to Oracle database");
 
-            return Ok(conn);
+            Ok(conn)
         }
         Err(err) => {
             eprintln!("Error: {}", err);
 
-            return Err(err);
+            Err(err)
         }
     }
 }

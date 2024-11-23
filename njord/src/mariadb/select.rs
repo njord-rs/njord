@@ -40,7 +40,7 @@ use crate::{
 };
 use std::{collections::HashMap, sync::Arc};
 
-use log::info;
+use log::{debug, info};
 use mysql::prelude::*;
 use mysql::{Error, PooledConn, Value};
 
@@ -360,7 +360,7 @@ impl<'a, T: Table + Default> SelectQueryBuilder<'a, T> {
     pub fn build(&mut self, conn: &mut PooledConn) -> Result<Vec<T>, Error> {
         let final_query = self.build_query();
 
-        info!("{}", final_query);
+        debug!("{}", final_query);
 
         raw_execute(&final_query, conn)
     }
@@ -426,7 +426,6 @@ pub fn raw_execute<T: Table + Default>(sql: &str, conn: &mut PooledConn) -> Resu
             instance.set_column_value(column.name_str().as_ref(), &column_value_str);
         }
 
-        // Move `instance` to the `results` only after it is fully set up
         results.push(instance);
     }
 

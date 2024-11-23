@@ -39,7 +39,7 @@ use crate::{
     },
 };
 
-use log::info;
+use log::{debug, info};
 use mysql::{prelude::Queryable, PooledConn};
 
 use crate::table::Table;
@@ -217,9 +217,8 @@ impl<'a, T: Table + Default> UpdateQueryBuilder<'a, T> {
             format!("{} {}", limit_str, offset_str),
         );
 
-        info!("{}", query);
+        debug!("{}", query);
 
-        // Prepare SQL statement
         let _ = conn.query_drop(query.as_str());
 
         Ok(())

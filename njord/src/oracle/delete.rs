@@ -39,7 +39,7 @@ use crate::{
     },
 };
 
-use log::info;
+use log::{debug, info};
 use oracle::Connection;
 
 use crate::table::Table;
@@ -156,9 +156,8 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
             format!("{} {}", limit_str, offset_str),
         );
 
-        info!("{}", query);
+        debug!("{}", query);
 
-        // Execute SQL
         let _ = conn.execute(&query, &[]);
 
         Ok(())

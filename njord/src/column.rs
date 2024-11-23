@@ -3,12 +3,13 @@ use crate::query::QueryBuilder;
 /// Define the enum to represent a column as either a String or SelectQueryBuilder
 #[derive(Clone)]
 pub enum Column<'a> {
+    /// Column as a String
     Text(String),
-    // Subquery with alias
+    ///  Subquery with Alias
     SubQuery(Box<dyn QueryBuilder<'a> + 'a>, String),
 }
 
-// Implement the build method to convert the enum to a string
+/// Implement the build method to convert the enum to a string
 impl<'a> Column<'a> {
     /// Helper function to convert the columns to a string
     pub fn build(&self) -> String {
@@ -21,21 +22,21 @@ impl<'a> Column<'a> {
     }
 }
 
-// Implementation of fmt::Display for Column
+/// Implementation of fmt::Display for Column
 impl<'a> std::fmt::Display for Column<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.build())
     }
 }
 
-// Implementation of PartialEq for Column
+/// Implementation of PartialEq for Column
 impl<'a> PartialEq for Column<'a> {
     fn eq(&self, other: &Self) -> bool {
         self.build() == other.build()
     }
 }
 
-// Implementation of PartialEq<String> for Column
+/// Implementation of PartialEq<String> for Column
 impl<'a> PartialEq<String> for Column<'a> {
     fn eq(&self, other: &String) -> bool {
         match self {
@@ -45,7 +46,7 @@ impl<'a> PartialEq<String> for Column<'a> {
     }
 }
 
-// Implementation of PartialEq<&str> for Column
+/// Implementation of PartialEq<&str> for Column
 impl<'a> PartialEq<&str> for Column<'a> {
     fn eq(&self, other: &&str) -> bool {
         match self {

@@ -34,7 +34,7 @@ use crate::{
     mssql::util::{generate_where_condition_str, remove_quotes_and_backslashes},
 };
 
-use log::info;
+use log::{debug, info};
 
 use crate::table::Table;
 
@@ -111,9 +111,8 @@ impl<'a, T: Table + Default> DeleteQueryBuilder<'a, T> {
         // Construct the query based on defined variables above
         let query = format!("DELETE FROM {} {}", table_name_str, where_condition_str,);
 
-        info!("{}", query);
+        debug!("{}", query);
 
-        // Execute SQL
         match conn.client.execute(&query, &[]).await {
             Ok(_) => Ok(()),
             Err(err) => Err(err.to_string()),
