@@ -12,6 +12,9 @@ rust-version = "1.81.0"
 homepage = "https://njord.rs"
 keywords = ["orm", "database", "sql"]
 
+[badges]
+maintenance = { status = "actively-developed" }
+
 [lib]
 name = "njord_derive"
 proc-macro = true
@@ -20,3 +23,6 @@ proc-macro = true
 proc-macro2 = "1.0.89"
 quote = "1.0"
 syn = { version = "2.0.87", features = ["full"] }
+
+[package.metadata.docs.rs]
+all-features = true
