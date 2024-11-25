@@ -28,7 +28,7 @@ A highly versatile and feature-rich ORM library for Rust, designed to simplify d
 | SQLite           | ✅    | ✅      | ✅      | ✅      | ✅      | ✅️     | 🏗         |
 | PostgreSQL       | 🏗️  | 🏗️    | 🏗️    | 🏗️    | 🏗️    | 🏗️     | 🏗️      |
 | MySQL            | ✅    | ✅      | ✅      | ✅      | ✅      | ✅️     | 🏗         |
-| MariaDB          | ✅  | ✅    | ✅    | ✅    | ✅    | ✅     | 🏗️      |
+| MariaDB          | ✅  | ✅    | ✅    | ✅    | ✅    | 🏗️     | 🏗️      |
 | Oracle           | ✅    | ✅      | ✅      | ✅      | ✅      | ✅️     | 🏗         |
 | MSSQL            | ✅    | ✅      | ✅      | ✅      | ✅      | ✅️     | 🏗         |
 
