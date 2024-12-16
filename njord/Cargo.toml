@@ -19,7 +19,7 @@ maintenance = { status = "actively-developed" }
 njord_derive = { version = "0.5.0", path = "../njord_derive" }
 log = "0.4.22"
 rusqlite = { version = "0.32.1", features = ["bundled"], optional = true }
-serde = { version = "1.0.215", features = ["derive"] }
+serde = { version = "1.0.216", features = ["derive"] }
 mysql = { version = "25.0.1", optional = true }
 oracle = { version = "0.6.2", features = ["chrono"], optional = true }
 tiberius = { version = "0.12.3", default-features = false, features = ["chrono", "time", "tds73", "rust_decimal", "bigdecimal", "rustls"], optional = true }
